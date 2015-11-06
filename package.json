@@ -1,0 +1,24 @@
+{
+  "name": "homebridge-http",
+  "version": "0.0.1",
+  "description": "domotiga plugin for homebridge: https://github.com/nfarina/homebridge",
+  "license": "ISC",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "author": {
+    "name": "Sam Fox"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Samfox2/homebridge-domotiga.git"
+  },
+  "dependencies": {
+    "jsonrequest": "^3.0.1"
+  }
+}
+
