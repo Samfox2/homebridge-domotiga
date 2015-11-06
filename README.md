@@ -1,10 +1,12 @@
 # homebridge-domotiga
 Supports domotiga devices on HomeBridge Platform
 At this time, only a combined temperature/hygrometer sensor is suported with:
-device value 1 = temperature
-device value 2 = humidity
-device value 3 = dewpoint (not used here)
-device value 4 = battery
+
+domotiga device:
+value 1 = temperature,
+value 2 = humidity,
+value 3 = dewpoint (not used here),
+value 4 = battery,
 
 # Installation
 
