@@ -1,5 +1,5 @@
 # homebridge-domotiga
-Supports domotiga devices on HomeBridge Platform
+Supports domotiga devices on HomeBridge Platform.
 At this time, only a combined temperature/hygrometer sensor with the following configuration is suported.
 
 domotiga device values:
