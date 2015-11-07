@@ -5,7 +5,7 @@ var JSONRequest = require("jsonrequest");
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-domotiga", "domotiga", DomotigaTempHygroMeter);
+  homebridge.registerAccessory("homebridge-domotigatemphygrometer", "DomotigaTempHygroMeter", DomotigaTempHygroMeter);
 }
 
 
