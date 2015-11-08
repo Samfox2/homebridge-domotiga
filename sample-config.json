@@ -22,6 +22,17 @@
             "valueHumidity":   "2",
             "valueBattery":    "4",
             "lowbattery": "3000"
+        },
+	    {
+            "accessory": "Domotiga",
+            "name": "PC",
+            "host": "192.168.2.103",
+            "port": "9090",
+            "service": "Contact",
+            "device": "77",
+            "valueContact": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
         }
     ]
 }
