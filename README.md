@@ -1,13 +1,8 @@
 # homebridge-domotiga
 Supports domotiga devices on HomeBridge Platform.
-At this time, only a combined temperature/hygrometer sensor with the following configuration is suported.
+At this time, only a combined temperature/hygrometer sensor is suported.
 
-domotiga device values:
-
-1. = temperature,
-2. = humidity,
-3. = dewpoint (not used here),
-4. = battery
+Domotiga device value numbers for temperature/humidity and battery can be assigned within the config.json file.
 
 # Installation
 
@@ -22,11 +17,15 @@ Configuration sample:
  ```
 "accessories": [
           {
-            "accessory": "DomotigaTempHygroMeter",
+            "accessory": "Domotiga",
             "name": "Sensor garden",
             "host": "localhost",
             "port": "9090",
+            "service": "TempHygroMeter",
             "device": "81",
+            "valueTemparatur": "1",
+            "valueHumidity":   "2",
+            "valueBattery":    "4",
             "lowbattery": "3000"
         }
     ]
