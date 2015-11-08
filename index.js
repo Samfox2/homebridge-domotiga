@@ -2,27 +2,27 @@
 var Service, Characteristic;
 var JSONRequest = require("jsonrequest");
 
-module.exports = function(homebridge){
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-domotigatemphygrometer", "DomotigaTempHygroMeter", DomotigaTempHygroMeter);
+module.exports = function (homebridge) {
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
+    homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
 
 
 //Get data from config file 
-function DomotigaTempHygroMeter(log, config) {
+function Domotiga(log, config) {
     this.log = log;
     this.config = {
         host: config.host || 'localhost',
         port: config.port || 9090,
+        service: config.service || "TempHygroMeter",
         device: config.device || 81,
         name: config.name || NA,
         lowbattery: config.lowbattery || 3000
     };
 }
 
-
-DomotigaTempHygroMeter.prototype = {
+Domotiga.prototype = {
     identify: function (callback) {
         this.log("Identify requested!");
         callback(); // success
@@ -132,6 +132,19 @@ DomotigaTempHygroMeter.prototype = {
         // 1 = F and 0 = C
         callback(null, 0);
     },
+
+    getGetFakeContactState: function (callback) {
+        var that = this;
+        that.log("getting fake ContactState for " + that.config.name);
+        //dbg:
+        //value = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
+
+        // The value property of ContactSensorState must be one of the following:
+//Characteristic.ContactSensorState.CONTACT_DETECTED = 0;
+//Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
+
+        callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED);
+    },
     
     getCurrentBatteryLevel: function (callback) {
         var that = this;
@@ -139,8 +152,6 @@ DomotigaTempHygroMeter.prototype = {
         //dbg:
         callback(null, 10);
     },
-    
-    
     getLowBatteryStatus: function (callback) {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
@@ -201,32 +212,51 @@ DomotigaTempHygroMeter.prototype = {
         // the default values for things like serial number, model, etc.
         var informationService = new Service.AccessoryInformation();
 
-        informationService
-                .setCharacteristic(Characteristic.Manufacturer, "TinyTX DHT22 Manufacturer")
-                .setCharacteristic(Characteristic.Model, "TinyTX DHT22 Sensor")
-                .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+        if (this.config.service == "TempHygroMeter") {
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "TinyTX DHT22 Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "TinyTX DHT22 Sensor")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
+            var controlService = new Service.TemperatureSensor();
 
-        var controlService = new Service.TemperatureSensor();
+            controlService
+                    .getCharacteristic(Characteristic.CurrentTemperature)
+                    .on('get', this.getCurrentTemperature.bind(this));
 
-        controlService
-                .getCharacteristic(Characteristic.CurrentTemperature)
-                .on('get', this.getCurrentTemperature.bind(this));
+            controlService
+                    .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .on('get', this.getCurrentRelativeHumidity.bind(this));
 
-        controlService
-                .addCharacteristic(Characteristic.CurrentRelativeHumidity)
-                .on('get', this.getCurrentRelativeHumidity.bind(this));
+            controlService
+                    .addCharacteristic(Characteristic.BatteryLevel)
+                    .on('get', this.getCurrentBatteryLevel.bind(this));
 
+            controlService
+                    .addCharacteristic(Characteristic.StatusLowBattery)
+                    .on('get', this.getLowBatteryStatus.bind(this));
 
-        controlService
-                .addCharacteristic(Characteristic.BatteryLevel)
-                .on('get', this.getCurrentBatteryLevel.bind(this));
+            return [informationService, controlService];
+        }
 
+        if (this.config.service == "Contact") {
 
-        controlService
-                .addCharacteristic(Characteristic.StatusLowBattery)
-                .on('get', this.getLowBatteryStatus.bind(this));
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "Contact Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Contact Model")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
-        return [informationService, controlService];
+            var controlService = new Service.ContactSensor();
+
+            controlService
+                    .getCharacteristic(Characteristic.ContactSensorState)
+                    .on('get', this.getGetFakeContactState.bind(this));
+
+            controlService
+                    .addCharacteristic(Characteristic.StatusLowBattery)
+                    .on('get', this.getLowBatteryStatus.bind(this));
+
+            return [informationService, controlService];
+        }
     }
 };
