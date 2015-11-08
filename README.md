@@ -1,6 +1,6 @@
 # homebridge-domotiga
 Supports domotiga devices on HomeBridge platform.
-At this time, supported sensores are:
+At this time, supported sensors are:
 
 1. temperature/hygrometer
 2. contact devices
