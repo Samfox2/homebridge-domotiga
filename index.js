@@ -17,7 +17,7 @@ function Domotiga(log, config) {
         port: config.port || 9090,
         service: config.service || "TempHygroMeter",
         device: config.device || 81,
-        valueTemparatur: config.valueTemparatur || 1,
+        valueTemperature: config.valueTemperature || 1,
         valueHumidity: config.valueHumidity || 2,
         valueBattery: config.valueBattery || 4,
         name: config.name || NA,
@@ -103,7 +103,7 @@ Domotiga.prototype = {
                 callback(err);
             }
             else {
-                item = Number(that.config.valueTemparatur)-1;
+                item = Number(that.config.valueTemperature)-1;
                 //that.log("data.result:", data.result);
                 //that.log( "data.result[values][0][value]", data.result[values][0][value]);
                 i = 0;
