@@ -12,10 +12,11 @@
 
     "accessories": [
         {
-            "accessory": "DomotigaTempHygroMeter",
+            "accessory": "Domotiga",
             "name": "Sensor garden",
             "host": "localhost",
             "port": "9090",
+            "service": "TempHygroMeter",
             "device": "81",
             "lowbattery": "3000"
         }
