@@ -23,7 +23,7 @@ Configuration sample:
             "port": "9090",
             "service": "TempHygroMeter",
             "device": "81",
-            "valueTemparatur": "1",
+            "valueTemperature": "1",
             "valueHumidity":   "2",
             "valueBattery":    "4",
             "lowbattery": "3000"
