@@ -1,4 +1,3 @@
-
 var Service, Characteristic;
 var JSONRequest = require("jsonrequest");
 
@@ -30,20 +29,8 @@ Domotiga.prototype = {
         this.log("Identify requested!");
         callback(); // success
     },
-    getCurrentRelativeHumidity: function (callback) {
+    getValueFromDomotiga: function (deviceValueNo, callback) {
         var that = this;
-        that.log("getting CurrentRelativeHumidity for " + that.config.name);
-
-////////////////////// Make a request to Domotiga server
-//        JSONRequest('http://' + that.config.host + ':' + that.config.port,
-//        {
-//        jsonrpc: "2.0",
-//                method: "domotiga.version",
-//                id: 1
-//        }, function (err, data) {
-//            that.log(err || data);
-//
-//            that.log("results.result:", data.result);
         JSONRequest('http://' + that.config.host + ':' + that.config.port,
                 {
                     jsonrpc: "2.0",
@@ -57,7 +44,7 @@ Domotiga.prototype = {
                 callback(err);
             }
             else {
-                item = Number(that.config.valueHumidity)-1;
+                item = Number(deviceValueNo) - 1;
                 //that.log("data.result:", data.result);
                 //that.log( "data.result[values][0][value]", data.result[values][0][value]);
                 i = 0;
@@ -72,7 +59,7 @@ Domotiga.prototype = {
                                 for (key3 in data.result[key1][key2]) {
                                     if (k == 17) {
                                         //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
-                                        callback(null, Number(data.result[key1][key2][key3]));
+                                        callback(null, data.result[key1][key2][key3]);
                                     }
                                     ++k;
                                 }
@@ -85,51 +72,29 @@ Domotiga.prototype = {
             }
         });
     },
+    getCurrentRelativeHumidity: function (callback) {
+        var that = this;
+        that.log("getting CurrentRelativeHumidity for " + that.config.name);
+        that.getValueFromDomotiga(that.config.valueHumidity, function (error, result) {
+            if (error) {
+                that.log('CurrentRelativeHumidity GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                callback(null, Number(result));
+            }
+        }.bind(this));
+    },
     getCurrentTemperature: function (callback) {
         var that = this;
         that.log("getting Temperature for " + that.config.name);
-
-////////////////////// Make a request to Domotiga server 
-        JSONRequest('http://' + that.config.host + ':' + that.config.port,
-                {
-                    jsonrpc: "2.0",
-                    method: "device.get",
-                    params: {"device_id": that.config.device},
-                    id: 1
-                }, function (err, data) {
-
-            if (err) {
-                that.log("Sorry err: ", err);
-                callback(err);
+        that.getValueFromDomotiga(that.config.valueTemperature, function (error, result) {
+            if (error) {
+                that.log('CurrentTemperature GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                callback(null, Number(result));
             }
-            else {
-                item = Number(that.config.valueTemperature)-1;
-                //that.log("data.result:", data.result);
-                //that.log( "data.result[values][0][value]", data.result[values][0][value]);
-                i = 0;
-                for (key1 in data.result) {
-                    if (i == 37) {
-                        //that.log("key1 ", i, key1, "values[key1]", values[key1]);
-                        j = 0;
-                        for (key2 in data.result[key1]) {
-                            if (j == item) {
-                                //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
-                                k = 0;
-                                for (key3 in data.result[key1][key2]) {
-                                    if (k == 17) {
-                                        //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
-                                        callback(null, Number(data.result[key1][key2][key3]));
-                                    }
-                                    ++k;
-                                }
-                            }
-                            ++j;
-                        }
-                    }
-                    ++i;
-                }
-            }
-        });
+        }.bind(this));
     },
     getTemperatureUnits: function (callback) {
         var that = this;
@@ -137,20 +102,25 @@ Domotiga.prototype = {
         // 1 = F and 0 = C
         callback(null, 0);
     },
-
-    getGetFakeContactState: function (callback) {
+    getGetContactState: function (callback) {
         var that = this;
-        that.log("getting fake ContactState for " + that.config.name);
-        //dbg:
-        //value = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
-
-        // The value property of ContactSensorState must be one of the following:
-//Characteristic.ContactSensorState.CONTACT_DETECTED = 0;
-//Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
-
-        callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED);
+        that.log("getting ContactState for " + that.config.name);
+        that.getValueFromDomotiga(that.config.valueContact, function (error, result) {
+            if (error) {
+                that.log('getGetContactState GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "on") {
+                    callback(null, 1);
+                    //Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
+                }
+                else {
+                    callback(null, 0);
+                    //Characteristic.ContactSensorState.CONTACT_DETECTED = 0;
+                }
+            }
+        }.bind(this));
     },
-    
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -161,55 +131,20 @@ Domotiga.prototype = {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
 
-////////////////////// Make a request to Domotiga server
-        JSONRequest('http://' + that.config.host + ':' + that.config.port,
-                {
-                    jsonrpc: "2.0",
-                    method: "device.get",
-                    params: {"device_id": that.config.device},
-                    id: 1
-                }, function (err, data) {
-
-            if (err) {
-                that.log("Sorry err: ", err);
-                callback(err);
-            }
-            else {
-                //that.log("data.result:", data.result);
-                //that.log( "data.result[values][0][value]", data.result[values][0][value]);
-                item = Number(that.config.valueBattery)-1;
-                i = 0;
-                for (key1 in data.result) {
-                    if (i == 37) {
-                        //that.log("key1 ", i, key1, "values[key1]", values[key1]);
-                        j = 0;
-                        for (key2 in data.result[key1]) {
-                            if (j == item) {
-                                //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
-                                k = 0;
-                                for (key3 in data.result[key1][key2]) {
-                                    if (k == 17) {
-                                        //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
-                                        if (Number(data.result[key1][key2][key3]) < Number(that.config.lowbattery)) {
-                                            callback(null, 1);
-                                            //callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-
-                                        }
-                                        else {
-                                            callback(null, 0);
-                                            //callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-                                        }
-                                    }
-                                    ++k;
-                                }
-                            }
-                            ++j;
-                        }
-                    }
-                    ++i;
+        that.getValueFromDomotiga(that.config.valueTemperature, function (error, result) {
+            if (error) {
+                that.log('BatteryStatus GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (Number(result) < Number(that.config.lowbattery)) {
+                    callback(null, 1);
+                    //callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+                }
+                else {
+                    callback(null, 0);
                 }
             }
-        });
+        }.bind(this));
     },
     getServices: function () {
         // you can OPTIONALLY create an information service if you wish to override
@@ -254,7 +189,7 @@ Domotiga.prototype = {
 
             controlService
                     .getCharacteristic(Characteristic.ContactSensorState)
-                    .on('get', this.getGetFakeContactState.bind(this));
+                    .on('get', this.getGetContactState.bind(this));
 
             controlService
                     .addCharacteristic(Characteristic.StatusLowBattery)
