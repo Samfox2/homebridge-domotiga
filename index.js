@@ -111,12 +111,12 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, 1);
-                    //Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
-                }
-                else {
                     callback(null, 0);
                     //Characteristic.ContactSensorState.CONTACT_DETECTED = 0;
+                }
+                else {
+                    callback(null, 1);
+                    //Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
                 }
             }
         }.bind(this));
