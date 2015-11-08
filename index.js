@@ -103,7 +103,7 @@ Domotiga.prototype = {
         // 1 = F and 0 = C
         callback(null, 0);
     },
-    getGetContactState: function (callback) {
+    getContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
         that.getValueFromDomotiga(that.config.valueContact, function (error, result) {
@@ -190,7 +190,7 @@ Domotiga.prototype = {
 
             controlService
                     .getCharacteristic(Characteristic.ContactSensorState)
-                    .on('get', this.getGetContactState.bind(this));
+                    .on('get', this.getContactState.bind(this));
 
             controlService
                     .addCharacteristic(Characteristic.StatusLowBattery)
