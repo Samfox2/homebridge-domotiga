@@ -19,6 +19,7 @@ function Domotiga(log, config) {
         valueTemperature: config.valueTemperature || 1,
         valueHumidity: config.valueHumidity || 2,
         valueBattery: config.valueBattery || 4,
+        valueContact: config.valueContact || 1,        
         name: config.name || NA,
         lowbattery: config.lowbattery || 3000
     };
