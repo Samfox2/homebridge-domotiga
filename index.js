@@ -17,6 +17,9 @@ function Domotiga(log, config) {
         port: config.port || 9090,
         service: config.service || "TempHygroMeter",
         device: config.device || 81,
+        valueTemparatur: config.valueTemparatur || 1,
+        valueHumidity: config.valueHumidity || 2,
+        valueBattery: config.valueBattery || 4,
         name: config.name || NA,
         lowbattery: config.lowbattery || 3000
     };
@@ -54,6 +57,7 @@ Domotiga.prototype = {
                 callback(err);
             }
             else {
+                item = Number(that.config.valueHumidity)-1;
                 //that.log("data.result:", data.result);
                 //that.log( "data.result[values][0][value]", data.result[values][0][value]);
                 i = 0;
@@ -62,7 +66,7 @@ Domotiga.prototype = {
                         //that.log("key1 ", i, key1, "values[key1]", values[key1]);
                         j = 0;
                         for (key2 in data.result[key1]) {
-                            if (j == 1) {
+                            if (j == item) {
                                 //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
                                 k = 0;
                                 for (key3 in data.result[key1][key2]) {
@@ -99,6 +103,7 @@ Domotiga.prototype = {
                 callback(err);
             }
             else {
+                item = Number(that.config.valueTemparatur)-1;
                 //that.log("data.result:", data.result);
                 //that.log( "data.result[values][0][value]", data.result[values][0][value]);
                 i = 0;
@@ -107,7 +112,7 @@ Domotiga.prototype = {
                         //that.log("key1 ", i, key1, "values[key1]", values[key1]);
                         j = 0;
                         for (key2 in data.result[key1]) {
-                            if (j == 0) {
+                            if (j == item) {
                                 //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
                                 k = 0;
                                 for (key3 in data.result[key1][key2]) {
@@ -172,15 +177,14 @@ Domotiga.prototype = {
             else {
                 //that.log("data.result:", data.result);
                 //that.log( "data.result[values][0][value]", data.result[values][0][value]);
-                callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-
+                item = Number(that.config.valueBattery)-1;
                 i = 0;
                 for (key1 in data.result) {
                     if (i == 37) {
                         //that.log("key1 ", i, key1, "values[key1]", values[key1]);
                         j = 0;
                         for (key2 in data.result[key1]) {
-                            if (j == 3) {
+                            if (j == item) {
                                 //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
                                 k = 0;
                                 for (key3 in data.result[key1][key2]) {
