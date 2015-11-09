@@ -2,22 +2,22 @@
 Supports domotiga devices on HomeBridge platform.
 At this time, supported sensors are:
 
-1. temperature/hygrometer
-2. contact devices
+- temperature/hygrometer
+- contact devices
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
 # Installation
 
-1. Install homebridge using: 
+- Install homebridge using: 
 ```
    npm install -g homebridge
 ```
-2. Install this plugin using: 
+- Install this plugin using: 
 ```   
    npm install -g git+https://github.com/Samfox2/homebridge-domotiga.git
 ```
-3. Update your configuration file. See sample-config.json in this repository for a sample. 
+- Update your configuration file. See sample-config.json in this repository for a sample. 
 
 # Configuration
 
