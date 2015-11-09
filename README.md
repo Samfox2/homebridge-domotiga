@@ -9,8 +9,14 @@ Domotiga device value numbers (e.g. which device value represents temperature) c
 
 # Installation
 
-1. Install homebridge using: npm install -g homebridge
-2. Install this plugin using: npm install -g git+https://github.com/Samfox2/homebridge-domotiga.git
+1. Install homebridge using: 
+```
+   npm install -g homebridge
+```
+2. Install this plugin using: 
+```   
+   npm install -g git+https://github.com/Samfox2/homebridge-domotiga.git
+```
 3. Update your configuration file. See sample-config.json in this repository for a sample. 
 
 # Configuration
