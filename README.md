@@ -1,5 +1,5 @@
 # homebridge-domotiga
-Supports domotiga devices on HomeBridge platform.
+Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 At this time, supported sensors are:
 
 - temperature/hygrometer
