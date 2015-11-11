@@ -19,7 +19,7 @@ function Domotiga(log, config) {
         valueTemperature: config.valueTemperature || 1,
         valueHumidity: config.valueHumidity || 2,
         valueBattery: config.valueBattery || 4,
-        valueContact: config.valueContact || 1,        
+        valueContact: config.valueContact || 1,
         name: config.name || NA,
         lowbattery: config.lowbattery || 3000
     };
@@ -103,7 +103,7 @@ Domotiga.prototype = {
         // 1 = F and 0 = C
         callback(null, 0);
     },
-    getContactState: function (callback) {
+    getGetContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
         that.getValueFromDomotiga(that.config.valueContact, function (error, result) {
@@ -163,18 +163,22 @@ Domotiga.prototype = {
             controlService
                     .getCharacteristic(Characteristic.CurrentTemperature)
                     .on('get', this.getCurrentTemperature.bind(this));
-
-            controlService
-                    .addCharacteristic(Characteristic.CurrentRelativeHumidity)
-                    .on('get', this.getCurrentRelativeHumidity.bind(this));
-
-            controlService
-                    .addCharacteristic(Characteristic.BatteryLevel)
-                    .on('get', this.getCurrentBatteryLevel.bind(this));
-
-            controlService
-                    .addCharacteristic(Characteristic.StatusLowBattery)
-                    .on('get', this.getLowBatteryStatus.bind(this));
+            //optionals
+            if (this.config.valueHumidity) {
+                controlService
+                        .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                        .on('get', this.getCurrentRelativeHumidity.bind(this));
+            }
+            if (this.config.valueBattery) {
+                controlService
+                        .addCharacteristic(Characteristic.BatteryLevel)
+                        .on('get', this.getCurrentBatteryLevel.bind(this));
+            }
+            if (this.config.lowbattery) {
+                controlService
+                        .addCharacteristic(Characteristic.StatusLowBattery)
+                        .on('get', this.getLowBatteryStatus.bind(this));
+            }
 
             return [informationService, controlService];
         }
@@ -190,12 +194,19 @@ Domotiga.prototype = {
 
             controlService
                     .getCharacteristic(Characteristic.ContactSensorState)
-                    .on('get', this.getContactState.bind(this));
+                    .on('get', this.getGetContactState.bind(this));
 
-            controlService
-                    .addCharacteristic(Characteristic.StatusLowBattery)
-                    .on('get', this.getLowBatteryStatus.bind(this));
-
+            //optionals
+            if (this.config.valueBattery) {
+                controlService
+                        .addCharacteristic(Characteristic.BatteryLevel)
+                        .on('get', this.getCurrentBatteryLevel.bind(this));
+            }
+            if (this.config.lowbattery) {
+                controlService
+                        .addCharacteristic(Characteristic.StatusLowBattery)
+                        .on('get', this.getLowBatteryStatus.bind(this));
+            }
             return [informationService, controlService];
         }
     }
