@@ -14,14 +14,14 @@ function Domotiga(log, config) {
     this.config = {
         host: config.host || 'localhost',
         port: config.port || 9090,
-        service: config.service || "TempHygroMeter",
+        service: config.service,
         device: config.device || 81,
         valueTemperature: config.valueTemperature || 1,
-        valueHumidity: config.valueHumidity || 2,
-        valueBattery: config.valueBattery || 4,
+        valueHumidity: config.valueHumidity,
+        valueBattery: config.valueBattery,
         valueContact: config.valueContact || 1,
         name: config.name || NA,
-        lowbattery: config.lowbattery || 3000
+        lowbattery: config.lowbattery
     };
 }
 
