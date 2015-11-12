@@ -13,7 +13,7 @@ function Domotiga(log, config) {
         host: config.host || 'localhost',
         port: config.port || 9090,
         service: config.service,
-        device: config.device || 81,
+        device: config.device,
         valueTemperature: config.valueTemperature || 1,
         valueHumidity: config.valueHumidity,
         valueBattery: config.valueBattery,
