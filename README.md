@@ -5,7 +5,7 @@ The latest version (work in progress) supports following services (accessories) 
 
 - temperature/hygrometer
 - contact devices
-- switch devices (not tested yet)
+- switch devices
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
