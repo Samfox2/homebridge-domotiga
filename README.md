@@ -4,6 +4,7 @@ At this time, supported sensors are:
 
 - temperature/hygrometer
 - contact devices
+- switch devices (not tested yet)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
