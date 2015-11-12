@@ -34,42 +34,42 @@ Domotiga.prototype = {
                 {
                     jsonrpc: "2.0",
                     method: "device.get",
-                    params: { "device_id": that.config.device },
+                    params: {"device_id": that.config.device},
                     id: 1
                 }, function (err, data) {
 
-                    if (err) {
-                        that.log("Sorry err: ", err);
-                        callback(err);
-                    }
-                    else {
-                        item = Number(deviceValueNo) - 1;
-                        //that.log("data.result:", data.result);
-                        //that.log( "data.result[values][0][value]", data.result[values][0][value]);
-                        i = 0;
-                        for (key1 in data.result) {
-                            if (i == 37) {
-                                //that.log("key1 ", i, key1, "values[key1]", values[key1]);
-                                j = 0;
-                                for (key2 in data.result[key1]) {
-                                    if (j == item) {
-                                        //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
-                                        k = 0;
-                                        for (key3 in data.result[key1][key2]) {
-                                            if (k == 17) {
-                                                //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
-                                                callback(null, data.result[key1][key2][key3]);
-                                            }
-                                            ++k;
-                                        }
+            if (err) {
+                that.log("Sorry err: ", err);
+                callback(err);
+            }
+            else {
+                item = Number(deviceValueNo) - 1;
+                //that.log("data.result:", data.result);
+                //that.log( "data.result[values][0][value]", data.result[values][0][value]);
+                i = 0;
+                for (key1 in data.result) {
+                    if (i == 37) {
+                        //that.log("key1 ", i, key1, "values[key1]", values[key1]);
+                        j = 0;
+                        for (key2 in data.result[key1]) {
+                            if (j == item) {
+                                //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
+                                k = 0;
+                                for (key3 in data.result[key1][key2]) {
+                                    if (k == 17) {
+                                        //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
+                                        callback(null, data.result[key1][key2][key3]);
                                     }
-                                    ++j;
+                                    ++k;
                                 }
                             }
-                            ++i;
+                            ++j;
                         }
                     }
-                });
+                    ++i;
+                }
+            }
+        });
     },
     setValueToDomotiga: function (deviceValueNo, value, callback) {
         var that = this;
@@ -85,18 +85,18 @@ Domotiga.prototype = {
                 {
                     jsonrpc: "2.0",
                     method: "device.set",
-                    params: { "device_id": that.config.device, "valuenum": deviceValueNo, "value": value },
+                    params: {"device_id": that.config.device, "valuenum": deviceValueNo, "value": value},
                     id: 1
                 }, function (err, data) {
-                    //that.log("data:", data);
-                    if (err) {
-                        that.log("Sorry err: ", err);
-                        callback(err);
-                    }
-                    else {
-                        callback(NULL)
-                    }
-                });
+            //that.log("data:", data);
+            if (err) {
+                that.log("Sorry err: ", err);
+                callback(err);
+            }
+            else {
+                callback();
+            }
+        });
     },
     getCurrentRelativeHumidity: function (callback) {
         var that = this;
@@ -191,24 +191,30 @@ Domotiga.prototype = {
     },
     setSwitchOn: function (switchOn, callback) {
         var that = this;
-        var binaryState = switchOn ? On : Off;
-        that.log("Setting SwitchState for '%s' to %s", that.config.name, binaryState);
+        that.log("Setting SwitchState for '%s' to %s", that.config.name, switchOn);
 
+        if (switchOn == 1) {
+            switchState = "On";
+        }
+        else {
+            switchState = "Off";
+        }
         var callbackWasCalled = false;
 
-        that.setValueToDomotiga(that.config.valueSwitch, binaryState, function (err, result) {
+        that.setValueToDomotiga(that.config.valueSwitch, switchState, function (err) {
             if (callbackWasCalled) {
                 that.log("WARNING: setValueToDomotiga called its callback more than once! Discarding the second one.");
             }
             callbackWasCalled = true;
             if (!err) {
-                that.log("Successfully set switch state on the '%s' to %s", that.config.name, binaryState);
+                that.log("Successfully set switch state on the '%s' to %s", that.config.name, switchOn);
                 callback(null);
             }
             else {
-                that.log("Error setting switch state to %s on the '%s'", binaryState, that.config.name);
+                that.log("Error setting switch state to %s on the '%s'", switchOn, that.config.name);
                 callback(err);
             }
+
         }.bind(this));
     },
     getServices: function () {
@@ -273,7 +279,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Switch") {
-            
+
             informationService
                     .setCharacteristic(Characteristic.Manufacturer, "Switch Manufacturer")
                     .setCharacteristic(Characteristic.Model, "Switch Model")
@@ -282,9 +288,9 @@ Domotiga.prototype = {
             var controlService = new Service.Switch(this.config.name);
 
             controlService
-              .getCharacteristic(Characteristic.On)
-              .on('get', this.getSwitchOn.bind(this))
-              .on('set', this.setSwitchOn.bind(this));
+                    .getCharacteristic(Characteristic.On)
+                    .on('get', this.getSwitchOn.bind(this))
+                    .on('set', this.setSwitchOn.bind(this));
 
             return [informationService, controlService];
         }
