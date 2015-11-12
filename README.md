@@ -51,7 +51,7 @@ Configuration sample:
             "port": "9090",
             "service": "Switch",
             "device": "79",
-            "valueSwitch": "1",
+            "valueSwitch": "1"
           }   
     ]
 ```
