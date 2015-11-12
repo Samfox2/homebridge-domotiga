@@ -30,17 +30,26 @@ Configuration sample:
             "valueHumidity":   "2",
             "valueBattery":    "4",
             "lowbattery": "3000"
-        },
-        {
+          },
+          {
             "accessory": "Domotiga",
             "name": "PC",
-            "host": "192.168.2.103",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Contact",
             "device": "77",
             "valueContact": "1",
             "valueBattery":    "2",
             "lowbattery": "3000"
-        }
+          },
+          {
+            "accessory": "Domotiga",
+            "name": "Printer",
+            "host": "192.168.0.xxx",
+            "port": "9090",
+            "service": "Switch",
+            "device": "79",
+            "valueSwitch": "1",
+          }   
     ]
 ```
