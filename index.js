@@ -273,6 +273,12 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Switch") {
+            
+                informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "Switch Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Switch Model")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
             var controlService = new Service.Switch(this.config.name);
 
             controlService
