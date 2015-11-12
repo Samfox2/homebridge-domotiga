@@ -94,7 +94,7 @@ Domotiga.prototype = {
                         callback(err);
                     }
                     else {
-                        callback(NULL,data)
+                        callback(NULL)
                     }
                 });
     },
