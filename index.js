@@ -73,14 +73,6 @@ Domotiga.prototype = {
     },
     setValueToDomotiga: function (deviceValueNo, value, callback) {
         var that = this;
-
-        //dbg: Message format:
-        // json='application/json'
-        // params='"params": {"device_id": 52, "valuenum": 1, "value": "Off"}'
-        // request='{"jsonrpc": "2.0", "method": "device.set", '${params}', "id": 1}'
-        // curl -sS -X POST -H "Content-Type: $json" -H "Accept: $json" -d "$request" localhost:9090
-
-        //todo  
         JSONRequest('http://' + that.config.host + ':' + that.config.port,
                 {
                     jsonrpc: "2.0",
