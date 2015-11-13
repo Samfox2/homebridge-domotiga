@@ -142,8 +142,16 @@ Domotiga.prototype = {
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
-        //dbg:
-        callback(null, 10);
+
+        that.getValueFromDomotiga(that.config.valueBattery, function (error, result) {
+            if (error) {
+                that.log('CurrentBattery GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                var remaining = (Number(result)*100)/4000;
+                callback(null, parseInt(remaining, 10));
+            }
+        }.bind(this));
     },
     getLowBatteryStatus: function (callback) {
         var that = this;
