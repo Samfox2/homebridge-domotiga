@@ -148,8 +148,15 @@ Domotiga.prototype = {
                 that.log('CurrentBattery GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                var remaining = (Number(result)*100)/4000;
-                callback(null, parseInt(remaining, 10));
+                //that.log('CurrentBattery level Number(result): %s', Number(result));
+                remaining = parseInt(Number(result)*100/5000, 10) ;
+                that.log('CurrentBattery level: %s', remaining);
+                if (remaining > 100)
+                    remaining = 100;
+                else if (remaining < 0)
+                    remaining = 0;
+                
+                callback(null, remaining);
             }
         }.bind(this));
     },
@@ -214,7 +221,6 @@ Domotiga.prototype = {
                 that.log("Error setting switch state to %s on the '%s'", switchOn, that.config.name);
                 callback(err);
             }
-
         }.bind(this));
     },
     getServices: function () {
