@@ -68,5 +68,7 @@ Fields:
 * "valueHumidity": Domotiga device value no. of humidity (optional for "TempHygroMeter")
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
-* "valueBattery":  Domotiga device value no. of battery (not yet supported by actual homekit apps)
-* "lowbattery":    Min. battery level which activates "low battery warning" (not yet supported by actual homekit apps)
+
+Not yet supported by actual homekit apps:
+* "valueBattery":  Domotiga device value no. of battery
+* "lowbattery":    Min. battery level which activates "low battery warning"
