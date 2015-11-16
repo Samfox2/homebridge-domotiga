@@ -65,7 +65,7 @@ Fields:
 * "service": Service that Domotiga device represents (required)
 * "device":  Domotiga device no. (required)
 * "valueTemperature": Value no. of Domotiga device that represents the temperature (required for "TempHygroMeter")
-* "valueHumidity": Domotiga device value no. that represents the humidity (oprional for "TempHygroMeter")
+* "valueHumidity": Domotiga device value no. that represents the humidity (optional for "TempHygroMeter")
 * "valueContact":  Domotiga device value no. that represents the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. that represents the switch (required for "Switch")
 * "valueBattery":  Domotiga device value no. that represents the battery (not yet supported by actual homekit)
