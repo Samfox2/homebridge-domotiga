@@ -55,3 +55,18 @@ Configuration sample:
           }   
     ]
 ```
+
+Fields:
+
+* "accessory": Must always be "Domotiga" (required)
+* "name": Can be anything
+* "host": The hostname or ip of the machine running Domotiga (required)
+* "port": The port that Domotiga is using (usually 9090) (required)
+* "service": The service that teh Domotiga device represents - "TempHygroMeter", "Contact", "Switch" (required)
+* "device":  Domotiga device no. (required)
+* "valueTemperature":  Domotiga device value no. that represents the temperature service (required for "TempHygroMeter")
+* "valueHumidity":  Domotiga device value no. that represents the service (oprional for "TempHygroMeter")
+* "valueContact":  Domotiga device value no. that represents the service (required for "Contact")
+* "valueSwitch":  Domotiga device value no. that represents the service (required for "Switch")
+* "valueBattery":  Domotiga device value no. that represents the service (optional - not yet supported by actual homekit)
+* "lowbattery":  Domotiga device value no. that represents the service (optional - not yet supported by actual homekit)
