@@ -164,7 +164,7 @@ Domotiga.prototype = {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
 
-        that.getValueFromDomotiga(that.config.valueTemperature, function (error, result) {
+        that.getValueFromDomotiga(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log('BatteryStatus GetValue failed: %s', error.message);
                 callback(error);
