@@ -83,4 +83,3 @@ Fields:
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
 * "lowbattery":    Min. battery level which activates "low battery warning"
-* 
