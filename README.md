@@ -79,7 +79,8 @@ Fields:
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
 * "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
-* 
+
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
 * "lowbattery":    Min. battery level which activates "low battery warning"
+* 
