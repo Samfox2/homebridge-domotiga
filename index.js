@@ -19,6 +19,7 @@ function Domotiga(log, config) {
         valueBattery: config.valueBattery,
         valueContact: config.valueContact || 1,
         valueSwitch: config.valueSwitch || 1,
+        valueOutlet: config.valueOutlet || 1,
         name: config.name || NA,
         lowbattery: config.lowbattery
     };
@@ -139,6 +140,40 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    getGetOutletState: function (callback) {
+        var that = this;
+        that.log("getting OutletState for " + that.config.name);
+        that.getValueFromDomotiga(that.config.valueOutlet, function (error, result) {
+            if (error) {
+                that.log('getGetOutletState GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "on") {
+                    callback(null, 0);
+                }
+                else {
+                    callback(null, 1);
+                }
+            }
+        }.bind(this));
+    },
+    getOutletInUse: function (callback) {
+        var that = this;
+        that.log("getting OutletInUse for " + that.config.name);
+        that.getValueFromDomotiga(that.config.valueOutlet, function (error, result) {
+            if (error) {
+                that.log('getOutletInUse GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "on") {
+                    callback(null, 0);
+                }
+                else {
+                    callback(null, 1);
+                }
+            }
+        }.bind(this));
+    },  
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -300,5 +335,25 @@ Domotiga.prototype = {
 
             return [informationService, controlService];
         }
+        else if (this.config.service == "Outlet") {
+
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "Outlet Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Outlet Model")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
+            var controlService = new Service.Outlet(this.config.name);
+
+            controlService
+                    .getCharacteristic(Characteristic.On)
+                    .on('get', this.getOutletState.bind(this));
+
+            //if (this.config.outletinuse) {
+                controlService
+                        .addCharacteristic(Characteristic.OutletInUse)
+                        .on('get', this.getOutletInUse.bind(this));
+            //}
+            return [informationService, controlService];
+        }        
     }
 };
