@@ -140,7 +140,7 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getGetOutletState: function (callback) {
+    getOutletState: function (callback) {
         var that = this;
         that.log("getting OutletState for " + that.config.name);
         that.getValueFromDomotiga(that.config.valueOutlet, function (error, result) {
@@ -157,6 +157,32 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    setOutletState: function (boolvalue, callback) {
+        var that = this;
+        that.log("Setting outlet state for '%s' to %s", that.config.name, boolvalue);
+
+        if (boolvalue == 1) {
+            outletState = "On";
+        }
+        else {
+            outletState = "Off";
+        }
+        var callbackWasCalled = false;
+        that.setValueToDomotiga(that.config.valueOutlet, outletState, function (err) {
+            if (callbackWasCalled) {
+                that.log("WARNING: setValueToDomotiga called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                that.log("Successfully set outlet state on the '%s' to %s", that.config.name, outletState);
+                callback(null);
+            }
+            else {
+                that.log("Error setting outlet state to %s on the '%s'", outletState, that.config.name);
+                callback(err);
+            }
+        }.bind(this));
+    },
     getOutletInUse: function (callback) {
         var that = this;
         that.log("getting OutletInUse for " + that.config.name);
@@ -166,10 +192,10 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, 0);
+                    callback(null, false);
                 }
                 else {
-                    callback(null, 1);
+                    callback(null, true);
                 }
             }
         }.bind(this));
@@ -290,7 +316,6 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.StatusLowBattery)
                         .on('get', this.getLowBatteryStatus.bind(this));
             }
-
             return [informationService, controlService];
         }
         else if (this.config.service == "Contact") {
@@ -342,18 +367,18 @@ Domotiga.prototype = {
                     .setCharacteristic(Characteristic.Model, "Outlet Model")
                     .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
-            var controlService = new Service.Outlet(this.config.name);
+            var controlService = new Service.Outlet();
 
             controlService
                     .getCharacteristic(Characteristic.On)
-                    .on('get', this.getOutletState.bind(this));
+                    .on('get', this.getOutletState.bind(this))
+                    .on('set', this.setOutletState.bind(this));
+             
+            controlService
+                    .getCharacteristic(Characteristic.OutletInUse)
+                    .on('get', this.getOutletInUse.bind(this));
 
-            //if (this.config.outletinuse) {
-                controlService
-                        .addCharacteristic(Characteristic.OutletInUse)
-                        .on('get', this.getOutletInUse.bind(this));
-            //}
-            return [informationService, controlService];
+            return [informationService, controlService];     
         }        
     }
 };
