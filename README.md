@@ -52,7 +52,16 @@ Configuration sample:
             "service": "Switch",
             "device": "79",
             "valueSwitch": "1"
-          }   
+          },
+          {
+            "accessory": "Domotiga",
+            "name": "Outlet",
+            "host": "192.168.2.103",
+            "port": "9090",
+            "service": "Outlet",
+            "device": "72",
+            "valueOutlet": "1"
+          }    
     ]
 ```
 
