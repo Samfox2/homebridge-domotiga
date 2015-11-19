@@ -6,6 +6,7 @@ The latest version (work in progress) supports following services (accessories) 
 - temperature/hygrometer
 - contact devices
 - switch devices
+- outlet devices
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
@@ -77,7 +78,8 @@ Fields:
 * "valueHumidity": Domotiga device value no. of humidity (optional for "TempHygroMeter")
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
-
+* "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
+* 
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
 * "lowbattery":    Min. battery level which activates "low battery warning"
