@@ -14,12 +14,12 @@ function Domotiga(log, config) {
         port: config.port || 9090,
         service: config.service,
         device: config.device,
-        valueTemperature: config.valueTemperature || 1,
+        valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
         valueBattery: config.valueBattery,
-        valueContact: config.valueContact || 1,
-        valueSwitch: config.valueSwitch || 1,
-        valueOutlet: config.valueOutlet || 1,
+        valueContact: config.valueContact,
+        valueSwitch: config.valueSwitch,
+        valueOutlet: config.valueOutlet,
         name: config.name || NA,
         lowbattery: config.lowbattery
     };
@@ -29,72 +29,71 @@ Domotiga.prototype = {
         this.log("Identify requested!");
         callback(); // success
     },
-    getValueFromDomotiga: function (deviceValueNo, callback) {
+    domotigaGetValue: function (deviceValueNo, callback) {
         var that = this;
         JSONRequest('http://' + that.config.host + ':' + that.config.port,
                 {
                     jsonrpc: "2.0",
                     method: "device.get",
-                    params: {"device_id": that.config.device},
+                    params: { "device_id": that.config.device },
                     id: 1
                 }, function (err, data) {
-
-            if (err) {
-                that.log("Sorry err: ", err);
-                callback(err);
-            }
-            else {
-                item = Number(deviceValueNo) - 1;
-                //that.log("data.result:", data.result);
-                //that.log( "data.result[values][0][value]", data.result[values][0][value]);
-                i = 0;
-                for (key1 in data.result) {
-                    if (i == 37) {
-                        //that.log("key1 ", i, key1, "values[key1]", values[key1]);
-                        j = 0;
-                        for (key2 in data.result[key1]) {
-                            if (j == item) {
-                                //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
-                                k = 0;
-                                for (key3 in data.result[key1][key2]) {
-                                    if (k == 17) {
-                                        //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
-                                        callback(null, data.result[key1][key2][key3]);
+                    if (err) {
+                        that.log("Sorry err: ", err);
+                        callback(err);
+                    }
+                    else {
+                        item = Number(deviceValueNo) - 1;
+                        //that.log("data.result:", data.result);
+                        //that.log( "data.result[values][0][value]", data.result[values][0][value]);
+                        i = 0;
+                        for (key1 in data.result) {
+                            if (i == 37) {
+                                //that.log("key1 ", i, key1, "values[key1]", values[key1]);
+                                j = 0;
+                                for (key2 in data.result[key1]) {
+                                    if (j == item) {
+                                        //that.log("key2 ", j, key2, "values[key1][key2]", values[key1][key2]);
+                                        k = 0;
+                                        for (key3 in data.result[key1][key2]) {
+                                            if (k == 17) {
+                                                //that.log("key3 ", k, key3, "data.result[key1][key2][key3]", data.result[key1][key2][key3]);
+                                                callback(null, data.result[key1][key2][key3]);
+                                            }
+                                            ++k;
+                                        }
                                     }
-                                    ++k;
+                                    ++j;
                                 }
                             }
-                            ++j;
+                            ++i;
                         }
                     }
-                    ++i;
-                }
-            }
-        });
+                });
     },
-    setValueToDomotiga: function (deviceValueNo, value, callback) {
+    domotigaSetValue: function (deviceValueNo, value, callback) {
         var that = this;
         JSONRequest('http://' + that.config.host + ':' + that.config.port,
                 {
                     jsonrpc: "2.0",
                     method: "device.set",
-                    params: {"device_id": that.config.device, "valuenum": deviceValueNo, "value": value},
+                    params: { "device_id": that.config.device, "valuenum": deviceValueNo, "value": value },
                     id: 1
                 }, function (err, data) {
-            //that.log("data:", data);
-            if (err) {
-                that.log("Sorry err: ", err);
-                callback(err);
-            }
-            else {
-                callback();
-            }
-        });
+                    //that.log("data:", data);
+                    if (err) {
+                        that.log("Sorry err: ", err);
+                        callback(err);
+                    }
+                    else {
+                        callback();
+                    }
+                });
     },
     getCurrentRelativeHumidity: function (callback) {
         var that = this;
         that.log("getting CurrentRelativeHumidity for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueHumidity, function (error, result) {
+        that.domotigaGetValue(that.config.valueHumidity, function (error, result) {
             if (error) {
                 that.log('CurrentRelativeHumidity GetValue failed: %s', error.message);
                 callback(error);
@@ -106,7 +105,7 @@ Domotiga.prototype = {
     getCurrentTemperature: function (callback) {
         var that = this;
         that.log("getting Temperature for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueTemperature, function (error, result) {
+        that.domotigaGetValue(that.config.valueTemperature, function (error, result) {
             if (error) {
                 that.log('CurrentTemperature GetValue failed: %s', error.message);
                 callback(error);
@@ -124,7 +123,7 @@ Domotiga.prototype = {
     getGetContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueContact, function (error, result) {
+        that.domotigaGetValue(that.config.valueContact, function (error, result) {
             if (error) {
                 that.log('getGetContactState GetValue failed: %s', error.message);
                 callback(error);
@@ -143,7 +142,7 @@ Domotiga.prototype = {
     getOutletState: function (callback) {
         var that = this;
         that.log("getting OutletState for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueOutlet, function (error, result) {
+        that.domotigaGetValue(that.config.valueOutlet, function (error, result) {
             if (error) {
                 that.log('getGetOutletState GetValue failed: %s', error.message);
                 callback(error);
@@ -168,9 +167,9 @@ Domotiga.prototype = {
             outletState = "Off";
         }
         var callbackWasCalled = false;
-        that.setValueToDomotiga(that.config.valueOutlet, outletState, function (err) {
+        that.domotigaSetValue(that.config.valueOutlet, outletState, function (err) {
             if (callbackWasCalled) {
-                that.log("WARNING: setValueToDomotiga called its callback more than once! Discarding the second one.");
+                that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
             }
             callbackWasCalled = true;
             if (!err) {
@@ -186,7 +185,7 @@ Domotiga.prototype = {
     getOutletInUse: function (callback) {
         var that = this;
         that.log("getting OutletInUse for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueOutlet, function (error, result) {
+        that.domotigaGetValue(that.config.valueOutlet, function (error, result) {
             if (error) {
                 that.log('getOutletInUse GetValue failed: %s', error.message);
                 callback(error);
@@ -199,24 +198,24 @@ Domotiga.prototype = {
                 }
             }
         }.bind(this));
-    },  
+    },
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
 
-        that.getValueFromDomotiga(that.config.valueBattery, function (error, result) {
+        that.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log('CurrentBattery GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 //that.log('CurrentBattery level Number(result): %s', Number(result));
-                remaining = parseInt(Number(result)*100/5000, 10) ;
+                remaining = parseInt(Number(result) * 100 / 5000, 10);
                 that.log('CurrentBattery level: %s', remaining);
                 if (remaining > 100)
                     remaining = 100;
                 else if (remaining < 0)
                     remaining = 0;
-                
+
                 callback(null, remaining);
             }
         }.bind(this));
@@ -225,7 +224,7 @@ Domotiga.prototype = {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
 
-        that.getValueFromDomotiga(that.config.valueBattery, function (error, result) {
+        that.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log('BatteryStatus GetValue failed: %s', error.message);
                 callback(error);
@@ -243,7 +242,7 @@ Domotiga.prototype = {
     getSwitchOn: function (callback) {
         var that = this;
         that.log("getting SwitchState for " + that.config.name);
-        that.getValueFromDomotiga(that.config.valueSwitch, function (error, result) {
+        that.domotigaGetValue(that.config.valueSwitch, function (error, result) {
             if (error) {
                 that.log('getSwitchOn GetValue failed: %s', error.message);
                 callback(error);
@@ -269,9 +268,9 @@ Domotiga.prototype = {
         }
         var callbackWasCalled = false;
 
-        that.setValueToDomotiga(that.config.valueSwitch, switchState, function (err) {
+        that.domotigaSetValue(that.config.valueSwitch, switchState, function (err) {
             if (callbackWasCalled) {
-                that.log("WARNING: setValueToDomotiga called its callback more than once! Discarding the second one.");
+                that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
             }
             callbackWasCalled = true;
             if (!err) {
@@ -373,12 +372,12 @@ Domotiga.prototype = {
                     .getCharacteristic(Characteristic.On)
                     .on('get', this.getOutletState.bind(this))
                     .on('set', this.setOutletState.bind(this));
-             
+
             controlService
                     .getCharacteristic(Characteristic.OutletInUse)
                     .on('get', this.getOutletInUse.bind(this));
 
-            return [informationService, controlService];     
-        }        
+            return [informationService, controlService];
+        }
     }
 };
