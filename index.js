@@ -129,12 +129,10 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, 0);
-                    //Characteristic.ContactSensorState.CONTACT_DETECTED = 0;
+                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED ;
                 }
                 else {
-                    callback(null, 1);
-                    //Characteristic.ContactSensorState.CONTACT_NOT_DETECTED = 1;
+                    callback(null, Characteristic.ContactSensorState.CONTACT_NOT_DETECTED );
                 }
             }
         }.bind(this));
@@ -230,11 +228,10 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (Number(result) < Number(that.config.lowbattery)) {
-                    callback(null, 1);
-                    //callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+                    callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
                 }
                 else {
-                    callback(null, 0);
+                    callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
                 }
             }
         }.bind(this));
