@@ -61,7 +61,9 @@ Configuration sample:
             "port": "9090",
             "service": "Outlet",
             "device": "72",
-            "valueOutlet": "1"
+            "valueOutlet": "1",
+            "valuePowerConsumption": "3",
+            "valueTotalPowerConsumption": "7"
           }    
     ]
 ```
@@ -79,6 +81,8 @@ Fields:
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
 * "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
+* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (optional for "Outlet")
+* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional for "Outlet")
 
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
