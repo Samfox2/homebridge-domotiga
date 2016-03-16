@@ -1,11 +1,7 @@
 var Service, Characteristic;
 var JSONRequest = require("jsonrequest");
+var inherits = require('util').inherits;
 
-module.exports = function (homebridge) {
-    Service = homebridge.hap.Service;
-    Characteristic = homebridge.hap.Characteristic;
-    homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
-}
 //Get data from config file 
 function Domotiga(log, config) {
     this.log = log;
@@ -20,10 +16,53 @@ function Domotiga(log, config) {
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueOutlet: config.valueOutlet,
+        valuePowerConsumption: config.valuePowerConsumption,
+        valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
         lowbattery: config.lowbattery
     };
 }
+
+
+module.exports = function (homebridge) {
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
+
+
+
+    PowerConsumption = function() {
+      Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
+      this.setProps({
+        format: Characteristic.Formats.UINT16,
+        unit: "watts",
+        maxValue: 1000000000,
+        minValue: 0,
+        minStep: 1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      });
+      this.value = this.getDefaultValue();
+    };
+    inherits(PowerConsumption, Characteristic);
+
+    TotalPowerConsumption = function() {
+      Characteristic.call(this, 'Total Consumption', 'E863F10C-079E-48FF-8F27-9C2605A29F52');
+      this.setProps({
+        format: Characteristic.Formats.FLOAT, // Deviation from Eve Energy observed type
+        unit: "kilowatthours",
+        maxValue: 1000000000,
+        minValue: 0,
+        minStep: 0.001,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      });
+      this.value = this.getDefaultValue();
+    };
+    inherits(TotalPowerConsumption, Characteristic);
+
+
+    homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
+}
+
+
 Domotiga.prototype = {
     identify: function (callback) {
         this.log("Identify requested!");
@@ -129,7 +168,7 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED ;
+                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED );
                 }
                 else {
                     callback(null, Characteristic.ContactSensorState.CONTACT_NOT_DETECTED );
@@ -191,12 +230,42 @@ Domotiga.prototype = {
                 if (result.toLowerCase() == "on") {
                     callback(null, false);
                 }
-                else {
+		else {
                     callback(null, true);
                 }
             }
         }.bind(this));
     },
+
+    getPowerConsumption: function (callback) {
+        var that = this;
+        that.log("getting PowerConsumption for " + that.config.name);
+        that.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
+            if (error) {
+                that.log('PowerConsumption GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+		// Supposedly units are 0.1W, but by experience it's simply Watts ...?
+                callback(null, Math.round(Number(result)));
+            }
+        }.bind(this));
+    },
+    
+    getTotalPowerConsumption: function (callback) {
+        var that = this;
+        that.log("getting TotalPowerConsumption for " + that.config.name);
+        that.domotigaGetValue(that.config.valueTotalPowerConsumption, function (error, result) {
+            if (error) {
+                that.log('TotalPowerConsumption GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                // Supposedly units are 0.001kWh, but by experience it's simply kWh ...?
+                callback(null, Math.round(Number(result)*1000.0)/1000.0);
+            }
+        }.bind(this));
+    },
+   
+    
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -374,6 +443,20 @@ Domotiga.prototype = {
                     .getCharacteristic(Characteristic.OutletInUse)
                     .on('get', this.getOutletInUse.bind(this));
 
+
+            //optionals
+            if (this.config.valuePowerConsumption) {
+                controlService
+                        .addCharacteristic(PowerConsumption)
+                        .on('get', this.getPowerConsumption.bind(this));
+
+            }
+            if (this.config.valueTotalPowerConsumption) {
+                controlService
+                        .addCharacteristic(TotalPowerConsumption)
+                        .on('get', this.getTotalPowerConsumption.bind(this));
+            }
+  
             return [informationService, controlService];
         }
     }
