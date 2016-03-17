@@ -30,8 +30,9 @@ Configuration sample:
             "service": "TempHygroMeter",
             "device": "81",
             "valueTemperature": "1",
-            "valueHumidity":   "2",
-            "valueBattery":    "4",
+            "valueHumidity":    "2",
+            "valueAirPressure": "3",
+            "valueBattery":     "4",
             "lowbattery": "3000"
           },
           {
@@ -78,11 +79,12 @@ Fields:
 * "device":  Domotiga device no. (required)
 * "valueTemperature": Domotiga device value no. of temperature (required for "TempHygroMeter")
 * "valueHumidity": Domotiga device value no. of humidity (optional for "TempHygroMeter")
+* "valueAirPressure": Domotiga device value no. of air pressure  (optional EVE characteristic for "TempHygroMeter")
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
 * "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
-* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (optional for "Outlet")
-* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional for "Outlet")
+* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (optional EVE characteristic for "Outlet")
+* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional EVE characteristic for "Outlet")
 
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
