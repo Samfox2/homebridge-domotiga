@@ -12,6 +12,7 @@ function Domotiga(log, config) {
         device: config.device,
         valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
+	valueAirPressure: config.valueAirPressure,
         valueBattery: config.valueBattery,
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
@@ -167,6 +168,18 @@ Domotiga.prototype = {
         // 1 = F and 0 = C
         callback(null, 0);
     },
+    getCurrentAirPressure: function (callback) {
+        var that = this;
+        that.log("getting CurrentAirPressure for " + that.config.name);
+        that.domotigaGetValue(that.config.valueAirPressure, function (error, result) {
+            if (error) {
+                that.log('CurrentAirPressure GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                callback(null, Number(result));
+            }
+        }.bind(this));
+   },
     getGetContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
@@ -176,7 +189,7 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED ;
+                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED );
                 }
                 else {
                     callback(null, Characteristic.ContactSensorState.CONTACT_NOT_DETECTED );
@@ -374,6 +387,12 @@ Domotiga.prototype = {
                 controlService
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
+            }
+	                //custom EVE characteristic
+            if (this.config.valueAirPressure) {
+                controlService
+                        .addCharacteristic(AirPressure)
+                        .on('get', this.getCurrentAirPressure.bind(this));
             }
             if (this.config.valueBattery) {
                 controlService
