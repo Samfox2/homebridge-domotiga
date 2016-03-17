@@ -7,7 +7,6 @@ The latest version (work in progress) supports following services (accessories) 
 - contact
 - switch
 - outlet
-- powermeter (custom service)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
@@ -66,17 +65,7 @@ Configuration sample:
             "valueOutlet": "1",
             "valuePowerConsumption": "3",
             "valueTotalPowerConsumption": "7"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "PowerMeter basement",
-            "host": "192.168.2.103",
-            "port": "9090",
-            "service": "PowerMeter",
-            "device": "44",
-            "valuePowerConsumption": "1",
-            "valueTotalPowerConsumption": "2"
-          }   
+          }  
     ]
 ```
 
