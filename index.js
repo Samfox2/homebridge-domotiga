@@ -16,7 +16,7 @@ function Domotiga(log, config) {
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueOutlet: config.valueOutlet,
-        valueCurrentPowerConsumption: config.valuePowerConsumption,
+        valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
         lowbattery: config.lowbattery
@@ -247,7 +247,7 @@ Domotiga.prototype = {
     getCurrentPowerConsumption: function (callback) {
         var that = this;
         that.log("getting CurrentPowerConsumption for " + that.config.name);
-        that.domotigaGetValue(that.config.valueCurrentPowerConsumption, function (error, result) {
+        that.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
             if (error) {
                 that.log('CurrentPowerConsumption GetValue failed: %s', error.message);
                 callback(error);
@@ -450,7 +450,7 @@ Domotiga.prototype = {
 
 
             //optionals
-            if (this.config.valueCurrentPowerConsumption) {
+            if (this.config.valuePowerConsumption) {
                 controlService
                         .addOptionalCharacteristic(Characteristic.CurrentPowerConsumption)
                         .on('get', this.getCurrentPowerConsumption.bind(this));
