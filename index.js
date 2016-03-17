@@ -12,6 +12,7 @@ function Domotiga(log, config) {
         device: config.device,
         valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
+        valueAirPressure: config.valueAirPressure,
         valueBattery: config.valueBattery,
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
@@ -28,8 +29,7 @@ module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-
-
+    // Custom UUID's
     PowerConsumption = function() {
       Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
@@ -58,6 +58,19 @@ module.exports = function (homebridge) {
     };
     inherits(TotalPowerConsumption, Characteristic);
 
+    AirPressure = function() {
+      Characteristic.call(this, 'AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
+      this.setProps({
+        format: Characteristic.Formats.UINT16,
+        unit: "hPa",
+        maxValue: 1085,
+        minValue: 870,
+        minStep: 1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      });
+      this.value = this.getDefaultValue();
+    };
+    inherits(AirPressure, Characteristic);
 
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
@@ -147,6 +160,18 @@ Domotiga.prototype = {
         that.domotigaGetValue(that.config.valueTemperature, function (error, result) {
             if (error) {
                 that.log('CurrentTemperature GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                callback(null, Number(result));
+            }
+        }.bind(this));
+    },
+    getCurrentAirPressure: function (callback) {
+        var that = this;
+        that.log("getting CurrentAirPressure for " + that.config.name);
+        that.domotigaGetValue(that.config.valueAirPressure, function (error, result) {
+            if (error) {
+                that.log('CurrentRelativeHumidity GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 callback(null, Number(result));
@@ -370,6 +395,12 @@ Domotiga.prototype = {
                 controlService
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
+            }
+            //custom EVE characteristic
+            if (this.config.valueAirPressure) {
+                controlService
+                        .addCharacteristic(AirPressure)
+                        .on('get', this.getCurrentAirPressure.bind(this));
             }
             if (this.config.valueBattery) {
                 controlService
