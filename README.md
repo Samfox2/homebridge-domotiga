@@ -3,7 +3,7 @@ Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.
 
 The latest version (work in progress) supports following services (accessories) :
 
-- temperature/hygrometer/air gauge
+- temperature/hygrometer
 - contact
 - switch
 - outlet
