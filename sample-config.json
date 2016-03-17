@@ -20,8 +20,9 @@
             "service": "TempHygroMeter",
             "device": "81",
             "valueTemperature": "1",
-            "valueHumidity":   "2",
-            "valueBattery":    "4",
+            "valueHumidity":    "2",
+            "valueAirPressure": "3",
+            "valueBattery":     "4",
             "lowbattery": "3000"
         },
 	{
