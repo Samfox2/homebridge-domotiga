@@ -73,6 +73,22 @@ module.exports = function (homebridge) {
     };
     inherits(AirPressure, Characteristic);
 
+
+    PowerMeterService = function(displayName, subtype) {
+    Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
+
+    // Required Characteristics
+    this.addCharacteristic(PowerConsumption);
+
+    // Optional Characteristics
+    this.addOptionalCharacteristic(TotalPowerConsumption);
+    };
+    inherits(PowerMeterService, Service);
+
+
+
+
+
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
 
@@ -490,6 +506,27 @@ Domotiga.prototype = {
                         .on('get', this.getTotalPowerConsumption.bind(this));
             }
   
+            return [informationService, controlService];
+        }
+        else if (this.config.service == "Powermeter") {
+
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "Powermeter Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Powermeter Model")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
+            var controlService = new PowerMeterService("Powermeter");
+
+           controlService
+                        .getCharacteristic(PowerConsumption)
+                        .on('get', this.getPowerConsumption.bind(this));
+
+            //optionals
+            if (this.config.valueTotalPowerConsumption) {
+            controlService
+                    .getCharacteristic(TotalPowerConsumption)
+                    .on('get', this.getTotalPowerConsumption.bind(this));
+            }
             return [informationService, controlService];
         }
     }
