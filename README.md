@@ -7,6 +7,7 @@ The latest version (work in progress) supports following services (accessories) 
 - contact
 - switch
 - outlet
+- powermeter (custom service)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
@@ -65,7 +66,17 @@ Configuration sample:
             "valueOutlet": "1",
             "valuePowerConsumption": "3",
             "valueTotalPowerConsumption": "7"
-          }    
+          },
+          {
+            "accessory": "Domotiga",
+            "name": "PowerMeter basement",
+            "host": "192.168.2.103",
+            "port": "9090",
+            "service": "PowerMeter",
+            "device": "44",
+            "valuePowerConsumption": "1",
+            "valueTotalPowerConsumption": "2"
+          }   
     ]
 ```
 
@@ -83,8 +94,8 @@ Fields:
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
 * "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
-* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (optional EVE characteristic for "Outlet")
-* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional EVE characteristic for "Outlet")
+* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (required for custom "PowerMeter" and optional EVE characteristic for "Outlet")
+* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional for custom "PowerMeter" and EVE characteristic for "Outlet")
 
 Not yet supported by actual homekit apps:
 * "valueBattery":  Domotiga device value no. of battery
