@@ -55,6 +55,16 @@
             "valueOutlet": "1",
             "valuePowerConsumption": "3",
             "valueTotalPowerConsumption": "7"
-        }     
+        },
+        {
+            "accessory": "Domotiga",
+            "name": "Powermeter basement",
+            "host": "DomotiGa",
+            "port": "9090",
+            "service": "Powermeter",
+            "device": "44",
+            "valuePowerConsumption": "1",
+            "valueTotalPowerConsumption": "2"
+        }
     ]
 }
