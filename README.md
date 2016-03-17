@@ -3,10 +3,10 @@ Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.
 
 The latest version (work in progress) supports following services (accessories) :
 
-- temperature/hygrometer
-- contact devices
-- switch devices
-- outlet devices
+- temperature/hygrometer/air gauge
+- contacts
+- switches
+- outlets
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
