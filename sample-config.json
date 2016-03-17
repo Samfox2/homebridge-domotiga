@@ -63,8 +63,8 @@
             "port": "9090",
             "service": "PowerMeter",
             "device": "44",
-            "valuePowerConsumption": "3",
-            "valueTotalPowerConsumption": "7"
+            "valuePowerConsumption": "1",
+            "valueTotalPowerConsumption": "2"
         }       
     ]
 }
