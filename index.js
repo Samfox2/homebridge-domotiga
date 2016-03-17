@@ -12,12 +12,11 @@ function Domotiga(log, config) {
         device: config.device,
         valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
-        valueAirPressure: config.valueAirPressure,
         valueBattery: config.valueBattery,
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueOutlet: config.valueOutlet,
-        valuePowerConsumption: config.valuePowerConsumption,
+        valueCurrentPowerConsumption: config.valueCurrentPowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
         lowbattery: config.lowbattery
@@ -29,8 +28,8 @@ module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-    // Custom UUID's
-    PowerConsumption = function() {
+
+    CurrentPowerConsumption = function() {
       Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
@@ -42,7 +41,7 @@ module.exports = function (homebridge) {
       });
       this.value = this.getDefaultValue();
     };
-    inherits(PowerConsumption, Characteristic);
+    inherits(CurrentPowerConsumption, Characteristic);
 
     TotalPowerConsumption = function() {
       Characteristic.call(this, 'Total Consumption', 'E863F10C-079E-48FF-8F27-9C2605A29F52');
@@ -58,19 +57,15 @@ module.exports = function (homebridge) {
     };
     inherits(TotalPowerConsumption, Characteristic);
 
-    AirPressure = function() {
-      Characteristic.call(this, 'AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
-      this.setProps({
-        format: Characteristic.Formats.UINT16,
-        unit: "hPa",
-        maxValue: 1085,
-        minValue: 870,
-        minStep: 1,
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
-      });
-      this.value = this.getDefaultValue();
-    };
-    inherits(AirPressure, Characteristic);
+    
+    PowerMeterDeviceService = function(displayName, subtype) {
+    Service.call(this, displayName, '00000001-0000-1000-9FFF-135D67EC4377', subtype);
+
+    // Required Characteristics
+    this.addCharacteristic(PowerConsumption);
+
+    // Optional Characteristics
+    this.addOptionalCharacteristic(TotalPowerConsumption);
 
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
@@ -166,18 +161,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getCurrentAirPressure: function (callback) {
-        var that = this;
-        that.log("getting CurrentAirPressure for " + that.config.name);
-        that.domotigaGetValue(that.config.valueAirPressure, function (error, result) {
-            if (error) {
-                that.log('CurrentRelativeHumidity GetValue failed: %s', error.message);
-                callback(error);
-            } else {
-                callback(null, Number(result));
-            }
-        }.bind(this));
-    },
     getTemperatureUnits: function (callback) {
         var that = this;
         that.log("getting Temperature unit for " + that.config.name);
@@ -193,7 +176,7 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
-                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED );
+                    callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED ;
                 }
                 else {
                     callback(null, Characteristic.ContactSensorState.CONTACT_NOT_DETECTED );
@@ -255,19 +238,18 @@ Domotiga.prototype = {
                 if (result.toLowerCase() == "on") {
                     callback(null, false);
                 }
-		else {
+                else {
                     callback(null, true);
                 }
             }
         }.bind(this));
     },
-
-    getPowerConsumption: function (callback) {
+    getCurrentPowerConsumption: function (callback) {
         var that = this;
-        that.log("getting PowerConsumption for " + that.config.name);
-        that.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
+        that.log("getting CurrentPowerConsumption for " + that.config.name);
+        that.domotigaGetValue(that.config.valueCurrentPowerConsumption, function (error, result) {
             if (error) {
-                that.log('PowerConsumption GetValue failed: %s', error.message);
+                that.log('CurrentPowerConsumption GetValue failed: %s', error.message);
                 callback(error);
             } else {
 		// Supposedly units are 0.1W, but by experience it's simply Watts ...?
@@ -275,7 +257,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    
     getTotalPowerConsumption: function (callback) {
         var that = this;
         that.log("getting TotalPowerConsumption for " + that.config.name);
@@ -289,8 +270,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-   
-    
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -396,12 +375,6 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
             }
-            //custom EVE characteristic
-            if (this.config.valueAirPressure) {
-                controlService
-                        .addCharacteristic(AirPressure)
-                        .on('get', this.getCurrentAirPressure.bind(this));
-            }
             if (this.config.valueBattery) {
                 controlService
                         .addCharacteristic(Characteristic.BatteryLevel)
@@ -475,19 +448,41 @@ Domotiga.prototype = {
                     .on('get', this.getOutletInUse.bind(this));
 
 
-            //optionals
-            if (this.config.valuePowerConsumption) {
-                controlService
-                        .addCharacteristic(PowerConsumption)
-                        .on('get', this.getPowerConsumption.bind(this));
 
+            //optionals
+            if (this.config.valueCurrentPowerConsumption) {
+                controlService
+                        .addOptionalCharacteristic(Characteristic.CurrentPowerConsumption)
+                        .on('get', this.getCurrentPowerConsumption.bind(this));
             }
             if (this.config.valueTotalPowerConsumption) {
                 controlService
-                        .addCharacteristic(TotalPowerConsumption)
+                        .addOptionalCharacteristic(Characteristic.TotalPowerConsumption)
                         .on('get', this.getTotalPowerConsumption.bind(this));
             }
   
+
+            return [informationService, controlService];
+        }
+	// custom service
+        else if (this.config.service == "PowerMeter") {
+
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "Powermeter Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Powermeter Model")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
+            var controlService = new PowerMeterDeviceService("Powermeter");
+                controlService
+                    .getCharacteristic(Characteristic.CurrentPowerConsumption)
+                    .on('get', this.getCurrentPowerConsumption.bind(this));
+           
+	    //optionals
+            if (this.config.valueTotalPowerConsumption) {
+                 controlService
+                    .getCharacteristic(Characteristic.TotalPowerConsumption)
+                    .on('get', this.getTotalPowerConsumption.bind(this));
+            }
             return [informationService, controlService];
         }
     }
