@@ -16,7 +16,7 @@ function Domotiga(log, config) {
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueOutlet: config.valueOutlet,
-        valueCurrentPowerConsumption: config.valueCurrentPowerConsumption,
+        valueCurrentPowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
         lowbattery: config.lowbattery
