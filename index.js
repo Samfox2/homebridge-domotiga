@@ -388,7 +388,7 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
             }
-	                //custom EVE characteristic
+	    //custom EVE characteristic
             if (this.config.valueAirPressure) {
                 controlService
                         .addCharacteristic(AirPressure)
