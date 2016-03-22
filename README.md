@@ -59,7 +59,7 @@ Configuration sample:
           {
             "accessory": "Domotiga",
             "name": "Outlet",
-            "host": "192.168.2.103",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Outlet",
             "device": "72",
@@ -70,7 +70,7 @@ Configuration sample:
           {
             "accessory": "Domotiga",
             "name": "Powermeter basement",
-            "host": "DomotiGa",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Powermeter",
             "device": "44",
