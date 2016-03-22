@@ -28,7 +28,7 @@
 	{
             "accessory": "Domotiga",
             "name": "PC",
-            "host": "192.168.2.103",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Contact",
             "device": "77",
@@ -39,7 +39,7 @@
      	{
             "accessory": "Domotiga",
             "name": "Printer",
-            "host": "192.168.2.103",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Switch",
             "device": "79",
@@ -48,7 +48,7 @@
      	{
             "accessory": "Domotiga",
             "name": "Outlet",
-            "host": "192.168.2.103",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Outlet",
             "device": "72",
@@ -59,7 +59,7 @@
         {
             "accessory": "Domotiga",
             "name": "Powermeter basement",
-            "host": "DomotiGa",
+            "host": "192.168.0.xxx",
             "port": "9090",
             "service": "Powermeter",
             "device": "44",
