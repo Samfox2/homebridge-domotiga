@@ -1,10 +1,12 @@
 # homebridge-domotiga
 Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 
-The latest version (work in progress) supports following services (accessories) :
+The latest version (work in progress) supports following services:
 
-- temperature/hygrometer
-- air quality sensor
+- temperature
+- humidity
+- air pressure
+- air quality
 - contact
 - switch
 - outlet
