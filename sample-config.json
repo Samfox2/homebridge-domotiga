@@ -25,6 +25,17 @@
             "valueBattery":     "4",
             "lowbattery": "3000"
         },
+        {
+            "accessory": "Domotiga",
+            "name": "AirQualitySensor bedroom",
+            "host": "DomotiGa",
+            "port": "9090",
+            "service": "AirQualitySensor",
+            "device": "82",
+            "valueAirQuality": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
+        },    
 	{
             "accessory": "Domotiga",
             "name": "PC",
