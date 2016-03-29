@@ -113,6 +113,18 @@ module.exports = function (homebridge) {
     };
     inherits(PowerMeterService, Service);
 
+
+    EveRoomService = function(displayName, subtype) {
+    Service.call(this, displayName, 'E863F002-079E-48FF-8F27-9C2605A29F52', subtype);
+
+    // Required Characteristics
+    this.addCharacteristic(Characteristic.CurrentTemperature);
+
+    // Optional Characteristics
+    this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
+    };
+    inherits(EveRoomService, Service);
+
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
 
