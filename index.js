@@ -356,9 +356,14 @@ Domotiga.prototype = {
         }.bind(this));
     },  
     getCurrentEveRoomAirQuality: function (callback) {
+        // Custom EVE intervals:
+        //    0... 700 : Exzellent
+        //  700...1100 : Good
+        // 1100...1600 : Acceptable
+        // 1600...2000 : Moderate
+        //      > 2000 : Bad	
         var that = this;
         that.log("getting EVE room airquality for " + that.config.name);
-
         that.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
             if (error) {
                 that.log('CurrentEveRoomAirQuality GetValue failed: %s', error.message);
@@ -622,7 +627,25 @@ Domotiga.prototype = {
             controlService
                     .getCharacteristic(EveRoomAirQuality)
                     .on('get', this.getCurrentEveRoomAirQuality.bind(this));
-            //optionals (EVE battery)
+                    
+            //optionals
+            if (this.config.valueTemperature) {
+                controlService
+                    .addCharacteristic(Characteristic.CurrentTemperature)
+                    .on('get', this.getCurrentTemperature.bind(this));
+             }
+            if (this.config.valueHumidity) {
+                controlService
+                        .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                        .on('get', this.getCurrentRelativeHumidity.bind(this));
+            }
+	    //custom EVE characteristic
+            if (this.config.valueAirPressure) {
+                controlService
+                        .addCharacteristic(AirPressure)
+                        .on('get', this.getCurrentAirPressure.bind(this));
+            }        
+            //EVE battery (custom UUID)
             if (this.config.valueBattery) {
                 controlService
                         .addCharacteristic(EveBatteryLevel)
