@@ -77,8 +77,8 @@ module.exports = function (homebridge) {
     EveBatteryLevel = function() {
       Characteristic.call(this, 'EVE Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
-        format: Characteristic.Formats.UINT16,
-        unit: "%",
+        format: Characteristic.Formats.UINT8,
+        unit: "PERCENTAGE",
         maxValue: 100,
         minValue: 0,
         minStep: 1,
