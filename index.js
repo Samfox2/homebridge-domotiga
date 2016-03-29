@@ -117,15 +117,26 @@ module.exports = function (homebridge) {
     EveRoomService = function(displayName, subtype) {
     Service.call(this, displayName, 'E863F002-079E-48FF-8F27-9C2605A29F52', subtype);
 
-
     // Required Characteristics
     this.addCharacteristic(EveRoomAirQuality);
-    //this.addCharacteristic(Characteristic.CurrentTemperature);
 
     // Optional Characteristics
     this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
     };
     inherits(EveRoomService, Service);
+
+    
+    EveWeatherService = function(displayName, subtype) {
+    Service.call(this, displayName, 'E863F001-079E-48FF-8F27-9C2605A29F52', subtype);
+
+    // Required Characteristics
+    this.addCharacteristic(Characteristic.CurrentTemperature);
+
+    // Optional Characteristics
+    this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
+    };
+    inherits(EveWeatherService, Service);
+
 
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
@@ -689,6 +700,5 @@ Domotiga.prototype = {
         }
     }
 };
-
 
 
