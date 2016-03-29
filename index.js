@@ -16,6 +16,7 @@ function Domotiga(log, config) {
         valueBattery: config.valueBattery,
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
+        valueAirQuality: config.valueAirQuality,
         valueOutlet: config.valueOutlet,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
@@ -201,7 +202,7 @@ Domotiga.prototype = {
             }
         }.bind(this));
    },
-   getGetContactState: function (callback) {
+   getContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
         that.domotigaGetValue(that.config.valueContact, function (error, result) {
@@ -306,8 +307,32 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-   
-    
+    getCurrentAirQuality: function (callback) {
+        var that = this;
+        that.log("getting airquality for " + that.config.name);
+
+        that.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
+            if (error) {
+                that.log('CurrentAirQuality GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                airquality = Number(result);
+                that.log('CurrentBattery level: %s', airquality);
+                if(airquality > 1500)
+                    callback(null, Characteristic.AirQuality.POOR);
+                else if(airquality > 1000)
+                    callback(null, Characteristic.AirQuality.INFERIOR);
+                else if(airquality > 800)
+                    callback(null, Characteristic.AirQuality.FAIR);
+                else if(airquality > 600)
+                    callback(null, Characteristic.AirQuality.GOOD);
+                else if(airquality > 0)
+                    callback(null, Characteristic.AirQuality.EXCELLENT);
+                else
+                    callback(null, Characteristic.AirQuality.UNKNOWN);               
+            }
+        }.bind(this));
+    },  
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -443,7 +468,7 @@ Domotiga.prototype = {
 
             controlService
                     .getCharacteristic(Characteristic.ContactSensorState)
-                    .on('get', this.getGetContactState.bind(this));
+                    .on('get', this.getContactState.bind(this));
 
             //optionals
             if (this.config.valueBattery) {
@@ -508,6 +533,30 @@ Domotiga.prototype = {
   
             return [informationService, controlService];
         }
+        if (this.config.service == "AirQualitySensor") {
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "AirQualitySensor Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "AirQualitySensor Sensor")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
+            var controlService = new Service.AirQualitySensor();
+
+            controlService
+                    .getCharacteristic(Characteristic.AirQuality)
+                    .on('get', this.getCurrentAirQuality.bind(this));
+            //optionals
+            if (this.config.valueBattery) {
+                controlService
+                        .addCharacteristic(Characteristic.BatteryLevel)
+                        .on('get', this.getCurrentBatteryLevel.bind(this));
+            }
+            if (this.config.lowbattery) {
+                controlService
+                        .addCharacteristic(Characteristic.StatusLowBattery)
+                        .on('get', this.getLowBatteryStatus.bind(this));
+            }
+            return [informationService, controlService];
+        }  
         else if (this.config.service == "Powermeter") {
 
             informationService
