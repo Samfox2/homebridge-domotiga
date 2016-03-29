@@ -4,6 +4,7 @@ Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.
 The latest version (work in progress) supports following services (accessories) :
 
 - temperature/hygrometer
+- air quality sensor
 - contact
 - switch
 - outlet
@@ -36,6 +37,17 @@ Configuration sample:
             "valueBattery":     "4",
             "lowbattery": "3000"
           },
+          {
+            "accessory": "Domotiga",
+            "name": "AirQualitySensor bedroom",
+            "host": "DomotiGa",
+            "port": "9090",
+            "service": "AirQualitySensor",
+            "device": "82",
+            "valueAirQuality": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
+          },           
           {
             "accessory": "Domotiga",
             "name": "PC",
@@ -91,6 +103,7 @@ Fields:
 * "valueTemperature": Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
 * "valueHumidity": Domotiga device value no. of humidity in % (optional for "TempHygroMeter")
 * "valueAirPressure": Domotiga device value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
+* "valueAirQuality":  Domotiga device value no. of the air quality VOC (required for "AirQualitySensor")
 * "valueContact":  Domotiga device value no. of the contact (required for "Contact")
 * "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
 * "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
