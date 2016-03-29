@@ -17,7 +17,6 @@ function Domotiga(log, config) {
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueAirQuality: config.valueAirQuality,
-        valueEveRoomAirQuality: config.valueEveRoomAirQuality,        
         valueOutlet: config.valueOutlet,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
@@ -225,8 +224,8 @@ Domotiga.prototype = {
                 callback(null, Number(result));
             }
         }.bind(this));
-   },
-   getContactState: function (callback) {
+    },
+    getContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
         that.domotigaGetValue(that.config.valueContact, function (error, result) {
@@ -242,8 +241,8 @@ Domotiga.prototype = {
                 }
             }
         }.bind(this));
-    },
-    getOutletState: function (callback) {
+     },
+     getOutletState: function (callback) {
         var that = this;
         that.log("getting OutletState for " + that.config.name);
         that.domotigaGetValue(that.config.valueOutlet, function (error, result) {
@@ -259,8 +258,8 @@ Domotiga.prototype = {
                 }
             }
         }.bind(this));
-    },
-    setOutletState: function (boolvalue, callback) {
+     },
+     setOutletState: function (boolvalue, callback) {
         var that = this;
         that.log("Setting outlet state for '%s' to %s", that.config.name, boolvalue);
 
@@ -285,8 +284,8 @@ Domotiga.prototype = {
                 callback(err);
             }
         }.bind(this));
-    },
-    getOutletInUse: function (callback) {
+     },
+     getOutletInUse: function (callback) {
         var that = this;
         that.log("getting OutletInUse for " + that.config.name);
         that.domotigaGetValue(that.config.valueOutlet, function (error, result) {
@@ -302,8 +301,8 @@ Domotiga.prototype = {
                 }
             }
         }.bind(this));
-    },
-    getPowerConsumption: function (callback) {
+     },
+     getPowerConsumption: function (callback) {
         var that = this;
         that.log("getting PowerConsumption for " + that.config.name);
         that.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
@@ -355,7 +354,7 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },  
-    getCurrentEveRoomAirQuality: function (callback) {
+    getCurrentEVEAirQuality: function (callback) {
         // Custom EVE intervals:
         //    0... 700 : Exzellent
         //  700...1100 : Good
@@ -366,7 +365,7 @@ Domotiga.prototype = {
         that.log("getting EVE room airquality for " + that.config.name);
         that.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
             if (error) {
-                that.log('CurrentEveRoomAirQuality GetValue failed: %s', error.message);
+                that.log('CurrentEVEAirQuality GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 voc = Number(result);
@@ -616,17 +615,17 @@ Domotiga.prototype = {
             }
             return [informationService, controlService];
         } 
-        if (this.config.service == "EVEAirQualitySensor") {
+        if (this.config.service == "FakeEVEAirQualitySensor") {
             informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "EVE AirQualitySensor Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "EVE Room airquality sensor")
+                    .setCharacteristic(Characteristic.Manufacturer, "Fake EVE Air Quality Sensor Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Fake EVE Room")
                     .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
             var controlService = new Service.AirQualitySensor();
 
             controlService
                     .getCharacteristic(EveRoomAirQuality)
-                    .on('get', this.getCurrentEveRoomAirQuality.bind(this));
+                    .on('get', this.getCurrentEVEAirQuality.bind(this));
                     
             //optionals
             if (this.config.valueTemperature) {
