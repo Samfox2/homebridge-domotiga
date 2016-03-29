@@ -87,8 +87,8 @@ module.exports = function (homebridge) {
     };
     inherits(EveBatteryLevel, Characteristic);
 
-    AirPressure = function() {
-      Characteristic.call(this, 'AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
+    EveAirPressure = function() {
+      Characteristic.call(this, 'EVE AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
         unit: "hPa",
@@ -99,7 +99,7 @@ module.exports = function (homebridge) {
       });
       this.value = this.getDefaultValue();
     };
-    inherits(AirPressure, Characteristic);
+    inherits(EveAirPressure, Characteristic);
 
     ////////////////////////////// Custom services //////////////////////////////
     PowerMeterService = function(displayName, subtype) {
@@ -483,7 +483,7 @@ Domotiga.prototype = {
 	    //custom EVE characteristic
             if (this.config.valueAirPressure) {
                 controlService
-                        .addCharacteristic(AirPressure)
+                        .addCharacteristic(EveAirPressure)
                         .on('get', this.getCurrentAirPressure.bind(this));
             }
 	    
@@ -600,7 +600,7 @@ Domotiga.prototype = {
 	    //custom EVE characteristic
             if (this.config.valueAirPressure) {
                 controlService
-                        .addCharacteristic(AirPressure)
+                        .addCharacteristic(EveAirPressure)
                         .on('get', this.getCurrentAirPressure.bind(this));
             }
             if (this.config.valueBattery) {
@@ -641,7 +641,7 @@ Domotiga.prototype = {
 	    //custom EVE characteristic
             if (this.config.valueAirPressure) {
                 controlService
-                        .addCharacteristic(AirPressure)
+                        .addCharacteristic(EveAirPressure)
                         .on('get', this.getCurrentAirPressure.bind(this));
             }        
             //EVE battery (custom UUID)
