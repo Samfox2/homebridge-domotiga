@@ -117,8 +117,10 @@ module.exports = function (homebridge) {
     EveRoomService = function(displayName, subtype) {
     Service.call(this, displayName, 'E863F002-079E-48FF-8F27-9C2605A29F52', subtype);
 
+
     // Required Characteristics
-    this.addCharacteristic(Characteristic.CurrentTemperature);
+    this.addCharacteristic(EveRoomAirQuality);
+    //this.addCharacteristic(Characteristic.CurrentTemperature);
 
     // Optional Characteristics
     this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
@@ -633,7 +635,7 @@ Domotiga.prototype = {
                     .setCharacteristic(Characteristic.Model, "Fake Eve Room")
                     .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
-            var controlService = new Service.AirQualitySensor();
+            var controlService = new EveRoomService("Eve Room");
 
             controlService
                     .getCharacteristic(EveRoomAirQuality)
@@ -687,4 +689,6 @@ Domotiga.prototype = {
         }
     }
 };
+
+
 
