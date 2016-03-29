@@ -31,7 +31,7 @@ module.exports = function (homebridge) {
     Characteristic = homebridge.hap.Characteristic;
 
     ////////////////////////////// Custom characteristics //////////////////////////////
-    PowerConsumption = function() {
+    EvePowerConsumption = function() {
       Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
@@ -43,9 +43,9 @@ module.exports = function (homebridge) {
       });
       this.value = this.getDefaultValue();
     };
-    inherits(PowerConsumption, Characteristic);
+    inherits(EvePowerConsumption, Characteristic);
 
-    TotalPowerConsumption = function() {
+    EveTotalPowerConsumption = function() {
       Characteristic.call(this, 'Total Consumption', 'E863F10C-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.FLOAT, // Deviation from Eve Energy observed type
@@ -57,10 +57,10 @@ module.exports = function (homebridge) {
       });
       this.value = this.getDefaultValue();
     };
-    inherits(TotalPowerConsumption, Characteristic);
+    inherits(EveTotalPowerConsumption, Characteristic);
 
     EveRoomAirQuality = function() {
-      Characteristic.call(this, 'EVE Air Quality', 'E863F10B-079E-48FF-8F27-9C2605A29F52');
+      Characteristic.call(this, 'Eve Air Quality', 'E863F10B-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
         unit: "ppm",
@@ -74,7 +74,7 @@ module.exports = function (homebridge) {
     inherits(EveRoomAirQuality, Characteristic);
 
     EveBatteryLevel = function() {
-      Characteristic.call(this, 'EVE Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
+      Characteristic.call(this, 'Eve Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
         unit: "PERCENTAGE",
@@ -88,7 +88,7 @@ module.exports = function (homebridge) {
     inherits(EveBatteryLevel, Characteristic);
 
     EveAirPressure = function() {
-      Characteristic.call(this, 'EVE AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
+      Characteristic.call(this, 'Eve AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
         format: Characteristic.Formats.UINT16,
         unit: "hPa",
@@ -106,10 +106,10 @@ module.exports = function (homebridge) {
     Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
 
     // Required Characteristics
-    this.addCharacteristic(PowerConsumption);
+    this.addCharacteristic(EvePowerConsumption);
 
     // Optional Characteristics
-    this.addOptionalCharacteristic(TotalPowerConsumption);
+    this.addOptionalCharacteristic(EveTotalPowerConsumption);
     };
     inherits(PowerMeterService, Service);
 
@@ -302,9 +302,9 @@ Domotiga.prototype = {
             }
         }.bind(this));
      },
-     getPowerConsumption: function (callback) {
+     getEvePowerConsumption: function (callback) {
         var that = this;
-        that.log("getting PowerConsumption for " + that.config.name);
+        that.log("getting EvePowerConsumption for " + that.config.name);
         that.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
             if (error) {
                 that.log('PowerConsumption GetValue failed: %s', error.message);
@@ -315,12 +315,12 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getTotalPowerConsumption: function (callback) {
+    getEveTotalPowerConsumption: function (callback) {
         var that = this;
-        that.log("getting TotalPowerConsumption for " + that.config.name);
+        that.log("getting EveTotalPowerConsumption for " + that.config.name);
         that.domotigaGetValue(that.config.valueTotalPowerConsumption, function (error, result) {
             if (error) {
-                that.log('TotalPowerConsumption GetValue failed: %s', error.message);
+                that.log('EveTotalPowerConsumption GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 // Supposedly units are 0.001kWh, but by experience it's simply kWh ...?
@@ -354,18 +354,18 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },  
-    getCurrentEVEAirQuality: function (callback) {
-        // Custom EVE intervals:
+    getCurrentEveAirQuality: function (callback) {
+        // Custom Eve intervals:
         //    0... 700 : Exzellent
         //  700...1100 : Good
         // 1100...1600 : Acceptable
         // 1600...2000 : Moderate
         //      > 2000 : Bad	
         var that = this;
-        that.log("getting EVE room airquality for " + that.config.name);
+        that.log("getting Eve room airquality for " + that.config.name);
         that.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
             if (error) {
-                that.log('CurrentEVEAirQuality GetValue failed: %s', error.message);
+                that.log('CurrentEveAirQuality GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 voc = Number(result);
@@ -480,7 +480,7 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
             }
-	    //custom EVE characteristic
+	    //custom Eve characteristic
             if (this.config.valueAirPressure) {
                 controlService
                         .addCharacteristic(EveAirPressure)
@@ -563,14 +563,14 @@ Domotiga.prototype = {
             //optionals
             if (this.config.valuePowerConsumption) {
                 controlService
-                        .addCharacteristic(PowerConsumption)
-                        .on('get', this.getPowerConsumption.bind(this));
+                        .addCharacteristic(EvePowerConsumption)
+                        .on('get', this.getEvePowerConsumption.bind(this));
 
             }
             if (this.config.valueTotalPowerConsumption) {
                 controlService
-                        .addCharacteristic(TotalPowerConsumption)
-                        .on('get', this.getTotalPowerConsumption.bind(this));
+                        .addCharacteristic(EveTotalPowerConsumption)
+                        .on('get', this.getEveTotalPowerConsumption.bind(this));
             }
   
             return [informationService, controlService];
@@ -597,7 +597,7 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
             }
-	    //custom EVE characteristic
+	    //custom Eve characteristic
             if (this.config.valueAirPressure) {
                 controlService
                         .addCharacteristic(EveAirPressure)
@@ -615,17 +615,17 @@ Domotiga.prototype = {
             }
             return [informationService, controlService];
         } 
-        if (this.config.service == "FakeEVEAirQualitySensor") {
+        if (this.config.service == "FakeEveAirQualitySensor") {
             informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Fake EVE Air Quality Sensor Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Fake EVE Room")
+                    .setCharacteristic(Characteristic.Manufacturer, "Fake Eve Air Quality Sensor Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "Fake Eve Room")
                     .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
             var controlService = new Service.AirQualitySensor();
 
             controlService
                     .getCharacteristic(EveRoomAirQuality)
-                    .on('get', this.getCurrentEVEAirQuality.bind(this));
+                    .on('get', this.getCurrentEveAirQuality.bind(this));
                     
             //optionals
             if (this.config.valueTemperature) {
@@ -638,13 +638,13 @@ Domotiga.prototype = {
                         .addCharacteristic(Characteristic.CurrentRelativeHumidity)
                         .on('get', this.getCurrentRelativeHumidity.bind(this));
             }
-	    //custom EVE characteristic
+	    //custom Eve characteristic
             if (this.config.valueAirPressure) {
                 controlService
                         .addCharacteristic(EveAirPressure)
                         .on('get', this.getCurrentAirPressure.bind(this));
             }        
-            //EVE battery (custom UUID)
+            //Eve battery (custom UUID)
             if (this.config.valueBattery) {
                 controlService
                         .addCharacteristic(EveBatteryLevel)
@@ -662,14 +662,14 @@ Domotiga.prototype = {
             var controlService = new PowerMeterService("Powermeter");
 
            controlService
-                        .getCharacteristic(PowerConsumption)
-                        .on('get', this.getPowerConsumption.bind(this));
+                        .getCharacteristic(EvePowerConsumption)
+                        .on('get', this.getEvePowerConsumption.bind(this));
 
             //optionals
             if (this.config.valueTotalPowerConsumption) {
             controlService
-                    .getCharacteristic(TotalPowerConsumption)
-                    .on('get', this.getTotalPowerConsumption.bind(this));
+                    .getCharacteristic(EveTotalPowerConsumption)
+                    .on('get', this.getEveTotalPowerConsumption.bind(this));
             }
             return [informationService, controlService];
         }
