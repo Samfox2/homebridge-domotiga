@@ -303,7 +303,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-
     getPowerConsumption: function (callback) {
         var that = this;
         that.log("getting PowerConsumption for " + that.config.name);
@@ -317,7 +316,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    
     getTotalPowerConsumption: function (callback) {
         var that = this;
         that.log("getting TotalPowerConsumption for " + that.config.name);
@@ -585,6 +583,22 @@ Domotiga.prototype = {
                     .getCharacteristic(Characteristic.AirQuality)
                     .on('get', this.getCurrentAirQuality.bind(this));
             //optionals
+             if (this.config.valueTemperature) {
+                controlService
+                    .addCharacteristic(Characteristic.CurrentTemperature)
+                    .on('get', this.getCurrentTemperature.bind(this));
+             }
+            if (this.config.valueHumidity) {
+                controlService
+                        .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                        .on('get', this.getCurrentRelativeHumidity.bind(this));
+            }
+	    //custom EVE characteristic
+            if (this.config.valueAirPressure) {
+                controlService
+                        .addCharacteristic(AirPressure)
+                        .on('get', this.getCurrentAirPressure.bind(this));
+            }
             if (this.config.valueBattery) {
                 controlService
                         .addCharacteristic(Characteristic.BatteryLevel)
