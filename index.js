@@ -17,6 +17,7 @@ function Domotiga(log, config) {
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
         valueAirQuality: config.valueAirQuality,
+        valueEveRoomAirQuality: config.valueEveRoomAirQuality,        
         valueOutlet: config.valueOutlet,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
@@ -30,8 +31,7 @@ module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-
-
+    ////////////////////////////// Custom characteristics //////////////////////////////
     PowerConsumption = function() {
       Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
@@ -60,6 +60,34 @@ module.exports = function (homebridge) {
     };
     inherits(TotalPowerConsumption, Characteristic);
 
+    EveRoomAirQuality = function() {
+      Characteristic.call(this, 'EVE Air Quality', 'E863F10B-079E-48FF-8F27-9C2605A29F52');
+      this.setProps({
+        format: Characteristic.Formats.UINT16,
+        unit: "ppm",
+        maxValue: 5000,
+        minValue: 0,
+        minStep: 1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      });
+      this.value = this.getDefaultValue();
+    };
+    inherits(EveRoomAirQuality, Characteristic);
+
+    EveBatteryLevel = function() {
+      Characteristic.call(this, 'EVE Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
+      this.setProps({
+        format: Characteristic.Formats.UINT16,
+        unit: "%",
+        maxValue: 100,
+        minValue: 0,
+        minStep: 1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      });
+      this.value = this.getDefaultValue();
+    };
+    inherits(EveBatteryLevel, Characteristic);
+
     AirPressure = function() {
       Characteristic.call(this, 'AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
       this.setProps({
@@ -74,7 +102,7 @@ module.exports = function (homebridge) {
     };
     inherits(AirPressure, Characteristic);
 
-
+    ////////////////////////////// Custom services //////////////////////////////
     PowerMeterService = function(displayName, subtype) {
     Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
 
@@ -85,10 +113,6 @@ module.exports = function (homebridge) {
     this.addOptionalCharacteristic(TotalPowerConsumption);
     };
     inherits(PowerMeterService, Service);
-
-
-
-
 
     homebridge.registerAccessory("homebridge-domotiga", "Domotiga", Domotiga);
 }
@@ -317,7 +341,7 @@ Domotiga.prototype = {
                 callback(error);
             } else {
                 airquality = Number(result);
-                that.log('CurrentBattery level: %s', airquality);
+                that.log('CurrentAirQuality level: %s', airquality);
                 if(airquality > 1500)
                     callback(null, Characteristic.AirQuality.POOR);
                 else if(airquality > 1000)
@@ -333,6 +357,22 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },  
+    getCurrentEveRoomAirQuality: function (callback) {
+        var that = this;
+        that.log("getting EVE room airquality for " + that.config.name);
+
+        that.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
+            if (error) {
+                that.log('CurrentEveRoomAirQuality GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                voc = Number(result);
+                if (voc < 0)
+                    voc = 0;
+               callback(null, voc);        
+            }
+        }.bind(this));
+    },
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
@@ -556,7 +596,26 @@ Domotiga.prototype = {
                         .on('get', this.getLowBatteryStatus.bind(this));
             }
             return [informationService, controlService];
-        }  
+        } 
+        if (this.config.service == "EVEAirQualitySensor") {
+            informationService
+                    .setCharacteristic(Characteristic.Manufacturer, "EVE AirQualitySensor Manufacturer")
+                    .setCharacteristic(Characteristic.Model, "EVE Room airquality sensor")
+                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
+
+            var controlService = new Service.AirQualitySensor();
+
+            controlService
+                    .getCharacteristic(EveRoomAirQuality)
+                    .on('get', this.getCurrentEveRoomAirQuality.bind(this));
+            //optionals (EVE battery)
+            if (this.config.valueBattery) {
+                controlService
+                        .addCharacteristic(EveBatteryLevel)
+                        .on('get', this.getCurrentBatteryLevel.bind(this));
+            }
+            return [informationService, controlService];
+        }         
         else if (this.config.service == "Powermeter") {
 
             informationService
