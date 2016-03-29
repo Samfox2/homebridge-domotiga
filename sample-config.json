@@ -27,15 +27,27 @@
         },
         {
             "accessory": "Domotiga",
-            "name": "AirQualitySensor bedroom",
+            "name": "Combined AirQualitySensor livingroom",
+            "host": "DomotiGa",
+            "port": "9090",
+            "service": "AirQualitySensor",
+            "device": "83",
+            "valueAirQuality":  "1",
+            "valueTemperature": "2",
+            "valueHumidity":    "3",
+            "valueAirPressure": "4",            
+            "valueBattery":     "5",
+            "lowbattery": "3000"
+        }, 
+        {
+            "accessory": "Domotiga",
+            "name": "AirQualitySensor bedroom without battery",
             "host": "DomotiGa",
             "port": "9090",
             "service": "AirQualitySensor",
             "device": "82",
-            "valueAirQuality": "1",
-            "valueBattery":    "2",
-            "lowbattery": "3000"
-        },    
+            "valueAirQuality": "1"
+        },
 	{
             "accessory": "Domotiga",
             "name": "PC",
