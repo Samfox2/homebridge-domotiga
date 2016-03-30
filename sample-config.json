@@ -94,7 +94,18 @@
             "valueLeakSensor": "1",
             "valueBattery":    "2",
             "lowbattery": "3000"
-        }, 
+        },
+        {
+            "accessory": "Domotiga",
+            "name": "Entrance",
+            "host": "192.168.0.xxx",
+            "port": "9090",
+            "service": "MotionSensor",
+            "device": "26",
+            "valueMotionSensor": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
+          },   
      	{
             "accessory": "Domotiga",
             "name": "Outlet",
