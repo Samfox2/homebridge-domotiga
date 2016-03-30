@@ -7,6 +7,7 @@ The latest version (work in progress) supports following services:
 - ```AirQualitySensor``` (air quality + opt. temperature/humidity/air pressure/battery/low battery warning) 
 - ```FakeEveAirQualitySensor``` (custom Eve service, same as AirQualitySensor with additional ppm value in Eve app)
 - ```Contact``` (contact state + opt. battery/low battery warning) 
+- ```LeakSensor``` (leaksensor state + opt. battery/low battery warning) 
 - ```Switch``` (get/set switch state) 
 - ```Outlet``` (get/set outlet state + opt. power consumption/total power consumption) 
 - ```Powermeter``` (power consumption + opt. total power consumption) 
@@ -99,6 +100,17 @@ Configuration sample:
           },
           {
             "accessory": "Domotiga",
+            "name": "Utility room",
+            "host": "192.168.0.xxx",
+            "port": "9090",
+            "service": "LeakSensor",
+            "device": "25",
+            "valueLeakSensor": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
+          }, 
+          {
+            "accessory": "Domotiga",
             "name": "Outlet",
             "host": "192.168.0.xxx",
             "port": "9090",
@@ -138,6 +150,7 @@ Fields:
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
+* ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
 
 
 Not yet supported by all homekit apps:
