@@ -416,7 +416,8 @@ Domotiga.prototype = {
                 that.log('BatteryStatus GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (Number(result) < Number(that.config.lowbattery)) 
+            	var value = Number( result);
+                if (isNaN(value) || value < Number(that.config.lowbattery)) 
                     callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
                 else
                     callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
