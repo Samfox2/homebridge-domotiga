@@ -390,7 +390,6 @@ Domotiga.prototype = {
     getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
-
         that.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log('CurrentBattery GetValue failed: %s', error.message);
@@ -410,7 +409,6 @@ Domotiga.prototype = {
     getLowBatteryStatus: function (callback) {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
-
         that.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log('BatteryStatus GetValue failed: %s', error.message);
@@ -449,7 +447,6 @@ Domotiga.prototype = {
             switchState = "Off";
 
         var callbackWasCalled = false;
-
         that.domotigaSetValue(that.config.valueSwitch, switchState, function (err) {
             if (callbackWasCalled) {
                 that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
@@ -593,7 +590,6 @@ Domotiga.prototype = {
             controlService
                     .getCharacteristic(EveRoomAirQuality)
                     .on('get', this.getCurrentEveAirQuality.bind(this));
-                    
             //optionals
             if (this.config.valueTemperature) {
                 controlService
@@ -629,7 +625,6 @@ Domotiga.prototype = {
             controlService
                     .getCharacteristic(Characteristic.CurrentTemperature)
                     .on('get', this.getCurrentTemperature.bind(this));
-                    
             //optionals
             if (this.config.valueHumidity) {
                 controlService
@@ -660,7 +655,6 @@ Domotiga.prototype = {
             controlService
                         .getCharacteristic(EvePowerConsumption)
                         .on('get', this.getEvePowerConsumption.bind(this));
-
             //optionals
             if (this.config.valueTotalPowerConsumption) {
             controlService
