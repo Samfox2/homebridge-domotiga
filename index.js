@@ -572,7 +572,6 @@ Domotiga.prototype = {
                         .addCharacteristic(EveTotalPowerConsumption)
                         .on('get', this.getEveTotalPowerConsumption.bind(this));
             }
-  
             return [informationService, controlService];
         }
         if (this.config.service == "AirQualitySensor") {
