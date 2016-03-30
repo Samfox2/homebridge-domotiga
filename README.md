@@ -144,6 +144,6 @@ Not yet supported by all homekit apps:
 
 * ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional Eve characteristic for "Outlet")
 * ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and Eve characteristic for "Outlet")
-* ```"valueBattery":```  Value no. of battery
+* ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 
