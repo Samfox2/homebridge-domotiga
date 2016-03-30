@@ -526,7 +526,6 @@ Domotiga.prototype = {
                         .getCharacteristic(Characteristic.On)
                         .on('get', this.getSwitchOn.bind(this))
                         .on('set', this.setSwitchOn.bind(this));
-
                 return [informationService, controlService];
 
             case "Outlet":
@@ -544,7 +543,6 @@ Domotiga.prototype = {
                     controlService
                             .addCharacteristic(EvePowerConsumption)
                             .on('get', this.getEvePowerConsumption.bind(this));
-
                 }
                 if (this.config.valueTotalPowerConsumption) {
                     controlService
