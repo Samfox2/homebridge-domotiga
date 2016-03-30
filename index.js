@@ -10,6 +10,8 @@ function Domotiga(log, config) {
         port: config.port || 9090,
         service: config.service,
         device: config.device,
+        manufacturer: config.manufacturer || 'unknown',
+        model: config.model || 'unknown',
         valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
 	valueAirPressure: config.valueAirPressure,
@@ -466,15 +468,13 @@ Domotiga.prototype = {
         // you can OPTIONALLY create an information service if you wish to override
         // the default values for things like serial number, model, etc.
         var informationService = new Service.AccessoryInformation();
+        informationService
+                .setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer)
+                .setCharacteristic(Characteristic.Model, this.config.model)
+                .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
         if (this.config.service == "TempHygroMeter") {
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "TinyTX DHT22 Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "TinyTX DHT22 Sensor")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new Service.TemperatureSensor();
-
             controlService
                     .getCharacteristic(Characteristic.CurrentTemperature)
                     .on('get', this.getCurrentTemperature.bind(this));
@@ -503,14 +503,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Contact") {
-
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Contact Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Contact Model")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new Service.ContactSensor();
-
             controlService
                     .getCharacteristic(Characteristic.ContactSensorState)
                     .on('get', this.getContactState.bind(this));
@@ -528,14 +521,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Switch") {
-
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Switch Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Switch Model")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new Service.Switch(this.config.name);
-
             controlService
                     .getCharacteristic(Characteristic.On)
                     .on('get', this.getSwitchOn.bind(this))
@@ -544,14 +530,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Outlet") {
-
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Outlet Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Outlet Model")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new Service.Outlet();
-
             controlService
                     .getCharacteristic(Characteristic.On)
                     .on('get', this.getOutletState.bind(this))
@@ -575,13 +554,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         if (this.config.service == "AirQualitySensor") {
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "AirQualitySensor Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "AirQualitySensor Sensor")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new Service.AirQualitySensor();
-
             controlService
                     .getCharacteristic(Characteristic.AirQuality)
                     .on('get', this.getCurrentAirQuality.bind(this));
@@ -615,13 +588,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         } 
         if (this.config.service == "FakeEveAirQualitySensor") {
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Fake Eve Air Quality Sensor Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Fake Eve Room")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new EveRoomService("Eve Room");
-
             controlService
                     .getCharacteristic(EveRoomAirQuality)
                     .on('get', this.getCurrentEveAirQuality.bind(this));
@@ -657,13 +624,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         if (this.config.service == "FakeEveWeatherSensor") {
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Fake Eve Weather Sensor Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Fake Eve Weather")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new EveWeatherService("Eve Weather");
-
             controlService
                     .getCharacteristic(Characteristic.CurrentTemperature)
                     .on('get', this.getCurrentTemperature.bind(this));
@@ -694,14 +655,7 @@ Domotiga.prototype = {
             return [informationService, controlService];
         }
         else if (this.config.service == "Powermeter") {
-
-            informationService
-                    .setCharacteristic(Characteristic.Manufacturer, "Powermeter Manufacturer")
-                    .setCharacteristic(Characteristic.Model, "Powermeter Model")
-                    .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
-
             var controlService = new PowerMeterService("Powermeter");
-
             controlService
                         .getCharacteristic(EvePowerConsumption)
                         .on('get', this.getEvePowerConsumption.bind(this));
