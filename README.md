@@ -132,15 +132,15 @@ Fields:
 * ```"model":``` Model of accessory (optional)
 * ```"device":```  Domotiga device no. (required)
 * ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
-* ```"valueHumidity":``` Domotiga device value no. of humidity in % (optional for "TempHygroMeter")
-* ```"valueAirPressure":``` Domotiga device value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
-* ```"valueAirQuality":```  Domotiga device value no. of the air quality VOC (required for "AirQualitySensor")
-* ```"valueContact":```  Domotiga device value no. of the contact (required for "Contact")
-* ```"valueSwitch":```   Domotiga device value no. of the switch (required for "Switch")
-* ```"valueOutlet":```   Domotiga device value no. of the outlet (required for "Outlet")
-* ```"valuePowerConsumption":```  Domotiga device value no. of the consumption in W (required for custom "PowerMeter" and optional EVE characteristic for "Outlet")
-* ```"valueTotalPowerConsumption":```  Domotiga device value no. of the total consumption in kWh (optional for custom "PowerMeter" and EVE characteristic for "Outlet")
+* ```"valueHumidity":``` Value no. of humidity in % (optional for "TempHygroMeter")
+* ```"valueAirPressure":``` Value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
+* ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor")
+* ```"valueContact":```  Value no. of the contact (required for "Contact")
+* ```"valueSwitch":```   Value no. of the switch (required for "Switch")
+* ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
+* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "PowerMeter" and optional EVE characteristic for "Outlet")
+* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "PowerMeter" and EVE characteristic for "Outlet")
 
 Not yet supported by actual homekit apps:
-* ```"valueBattery":```  Domotiga device value no. of battery
+* ```"valueBattery":```  Value no. of battery
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
