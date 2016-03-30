@@ -466,134 +466,203 @@ Domotiga.prototype = {
         // you can OPTIONALLY create an information service if you wish to override
         // the default values for things like serial number, model, etc.
         var informationService = new Service.AccessoryInformation();
-        informationService.setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer).setCharacteristic(Characteristic.Model, this.config.model)
+        informationService
+                .setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer)
+                .setCharacteristic(Characteristic.Model, this.config.model)
                 .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
         switch (this.config.service) {
 
             case "TempHygroMeter":
                 var controlService = new Service.TemperatureSensor();
-                controlService.getCharacteristic(Characteristic.CurrentTemperature).on('get', this.getCurrentTemperature.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.CurrentTemperature)
+                        .on('get', this.getCurrentTemperature.bind(this));
                 //optionals
-                if (this.config.valueHumidity)
-                    controlService.addCharacteristic(Characteristic.CurrentRelativeHumidity).on('get', this.getCurrentRelativeHumidity.bind(this));
-
+                if (this.config.valueHumidity) {
+                    controlService
+                            .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                            .on('get', this.getCurrentRelativeHumidity.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueAirPressure)
-                    controlService.addCharacteristic(EveAirPressure).on('get', this.getCurrentAirPressure.bind(this));
-
-                if (this.config.valueBattery)
-                    controlService.addCharacteristic(Characteristic.BatteryLevel).on('get', this.getCurrentBatteryLevel.bind(this));
-
-                if (this.config.lowbattery)
-                    controlService.addCharacteristic(Characteristic.StatusLowBattery).on('get', this.getLowBatteryStatus.bind(this));
-
+                if (this.config.valueAirPressure) {
+                    controlService
+                            .addCharacteristic(EveAirPressure)
+                            .on('get', this.getCurrentAirPressure.bind(this));
+                }
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.BatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
                 return [informationService, controlService];
 
             case "Contact":
                 var controlService = new Service.ContactSensor();
-                controlService.getCharacteristic(Characteristic.ContactSensorState).on('get', this.getContactState.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.ContactSensorState)
+                        .on('get', this.getContactState.bind(this));
                 //optionals
-                if (this.config.valueBattery)
-                    controlService.addCharacteristic(Characteristic.BatteryLevel).on('get', this.getCurrentBatteryLevel.bind(this));
-
-                if (this.config.lowbattery)
-                    controlService.addCharacteristic(Characteristic.StatusLowBattery).on('get', this.getLowBatteryStatus.bind(this));
-
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.BatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
                 return [informationService, controlService];
 
             case "Switch":
                 var controlService = new Service.Switch(this.config.name);
-                controlService.getCharacteristic(Characteristic.On).on('get', this.getSwitchOn.bind(this)).on('set', this.setSwitchOn.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.On)
+                        .on('get', this.getSwitchOn.bind(this))
+                        .on('set', this.setSwitchOn.bind(this));
 
                 return [informationService, controlService];
 
             case "Outlet":
                 var controlService = new Service.Outlet();
-                controlService.getCharacteristic(Characteristic.On).on('get', this.getOutletState.bind(this)).on('set', this.setOutletState.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.On)
+                        .on('get', this.getOutletState.bind(this))
+                        .on('set', this.setOutletState.bind(this));
 
-                controlService.getCharacteristic(Characteristic.OutletInUse).on('get', this.getOutletInUse.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.OutletInUse)
+                        .on('get', this.getOutletInUse.bind(this));
                 //optionals
-                if (this.config.valuePowerConsumption)
-                    controlService.addCharacteristic(EvePowerConsumption).on('get', this.getEvePowerConsumption.bind(this));
+                if (this.config.valuePowerConsumption) {
+                    controlService
+                            .addCharacteristic(EvePowerConsumption)
+                            .on('get', this.getEvePowerConsumption.bind(this));
 
-                if (this.config.valueTotalPowerConsumption)
-                    controlService.addCharacteristic(EveTotalPowerConsumption).on('get', this.getEveTotalPowerConsumption.bind(this));
-
+                }
+                if (this.config.valueTotalPowerConsumption) {
+                    controlService
+                            .addCharacteristic(EveTotalPowerConsumption)
+                            .on('get', this.getEveTotalPowerConsumption.bind(this));
+                }
                 return [informationService, controlService];
 
             case "AirQualitySensor":
                 var controlService = new Service.AirQualitySensor();
-                controlService.getCharacteristic(Characteristic.AirQuality).on('get', this.getCurrentAirQuality.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.AirQuality)
+                        .on('get', this.getCurrentAirQuality.bind(this));
                 //optionals
-                if (this.config.valueTemperature)
-                    controlService.addCharacteristic(Characteristic.CurrentTemperature).on('get', this.getCurrentTemperature.bind(this));
-
-                if (this.config.valueHumidity)
-                    controlService.addCharacteristic(Characteristic.CurrentRelativeHumidity).on('get', this.getCurrentRelativeHumidity.bind(this));
-
+                if (this.config.valueTemperature) {
+                    controlService
+                        .addCharacteristic(Characteristic.CurrentTemperature)
+                        .on('get', this.getCurrentTemperature.bind(this));
+                }
+                if (this.config.valueHumidity) {
+                    controlService
+                            .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                            .on('get', this.getCurrentRelativeHumidity.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueAirPressure)
-                    controlService.addCharacteristic(EveAirPressure).on('get', this.getCurrentAirPressure.bind(this));
-
-                if (this.config.valueBattery)
-                    controlService.addCharacteristic(Characteristic.BatteryLevel).on('get', this.getCurrentBatteryLevel.bind(this));
-
-                if (this.config.lowbattery)
-                    controlService.addCharacteristic(Characteristic.StatusLowBattery).on('get', this.getLowBatteryStatus.bind(this));
-
+                if (this.config.valueAirPressure) {
+                    controlService
+                            .addCharacteristic(EveAirPressure)
+                            .on('get', this.getCurrentAirPressure.bind(this));
+                }
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.BatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
                 return [informationService, controlService];
 
             case "FakeEveAirQualitySensor":
                 var controlService = new EveRoomService("Eve Room");
-                controlService.getCharacteristic(EveRoomAirQuality).on('get', this.getCurrentEveAirQuality.bind(this));
+                controlService
+                        .getCharacteristic(EveRoomAirQuality)
+                        .on('get', this.getCurrentEveAirQuality.bind(this));
                 //optionals
-                if (this.config.valueTemperature)
-                    controlService.addCharacteristic(Characteristic.CurrentTemperature).on('get', this.getCurrentTemperature.bind(this));
-
-                if (this.config.valueHumidity)
-                    controlService.addCharacteristic(Characteristic.CurrentRelativeHumidity).on('get', this.getCurrentRelativeHumidity.bind(this));
-
+                if (this.config.valueTemperature) {
+                    controlService
+                        .addCharacteristic(Characteristic.CurrentTemperature)
+                        .on('get', this.getCurrentTemperature.bind(this));
+                }
+                if (this.config.valueHumidity) {
+                    controlService
+                            .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                            .on('get', this.getCurrentRelativeHumidity.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueAirPressure)
-                    controlService.addCharacteristic(EveAirPressure).on('get', this.getCurrentAirPressure.bind(this));
-
+                if (this.config.valueAirPressure) {
+                    controlService
+                            .addCharacteristic(EveAirPressure)
+                            .on('get', this.getCurrentAirPressure.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueBattery)
-                    controlService.addCharacteristic(EveBatteryLevel).on('get', this.getCurrentBatteryLevel.bind(this));
-
-                if (this.config.lowbattery)
-                    controlService.addCharacteristic(Characteristic.StatusLowBattery).on('get', this.getLowBatteryStatus.bind(this));
-
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(EveBatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
                 return [informationService, controlService];
 
             case "FakeEveWeatherSensor":
                 var controlService = new EveWeatherService("Eve Weather");
-                controlService.getCharacteristic(Characteristic.CurrentTemperature).on('get', this.getCurrentTemperature.bind(this));
+                controlService
+                        .getCharacteristic(Characteristic.CurrentTemperature)
+                        .on('get', this.getCurrentTemperature.bind(this));
                 //optionals
-                if (this.config.valueHumidity)
-                    controlService.addCharacteristic(Characteristic.CurrentRelativeHumidity).on('get', this.getCurrentRelativeHumidity.bind(this));
-
+                if (this.config.valueHumidity) {
+                    controlService
+                            .addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                            .on('get', this.getCurrentRelativeHumidity.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueAirPressure)
-                    controlService.addCharacteristic(EveAirPressure).on('get', this.getCurrentAirPressure.bind(this));
-
+                if (this.config.valueAirPressure) {
+                    controlService
+                            .addCharacteristic(EveAirPressure)
+                            .on('get', this.getCurrentAirPressure.bind(this));
+                }
                 //Eve characteristic (custom UUID)
-                if (this.config.valueBattery)
-                    controlService.addCharacteristic(EveBatteryLevel).on('get', this.getCurrentBatteryLevel.bind(this));
-
-                if (this.config.lowbattery)
-                    controlService.addCharacteristic(Characteristic.StatusLowBattery).on('get', this.getLowBatteryStatus.bind(this));
-
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(EveBatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
                 return [informationService, controlService];
 
             case "Powermeter":
                 var controlService = new PowerMeterService("Powermeter");
-                controlService.getCharacteristic(EvePowerConsumption).on('get', this.getEvePowerConsumption.bind(this));
+                controlService
+                            .getCharacteristic(EvePowerConsumption)
+                            .on('get', this.getEvePowerConsumption.bind(this));
                 //optionals
-                if (this.config.valueTotalPowerConsumption)
-                    controlService.getCharacteristic(EveTotalPowerConsumption).on('get', this.getEveTotalPowerConsumption.bind(this));
-
+                if (this.config.valueTotalPowerConsumption) {
+                    controlService
+                            .getCharacteristic(EveTotalPowerConsumption)
+                            .on('get', this.getEveTotalPowerConsumption.bind(this));
+                }
                 return [informationService, controlService];
 
             default:
@@ -602,7 +671,6 @@ Domotiga.prototype = {
         }
     }
 };
-
 
 
 
