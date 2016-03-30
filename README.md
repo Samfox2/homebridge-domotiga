@@ -8,6 +8,7 @@ The latest version (work in progress) supports following services:
 - ```FakeEveAirQualitySensor``` (custom Eve service, same as AirQualitySensor with additional ppm value in Eve app)
 - ```Contact``` (contact state + opt. battery/low battery warning) 
 - ```LeakSensor``` (leaksensor state + opt. battery/low battery warning) 
+- ```MotionSensor``` (motionsensor state + opt. battery/low battery warning) 
 - ```Switch``` (get/set switch state) 
 - ```Outlet``` (get/set outlet state + opt. power consumption/total power consumption) 
 - ```Powermeter``` (power consumption + opt. total power consumption) 
@@ -108,6 +109,17 @@ Configuration sample:
             "valueLeakSensor": "1",
             "valueBattery":    "2",
             "lowbattery": "3000"
+          },
+          {
+            "accessory": "Domotiga",
+            "name": "Entrance",
+            "host": "192.168.0.xxx",
+            "port": "9090",
+            "service": "MotionSensor",
+            "device": "26",
+            "valueMotionSensor": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
           }, 
           {
             "accessory": "Domotiga",
@@ -151,6 +163,8 @@ Fields:
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
 * ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
+* ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
+
 
 
 Not yet supported by all homekit apps:
