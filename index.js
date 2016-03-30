@@ -249,12 +249,10 @@ Domotiga.prototype = {
                 that.log('getGetContactState GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (result.toLowerCase() == "on") {
+                if (result.toLowerCase() == "on")
                     callback(null, Characteristic.ContactSensorState.CONTACT_DETECTED );
-                }
-                else {
+                else 
                     callback(null, Characteristic.ContactSensorState.CONTACT_NOT_DETECTED );
-                }
             }
         }.bind(this));
      },
@@ -266,12 +264,10 @@ Domotiga.prototype = {
                 that.log('getGetOutletState GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (result.toLowerCase() == "on") {
+                if (result.toLowerCase() == "on") 
                     callback(null, 0);
-                }
-                else {
+                else 
                     callback(null, 1);
-                }
             }
         }.bind(this));
      },
@@ -279,17 +275,16 @@ Domotiga.prototype = {
         var that = this;
         that.log("Setting outlet state for '%s' to %s", that.config.name, boolvalue);
 
-        if (boolvalue == 1) {
+        if (boolvalue == 1)
             outletState = "On";
-        }
-        else {
+        else
             outletState = "Off";
-        }
+
         var callbackWasCalled = false;
         that.domotigaSetValue(that.config.valueOutlet, outletState, function (err) {
-            if (callbackWasCalled) {
+            if (callbackWasCalled)
                 that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
-            }
+
             callbackWasCalled = true;
             if (!err) {
                 that.log("Successfully set outlet state on the '%s' to %s", that.config.name, outletState);
@@ -309,12 +304,10 @@ Domotiga.prototype = {
                 that.log('getOutletInUse GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (result.toLowerCase() == "on") {
+                if (result.toLowerCase() == "on")
                     callback(null, false);
-                }
-		else {
+		else 
                     callback(null, true);
-                }
             }
         }.bind(this));
      },
@@ -362,7 +355,7 @@ Domotiga.prototype = {
                 voc = Number(result);
                 if (voc < 0)
                     voc = 0;
-               callback(null, voc);        
+                callback(null, voc);        
             }
         }.bind(this));
     },   
@@ -375,8 +368,7 @@ Domotiga.prototype = {
                 that.log('PowerConsumption GetValue failed: %s', error.message);
                 callback(error);
             } else {
-		// Supposedly units are 0.1W, but by experience it's simply Watts ...?
-                callback(null, Math.round(Number(result)));
+                callback(null, Math.round(Number(result))); // W
             }
         }.bind(this));
     },
@@ -389,8 +381,7 @@ Domotiga.prototype = {
                 that.log('EveTotalPowerConsumption GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                // Supposedly units are 0.001kWh, but by experience it's simply kWh ...?
-                callback(null, Math.round(Number(result)*1000.0)/1000.0);
+                callback(null, Math.round(Number(result)*1000.0)/1000.0); // kWh
             }
         }.bind(this));
     },
@@ -410,7 +401,6 @@ Domotiga.prototype = {
                     remaining = 100;
                 else if (remaining < 0)
                     remaining = 0;
-
                 callback(null, remaining);
             }
         }.bind(this));
@@ -424,12 +414,10 @@ Domotiga.prototype = {
                 that.log('BatteryStatus GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (Number(result) < Number(that.config.lowbattery)) {
+                if (Number(result) < Number(that.config.lowbattery)) 
                     callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-                }
-                else {
+                else
                     callback(null, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-                }
             }
         }.bind(this));
     },
@@ -441,12 +429,10 @@ Domotiga.prototype = {
                 that.log('getSwitchOn GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                if (result.toLowerCase() == "on") {
+                if (result.toLowerCase() == "on") 
                     callback(null, 1);
-                }
-                else {
+                else 
                     callback(null, 0);
-                }
             }
         }.bind(this));
     },
@@ -454,12 +440,11 @@ Domotiga.prototype = {
         var that = this;
         that.log("Setting SwitchState for '%s' to %s", that.config.name, switchOn);
 
-        if (switchOn == 1) {
+        if (switchOn == 1) 
             switchState = "On";
-        }
-        else {
+        else 
             switchState = "Off";
-        }
+
         var callbackWasCalled = false;
 
         that.domotigaSetValue(that.config.valueSwitch, switchState, function (err) {
