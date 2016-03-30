@@ -3,15 +3,13 @@ Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.
 
 The latest version (work in progress) supports following services:
 
-- temperature
-- humidity
-- air pressure
-- air quality
-- contact
-- switch
-- outlet
-- powermeter (custom service)
-
+- TempHygroMeter (temperature + optional humidity/air pressure/battery/low battery warning) 
+- AirQualitySensor (air quality + opt. temperature/humidity/air pressure/battery/low battery warning) 
+- FakeEveAirQualitySensor (custom Eve service, same as AirQualitySensor with additional ppm value in Eve app)
+- Contact (contact state + opt. battery/low battery warning) 
+- Switch (get/set switch state) 
+- Outlet (contact state + opt. power consumption/total power consumption) 
+- Powermeter (power consumption + opt. total power consupmtion) 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
 # Installation
