@@ -53,6 +53,20 @@ Configuration sample:
             "valueAirPressure": "4",            
             "valueBattery":     "5",
             "lowbattery": "3000"
+          },
+          {
+            "accessory": "Domotiga",
+            "name": "Combined AirQualitySensor with ppm display",
+            "host": "DomotiGa",
+            "port": "9090",
+            "service": "FakeEveAirQualitySensor",
+            "device": "89",
+            "valueAirQuality":  "1",
+            "valueTemperature": "2",
+            "valueHumidity":    "3",
+            "valueAirPressure": "4",            
+            "valueBattery":     "5",
+            "lowbattery": "3000"
           }, 
           {
             "accessory": "Domotiga",
