@@ -32,6 +32,8 @@ Configuration sample:
             "host": "localhost",
             "port": "9090",
             "service": "TempHygroMeter",
+            "manufacturer": "DIY",
+            "model": "TinyTX",
             "device": "81",
             "valueTemperature": "1",
             "valueHumidity":    "2",
@@ -113,6 +115,8 @@ Fields:
 * "host": The hostname or ip of the machine running Domotiga (required)
 * "port": The port that Domotiga is using (usually 9090) (required)
 * "service": Service that Domotiga device represents (required)
+* "manufacturer": Manufacture of accessory (optional)
+* "model": Model of accessory (optional)
 * "device":  Domotiga device no. (required)
 * "valueTemperature": Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
 * "valueHumidity": Domotiga device value no. of humidity in % (optional for "TempHygroMeter")
