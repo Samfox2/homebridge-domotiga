@@ -18,6 +18,8 @@
             "host": "localhost",
             "port": "9090",
             "service": "TempHygroMeter",
+            "manufacturer": "DIY",
+            "model": "TinyTX",
             "device": "81",
             "valueTemperature": "1",
             "valueHumidity":    "2",
