@@ -133,13 +133,13 @@ Fields:
 * ```"device":```  Domotiga device no. (required)
 * ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
 * ```"valueHumidity":``` Value no. of humidity in % (optional for "TempHygroMeter")
-* ```"valueAirPressure":``` Value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
+* ```"valueAirPressure":``` Value no. of air pressure in hPa (optional Eve characteristic for "TempHygroMeter")
 * ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor")
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
-* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional EVE characteristic for "Outlet")
-* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and EVE characteristic for "Outlet")
+* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional Eve characteristic for "Outlet")
+* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and Eve characteristic for "Outlet")
 
 Not yet supported by actual homekit apps:
 * ```"valueBattery":```  Value no. of battery
