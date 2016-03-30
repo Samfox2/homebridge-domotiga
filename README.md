@@ -138,9 +138,9 @@ Fields:
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
-* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional Eve characteristic for "Outlet")
-* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and Eve characteristic for "Outlet")
 
-Not yet supported by actual homekit apps:
+Only supported by a few homekit apps:
 * ```"valueBattery":```  Value no. of battery
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
+* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional Eve characteristic for "Outlet")
+* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and Eve characteristic for "Outlet")
