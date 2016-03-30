@@ -663,6 +663,10 @@ Domotiga.prototype = {
             }
             return [informationService, controlService];
         }
+        else{
+            this.log('Service %s %s unknown, skipping...', this.config.service, this.config.name);
+            return [];
+        }
     }
 };
 
