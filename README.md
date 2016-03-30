@@ -123,24 +123,24 @@ Configuration sample:
 
 Fields:
 
-* "accessory": Must always be "Domotiga" (required)
-* "name": Can be anything
-* "host": The hostname or ip of the machine running Domotiga (required)
-* "port": The port that Domotiga is using (usually 9090) (required)
-* "service": Service that Domotiga device represents (required)
-* "manufacturer": Manufacture of accessory (optional)
-* "model": Model of accessory (optional)
-* "device":  Domotiga device no. (required)
-* "valueTemperature": Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
-* "valueHumidity": Domotiga device value no. of humidity in % (optional for "TempHygroMeter")
-* "valueAirPressure": Domotiga device value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
-* "valueAirQuality":  Domotiga device value no. of the air quality VOC (required for "AirQualitySensor")
-* "valueContact":  Domotiga device value no. of the contact (required for "Contact")
-* "valueSwitch":   Domotiga device value no. of the switch (required for "Switch")
-* "valueOutlet":   Domotiga device value no. of the outlet (required for "Outlet")
-* "valuePowerConsumption":  Domotiga device value no. of the consumption in W (required for custom "PowerMeter" and optional EVE characteristic for "Outlet")
-* "valueTotalPowerConsumption":  Domotiga device value no. of the total consumption in kWh (optional for custom "PowerMeter" and EVE characteristic for "Outlet")
+* ```"accessory":``` Must always be "Domotiga" (required)
+* ```"name":``` Can be anything
+* ```"host":``` The hostname or ip of the machine running Domotiga (required)
+* ```"port":``` The port that Domotiga is using (usually 9090) (required)
+* ```"service":``` Service that Domotiga device represents (required)
+* ```"manufacturer":``` Manufacture of accessory (optional)
+* ```"model":``` Model of accessory (optional)
+* ```"device":```  Domotiga device no. (required)
+* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
+* ```"valueHumidity":``` Domotiga device value no. of humidity in % (optional for "TempHygroMeter")
+* ```"valueAirPressure":``` Domotiga device value no. of air pressure in hPa (optional EVE characteristic for "TempHygroMeter")
+* ```"valueAirQuality":```  Domotiga device value no. of the air quality VOC (required for "AirQualitySensor")
+* ```"valueContact":```  Domotiga device value no. of the contact (required for "Contact")
+* ```"valueSwitch":```   Domotiga device value no. of the switch (required for "Switch")
+* ```"valueOutlet":```   Domotiga device value no. of the outlet (required for "Outlet")
+* ```"valuePowerConsumption":```  Domotiga device value no. of the consumption in W (required for custom "PowerMeter" and optional EVE characteristic for "Outlet")
+* ```"valueTotalPowerConsumption":```  Domotiga device value no. of the total consumption in kWh (optional for custom "PowerMeter" and EVE characteristic for "Outlet")
 
 Not yet supported by actual homekit apps:
-* "valueBattery":  Domotiga device value no. of battery
-* "lowbattery":    Min. battery level which activates "low battery warning" in mV
+* ```"valueBattery":```  Domotiga device value no. of battery
+* ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
