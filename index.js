@@ -21,6 +21,7 @@ function Domotiga(log, config) {
         valueAirQuality: config.valueAirQuality,
         valueOutlet: config.valueOutlet,
         valueLeakSensor: config.valueLeakSensor,
+        valueMotionSensor: config.valueMotionSensor,    
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
@@ -438,6 +439,21 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    getMotionDetected: function (callback) {
+        var that = this;
+        that.log("getting MotionDetected for " + that.config.name);
+        that.domotigaGetValue(that.config.valueMotionSensor, function (error, result) {
+            if (error) {
+                that.log('getMotionDetected GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (Number(result) == 0)
+                    callback(null, 0);
+                else
+                    callback(null, 1);
+            }
+        }.bind(this));
+    },    
     getSwitchOn: function (callback) {
         var that = this;
         that.log("getting SwitchState for " + that.config.name);
@@ -541,6 +557,24 @@ Domotiga.prototype = {
                 controlService
                         .getCharacteristic(Characteristic.LeakDetected)
                         .on('get', this.getLeakSensorState.bind(this));
+                //optionals
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.BatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
+                return [informationService, controlService];
+            
+            case "MotionSensor":
+                var controlService = new Service.MotionSensor();
+                controlService
+                        .getCharacteristic(Characteristic.MotionDetected)
+                        .on('get', this.getMotionDetected.bind(this));
                 //optionals
                 if (this.config.valueBattery) {
                     controlService
