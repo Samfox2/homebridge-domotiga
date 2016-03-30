@@ -20,6 +20,7 @@ function Domotiga(log, config) {
         valueSwitch: config.valueSwitch,
         valueAirQuality: config.valueAirQuality,
         valueOutlet: config.valueOutlet,
+        valueLeakSensor: config.valueLeakSensor,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
         name: config.name || NA,
@@ -258,6 +259,21 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    getLeakSensorState: function (callback) {
+        var that = this;
+        that.log("getting LeakSensorState for " + that.config.name);
+        that.domotigaGetValue(that.config.valueLeakSensor, function (error, result) {
+            if (error) {
+                that.log('getLeakSensorState GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (Number(result) == 0)
+                    callback(null, Characteristic.LeakDetected.LEAK_NOT_DETECTED);
+                else
+                    callback(null, Characteristic.LeakDetected.LEAK_DETECTED);
+            }
+        }.bind(this));
+    },   
     getOutletState: function (callback) {
         var that = this;
         that.log("getting OutletState for " + that.config.name);
@@ -520,6 +536,24 @@ Domotiga.prototype = {
                 }
                 return [informationService, controlService];
 
+            case "LeakSensor":
+                var controlService = new Service.LeakSensor();
+                controlService
+                        .getCharacteristic(Characteristic.LeakDetected)
+                        .on('get', this.getLeakSensorState.bind(this));
+                //optionals
+                if (this.config.valueBattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.BatteryLevel)
+                            .on('get', this.getCurrentBatteryLevel.bind(this));
+                }
+                if (this.config.lowbattery) {
+                    controlService
+                            .addCharacteristic(Characteristic.StatusLowBattery)
+                            .on('get', this.getLowBatteryStatus.bind(this));
+                }
+                return [informationService, controlService];
+                
             case "Switch":
                 var controlService = new Service.Switch(this.config.name);
                 controlService
