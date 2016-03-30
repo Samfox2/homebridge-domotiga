@@ -327,17 +327,17 @@ Domotiga.prototype = {
                 that.log('CurrentAirQuality GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                airquality = Number(result);
-                that.log('CurrentAirQuality level: %s', airquality);
-                if(airquality > 1500)
+                voc = Number(result);
+                that.log('CurrentAirQuality level: %s', voc);
+                if(voc > 1500)
                     callback(null, Characteristic.AirQuality.POOR);
-                else if(airquality > 1000)
+                else if(voc > 1000)
                     callback(null, Characteristic.AirQuality.INFERIOR);
-                else if(airquality > 800)
+                else if(voc > 800)
                     callback(null, Characteristic.AirQuality.FAIR);
-                else if(airquality > 600)
+                else if(voc > 600)
                     callback(null, Characteristic.AirQuality.GOOD);
-                else if(airquality > 0)
+                else if(voc > 0)
                     callback(null, Characteristic.AirQuality.EXCELLENT);
                 else
                     callback(null, Characteristic.AirQuality.UNKNOWN);               
