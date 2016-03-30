@@ -84,6 +84,17 @@
             "device": "79",
             "valueSwitch": "1"
         },
+        {
+            "accessory": "Domotiga",
+            "name": "Utility room",
+            "host": "192.168.0.xxx",
+            "port": "9090",
+            "service": "LeakSensor",
+            "device": "25",
+            "valueLeakSensor": "1",
+            "valueBattery":    "2",
+            "lowbattery": "3000"
+        }, 
      	{
             "accessory": "Domotiga",
             "name": "Outlet",
