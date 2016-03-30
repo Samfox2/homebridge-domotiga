@@ -10,6 +10,7 @@ The latest version (work in progress) supports following services:
 - ```Switch``` (get/set switch state) 
 - ```Outlet``` (contact state + opt. power consumption/total power consumption) 
 - ```Powermeter``` (power consumption + opt. total power consumption) 
+
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
 # Installation
