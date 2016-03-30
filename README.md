@@ -23,7 +23,7 @@ Domotiga device value numbers (e.g. which device value represents temperature) c
 
 Configuration sample:
 
- ```
+ ```sh
 "accessories": [
           {
             "accessory": "Domotiga",
