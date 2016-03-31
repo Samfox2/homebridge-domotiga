@@ -10,8 +10,8 @@ function Domotiga(log, config) {
         port: config.port || 9090,
         service: config.service,
         device: config.device,
-        manufacturer: config.manufacturer || 'unknown',
-        model: config.model || 'unknown',
+        manufacturer: config.manufacturer,
+        model: config.model,
         valueTemperature: config.valueTemperature,
         valueHumidity: config.valueHumidity,
         valueAirPressure: config.valueAirPressure,
@@ -499,14 +499,14 @@ Domotiga.prototype = {
         // the default values for things like serial number, model, etc.
         var informationService = new Service.AccessoryInformation();
         informationService
-                .setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer)
-                .setCharacteristic(Characteristic.Model, this.config.model)
+                .setCharacteristic(Characteristic.Manufacturer, 'Domotiga: ' + (this.config.manufacturer ? this.config.manufacturer : '<unknown>'))
+                .setCharacteristic(Characteristic.Model, 'Domotiga: ' + (this.config.model ? this.config.model : '<unknown>'))
                 .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + this.config.device + this.config.name));
 
         switch (this.config.service) {
 
             case "TempHygroMeter":
-                var controlService = new Service.TemperatureSensor();
+                var controlService = new Service.TemperatureSensor(this.config.name);
                 controlService
                         .getCharacteristic(Characteristic.CurrentTemperature)
                         .on('get', this.getCurrentTemperature.bind(this));
@@ -535,7 +535,7 @@ Domotiga.prototype = {
                 return [informationService, controlService];
 
             case "Contact":
-                var controlService = new Service.ContactSensor();
+                var controlService = new Service.ContactSensor(this.config.name);
                 controlService
                         .getCharacteristic(Characteristic.ContactSensorState)
                         .on('get', this.getContactState.bind(this));
@@ -553,7 +553,7 @@ Domotiga.prototype = {
                 return [informationService, controlService];
 
             case "LeakSensor":
-                var controlService = new Service.LeakSensor();
+                var controlService = new Service.LeakSensor(this.config.name);
                 controlService
                         .getCharacteristic(Characteristic.LeakDetected)
                         .on('get', this.getLeakSensorState.bind(this));
@@ -571,7 +571,7 @@ Domotiga.prototype = {
                 return [informationService, controlService];
             
             case "MotionSensor":
-                var controlService = new Service.MotionSensor();
+                var controlService = new Service.MotionSensor(this.config.name);
                 controlService
                         .getCharacteristic(Characteristic.MotionDetected)
                         .on('get', this.getMotionDetected.bind(this));
@@ -620,7 +620,7 @@ Domotiga.prototype = {
                 return [informationService, controlService];
 
             case "AirQualitySensor":
-                var controlService = new Service.AirQualitySensor();
+                var controlService = new Service.AirQualitySensor(this.config.name);
                 controlService
                         .getCharacteristic(Characteristic.AirQuality)
                         .on('get', this.getCurrentAirQuality.bind(this));
