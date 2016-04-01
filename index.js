@@ -91,6 +91,7 @@ module.exports = function (homebridge) {
     inherits(EveBatteryLevel, Characteristic);
 
     EveAirPressure = function () {
+        //todo: only rough guess of extreme values -> use correct min/max if known
         Characteristic.call(this, 'Eve AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
             format: Characteristic.Formats.UINT16,
@@ -241,7 +242,9 @@ Domotiga.prototype = {
                 that.log('CurrentAirPressure GetValue failed: %s', error.message);
                 callback(error);
             } else {
-                callback(null, Number(result));
+                var value = Number(result);
+                //todo: only rough guess of extreme values -> use correct min/max if known
+                callback(null, ((value < 870) ? 870 : ((value < 1085) ? 1085 : value)));
             }
         }.bind(this));
     },
