@@ -678,7 +678,7 @@ Domotiga.prototype = {
                 //Eve characteristic (custom UUID)
                 if (this.config.valueBattery) {
                     controlService
-                            .addCharacteristic(EveBatteryLevel)
+                            .addCharacteristic(Characteristic.BatteryLevel)
                             .on('get', this.getCurrentBatteryLevel.bind(this));
                 }
                 if (this.config.lowbattery) {
@@ -708,7 +708,7 @@ Domotiga.prototype = {
                 //Eve characteristic (custom UUID)
                 if (this.config.valueBattery) {
                     controlService
-                            .addCharacteristic(EveBatteryLevel)
+                            .addCharacteristic(Characteristic.BatteryLevel)
                             .on('get', this.getCurrentBatteryLevel.bind(this));
                 }
                 if (this.config.lowbattery) {
