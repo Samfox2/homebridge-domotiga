@@ -418,11 +418,7 @@ Domotiga.prototype = {
                 //that.log('CurrentBattery level Number(result): %s', Number(result));
                 remaining = parseInt(Number(result) * 100 / 5000, 10);
                 that.log('CurrentBattery level: %s', remaining);
-                if (remaining > 100)
-                    remaining = 100;
-                else if (remaining < 0)
-                    remaining = 0;
-                callback(null, remaining);
+                callback(null, ((remaining < 0) ? 0 : ((remaining > 100) ? 100 : remaining)));
             }
         }.bind(this));
     },
