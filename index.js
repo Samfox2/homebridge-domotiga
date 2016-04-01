@@ -244,7 +244,7 @@ Domotiga.prototype = {
             } else {
                 var value = Number(result);
                 //todo: only rough guess of extreme values -> use correct min/max if known
-                callback(null, ((value < 870) ? 870 : ((value < 1085) ? 1085 : value)));
+                callback(null, ((value < 870) ? 870 : ((value > 1085) ? 1085 : value)));
             }
         }.bind(this));
     },
