@@ -36,7 +36,7 @@ Configuration sample:
             "name": "Sensor garden",
             "host": "localhost",
             "port": "9090",
-            "service": "TempHygroMeter",
+            "service": "TemperatureSensor",
             "manufacturer": "DIY",
             "model": "TinyTX",
             "device": "81",
@@ -173,8 +173,8 @@ Fields:
 
 Not yet supported by all homekit apps:
 
-* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter" and optional Eve characteristic for "Outlet")
-* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh (optional for custom "Powermeter" and Eve characteristic for "Outlet")
+* ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter")
+* ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 
