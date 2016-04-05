@@ -1,17 +1,21 @@
 # homebridge-domotiga
 Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 
-The latest version (work in progress) supports following services:
+The latest version (work in progress) supports following (primary) services:
 
-- ```TempHygroMeter``` (temperature + optional humidity/air pressure/battery/low battery warning) 
-- ```AirQualitySensor``` (air quality + opt. temperature/humidity/air pressure/battery/low battery warning) 
+- ```TemperatureSensor``` (temperature) <------ name changed from ```TempHygroMeter```
+- ```HumiditySensor``` (humidity) 
+- ```AirQualitySensor``` (air quality) 
 - ```FakeEveAirQualitySensor``` (custom Eve service, same as AirQualitySensor with additional ppm value in Eve app)
-- ```Contact``` (contact state + opt. battery/low battery warning) 
-- ```LeakSensor``` (leaksensor state + opt. battery/low battery warning) 
-- ```MotionSensor``` (motionsensor state + opt. battery/low battery warning) 
+- ```FakeEveWeatherSensor``` (custom Eve service with airpressure in Eve app)
+- ```Contact``` (contact state) 
+- ```LeakSensor``` (leaksensor state) 
+- ```MotionSensor``` (motionsensor state) 
 - ```Switch``` (get/set switch state) 
-- ```Outlet``` (get/set outlet state + opt. power consumption/total power consumption) 
-- ```Powermeter``` (power consumption + opt. total power consumption) 
+- ```Outlet``` (get/set outlet state) 
+- ```Powermeter``` (power consumption) 
+
+Optional characteristics can be added by defining additional domotiga values in config.json (see example below)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file.
 
@@ -155,10 +159,10 @@ Fields:
 * ```"manufacturer":``` Manufacturer of accessory (optional)
 * ```"model":``` Model of accessory (optional)
 * ```"device":```  Domotiga device no. (required)
-* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TempHygroMeter")
-* ```"valueHumidity":``` Value no. of humidity in % (optional for "TempHygroMeter")
-* ```"valueAirPressure":``` Value no. of air pressure in hPa (optional Eve characteristic for "TempHygroMeter")
-* ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor")
+* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TemperatureSensor")
+* ```"valueHumidity":``` Value no. of humidity in % (required for "HumiditySensor")
+* ```"valueAirPressure":``` Value no. of air pressure in hPa (required for "FakeEveWeatherSensor")
+* ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor" and "FakeEveAirQualitySensor")
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
