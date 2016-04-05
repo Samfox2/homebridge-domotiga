@@ -1,4 +1,3 @@
-
 {
     "bridge": {
         "name": "HomebridgePI",
@@ -17,13 +16,26 @@
             "name": "Sensor garden",
             "host": "localhost",
             "port": "9090",
-            "service": "TempHygroMeter",
+            "service": "TemperatureSensor",
             "manufacturer": "DIY",
             "model": "TinyTX",
             "device": "81",
             "valueTemperature": "1",
             "valueHumidity":    "2",
             "valueAirPressure": "3",
+            "valueBattery":     "4",
+            "lowbattery": "3000"
+        },
+        {
+            "accessory": "Domotiga",
+            "name": "Sensor gardenhouse",
+            "host": "localhost",
+            "port": "9090",
+            "service": "HumiditySensor",
+            "manufacturer": "DIY",
+            "model": "TinyTX",
+            "device": "88",
+            "valueHumidity":    "2",
             "valueBattery":     "4",
             "lowbattery": "3000"
         },
