@@ -1,4 +1,7 @@
 # homebridge-domotiga
+
+[![npm version](https://badge.fury.io/js/homebridge-domotiga.svg)](https://badge.fury.io/js/homebridge-domotiga)
+
 Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 
 The latest version (work in progress) supports following (primary) services:
@@ -176,4 +179,3 @@ Not yet supported by all homekit apps:
 * ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
-
