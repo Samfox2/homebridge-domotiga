@@ -170,12 +170,10 @@ Fields:
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
 * ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
-
-
+* ```"valueBattery":```  Value no. of battery in mV
+* ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 
 Not yet supported by all homekit apps:
 
 * ```"valuePowerConsumption":```  Value no. of the consumption in W (required for custom "Powermeter")
 * ```"valueTotalPowerConsumption":```  Value no. of the total consumption in kWh
-* ```"valueBattery":```  Value no. of battery in mV
-* ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
