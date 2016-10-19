@@ -21,6 +21,10 @@ The latest version (work in progress) supports following (primary) services:
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
 
+# Contributing
+
+Intrigued? Missing any domotiga devices? Love HomeKit and Homebridge? - Feel free to contribute by sending pull requests to get this project going in a more generic direction. Or just open an issue if you have more questions or ideas.
+
 # Installation
 
 1. Install homebridge using:  ```npm install -g homebridge```
