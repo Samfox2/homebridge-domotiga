@@ -103,7 +103,8 @@ Configuration sample:
             "port": "9090",
             "service": "Switch",
             "device": "79",
-            "valueSwitch": "1"
+            "valueSwitch": "1",
+            "pollInMs": "10000" 
           },
           {
             "accessory": "Domotiga",
@@ -172,6 +173,8 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
+* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report if the switch is open or closed
+
 
 Not yet supported by all homekit apps:
 
