@@ -439,12 +439,12 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getSwitchOn: function (callback) {
+    getSwitchState: function (callback) {
         var that = this;
         that.log("getting SwitchState for " + that.config.name);
         that.domotigaGetValue(that.config.valueSwitch, function (error, result) {
             if (error) {
-                that.log('getSwitchOn GetValue failed: %s', error.message);
+                that.log('getSwitchState GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -454,7 +454,7 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    setSwitchOn: function (switchOn, callback) {
+    setSwitchState: function (switchOn, callback) {
         var that = this;
         that.log("Setting SwitchState for '%s' to %s", that.config.name, switchOn);
 
@@ -527,12 +527,12 @@ Domotiga.prototype = {
             case "Switch":
                 primaryservice = new Service.Switch(this.config.service);
                 primaryservice.getCharacteristic(Characteristic.On)
-                        .on('get', this.getSwitchOn.bind(this))
-                        .on('set', this.setSwitchOn.bind(this));
+                        .on('get', this.getSwitchState.bind(this))
+                        .on('set', this.setSwitchState.bind(this));
                 
                 // Optional polling
                 if (this.config.pollInMs){
-                    setTimeout(this.getSwitchOn.bind(this), Number(this.config.pollInMs) );
+                    setTimeout(this.getSwitchState.bind(this), Number(this.config.pollInMs) );
                 }
                 break;
 
