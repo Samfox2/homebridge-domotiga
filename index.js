@@ -531,10 +531,10 @@ Domotiga.prototype = {
                         .on('set', this.setSwitchState.bind(this));
                 
                 // Optional polling
-                if (this.config.pollInMs){
-                    this.log('Polling interval for %s: %s ms', this.config.name, this.config.pollInMs);
-                    setTimeout(this.getSwitchState.bind(this), Number(this.config.pollInMs) );
-                }
+                //if (this.config.pollInMs){
+                //    this.log('Polling interval for %s: %s ms', this.config.name, this.config.pollInMs);
+                //    setTimeout(this.getSwitchState.bind(this), Number(this.config.pollInMs) );
+               //}
                 break;
 
             case "Outlet":
