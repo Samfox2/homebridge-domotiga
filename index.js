@@ -532,7 +532,7 @@ Domotiga.prototype = {
                 
                 // Optional polling
                 if (this.config.pollInMs){
-                    this.log('Polling interval: %s ms', this.config.pollInMs);
+                    this.log('Polling interval for %s: %s ms', this.config.name, this.config.pollInMs);
                     setTimeout(this.getSwitchState.bind(this), Number(this.config.pollInMs) );
                 }
                 break;
