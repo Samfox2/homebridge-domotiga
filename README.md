@@ -6,7 +6,7 @@ Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.
 
 The latest version (work in progress) supports following (primary) services:
 
-- ```TemperatureSensor``` (temperature) <------ name changed from ```TempHygroMeter```
+- ```TemperatureSensor``` (temperature)
 - ```HumiditySensor``` (humidity) 
 - ```AirQualitySensor``` (air quality) 
 - ```FakeEveAirQualitySensor``` (custom Eve service, same as AirQualitySensor with additional ppm value in Eve app)
@@ -177,7 +177,7 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
-* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report if the switch is open or closed
+* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (opt. for "Switch")
 
 
 Not yet supported by all homekit apps:
