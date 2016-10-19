@@ -24,7 +24,7 @@ function Domotiga(log, config) {
         valueMotionSensor: config.valueMotionSensor,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
-        valueDoorPollInMs: config.valueDoorPollInMs,
+        pollInMs: config.pollInMs,
         name: config.name || NA,
         lowbattery: config.lowbattery
     };
@@ -531,8 +531,8 @@ Domotiga.prototype = {
                         .on('set', this.setSwitchOn.bind(this));
                 
                 // Optional polling
-                if (this.config.valueDoorPollInMs){
-                    setTimeout(this.getSwitchOn.bind(this), this.config.valueDoorPollInMs);
+                if (this.config.pollInMs){
+                    setTimeout(this.getSwitchOn.bind(this), this.config.pollInMs);
                 }
                 break;
 
