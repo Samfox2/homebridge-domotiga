@@ -36,38 +36,70 @@ function Domotiga(log, config) {
     if (this.config.pollInMs) {
 
         var pollingInterval = Number(this.config.pollInMs);
-        var pollingValue = this.config.valueSwitch;
 
         var statusemitter = pollingtoevent(function(done) {
-            that.domotigaGetValue(pollingValue, function(error, result) {
+            that.domotigaGetValue(that.primaryValue, function(error, result) {
                 if (error) {
                     that.log('getState GetValue failed: %s', error.message);
                     callback(error);
                 } else {
-                    if (result.toLowerCase() == "on")
-                        done(null, 1);
-                    else
-                        done(null, 0);        
+                        done(null, result);
                 }
             })
         }, {
             longpolling: true,
-            pollingInterval,
+            interval: pollingInterval,
             longpollEventName: "statuspoll"
         });
 
         statusemitter.on("statuspoll", function(data) {
-
-            var binaryState = parseInt(data);
-            that.state = binaryState > 0;
-            that.log(that.config.name, "received data:", "state is currently", binaryState);
+            that.log(that.config.name, "received data:", "state is currently", data);
 
             switch (that.config.service) {
                 case "Switch":
                     if (that.primaryservice) {
-                        that.primaryservice.getCharacteristic(Characteristic.On)
-                            .setValue(that.state);
+                        if (data.toLowerCase() == "on")
+                            that.primaryservice.getCharacteristic(Characteristic.On).setValue(1);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.On).setValue(0);
                         that.log("Switching state...");
+                    }
+                    break;
+                case "Outlet":
+                    if (that.primaryservice) {
+                        if (data.toLowerCase() == "on")
+                            that.primaryservice.getCharacteristic(Characteristic.On).setValue(1);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.On).setValue(0);
+                        that.log("Switching outlet state...");
+                    }
+                    break;
+                case "Contact":
+                    if (that.primaryservice) {
+                        if (data.toLowerCase() == "on")
+                            that.primaryservice.getCharacteristic(Characteristic.ContactSensorState).setValue(Characteristic.ContactSensorState.CONTACT_DETECTED);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.ContactSensorState).setValue(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED);
+                        that.log("Changing oontact state...");
+                    }
+                    break;
+                case "LeakSensor":
+                    if (that.primaryservice) {
+                        if (Number(data) == 0)
+                            that.primaryservice.getCharacteristic(Characteristic.LeakDetected).setValue(Characteristic.LeakDetected.LEAK_NOT_DETECTED);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.LeakDetected).setValue(Characteristic.LeakDetected.LEAK_DETECTED);
+                        that.log("Changing leaksensor state...");
+                    }
+                    break;
+                case "MotionSensor":
+                    if (that.primaryservice) {
+                        if (Number(data) == 0)
+                            that.primaryservice.getCharacteristic(Characteristic.MotionDetected).setValue(0);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.MotionDetected).setValue(1);
+
+                        that.log("Changing motionsensor state...");
                     }
                     break;
                     break;
@@ -502,6 +534,30 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    setSwitchState: function (switchOn, callback) {
+        var that = this;
+        that.log("Setting SwitchState for '%s' to %s", that.config.name, switchOn);
+
+        if (switchOn == 1)
+            switchState = "On";
+        else
+            switchState = "Off";
+
+        var callbackWasCalled = false;
+        that.domotigaSetValue(that.config.valueSwitch, switchState, function (err) {
+            if (callbackWasCalled) {
+                that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                that.log("Successfully set switch state on the '%s' to %s", that.config.name, switchOn);
+                callback(null);
+            } else {
+                that.log("Error setting switch state to %s on the '%s'", switchOn, that.config.name);
+                callback(err);
+            }
+        }.bind(this));
+    },
     triggerProgrammableSwitchEventsave: function(callback) {
         var that = this;
         that.log("getting DoorbellState for " + that.config.name);
@@ -517,12 +573,13 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
+    // for testing purposes only:
     triggerProgrammableSwitchEvent: function(callback) {
         var that = this;
         that.log("getting DoorbellState for " + that.config.name);
         this.domotigaGetValue(that.config.valueDoorbell, function(error, result) {
             if (error) {
-                that.log('getDoorbellOn GetValue failed: %s', error.message);
+                that.log('triggerProgrammableSwitchEvent GetValue failed: %s', error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
@@ -536,30 +593,6 @@ Domotiga.prototype = {
                 } else {
                     callback(null, 0);
                 }
-            }
-        }.bind(this));
-    },
-    setSwitchState: function(switchOn, callback) {
-        var that = this;
-        that.log("Setting SwitchState for '%s' to %s", that.config.name, switchOn);
-
-        if (switchOn == 1)
-            switchState = "On";
-        else
-            switchState = "Off";
-
-        var callbackWasCalled = false;
-        that.domotigaSetValue(that.config.valueSwitch, switchState, function(err) {
-            if (callbackWasCalled) {
-                that.log("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
-            }
-            callbackWasCalled = true;
-            if (!err) {
-                that.log("Successfully set switch state on the '%s' to %s", that.config.name, switchOn);
-                callback(null);
-            } else {
-                that.log("Error setting switch state to %s on the '%s'", switchOn, that.config.name);
-                callback(err);
             }
         }.bind(this));
     },
@@ -594,18 +627,21 @@ Domotiga.prototype = {
                 this.primaryservice = new Service.ContactSensor(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.ContactSensorState)
                     .on('get', this.getContactState.bind(this));
+                this.primaryValue = this.config.valueContact;
                 break;
 
             case "LeakSensor":
                 this.primaryservice = new Service.LeakSensor(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.LeakDetected)
                     .on('get', this.getLeakSensorState.bind(this));
+                this.primaryValue = this.config.valueLeakSensor;
                 break;
 
             case "MotionSensor":
                 this.primaryservice = new Service.MotionSensor(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.MotionDetected)
                     .on('get', this.getMotionDetected.bind(this));
+                this.primaryValue = this.config.valueMotionSensor;
                 break;
 
             case "Switch":
@@ -613,6 +649,7 @@ Domotiga.prototype = {
                 this.primaryservice.getCharacteristic(Characteristic.On)
                     .on('get', this.getSwitchState.bind(this))
                     .on('set', this.setSwitchState.bind(this));
+                this.primaryValue = this.config.valueSwitch;
                 break;
 
             case "Outlet":
@@ -620,6 +657,7 @@ Domotiga.prototype = {
                 this.primaryservice.getCharacteristic(Characteristic.On)
                     .on('get', this.getOutletState.bind(this))
                     .on('set', this.setOutletState.bind(this));
+                this.primaryValue = this.config.valueOutlet;
                 break;
 
             case "AirQualitySensor":
@@ -651,13 +689,12 @@ Domotiga.prototype = {
                 this.primaryservice.getCharacteristic(EvePowerConsumption)
                     .on('get', this.getEvePowerConsumption.bind(this));
                 break;
-
+            // for testing purposes only:
             case "Doorbell":
                 this.primaryservice = new Service.Doorbell(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
                     .on('set', this.triggerProgrammableSwitchEvent.bind(this));
                 break;
-
 
             default:
                 this.log('Service %s %s unknown, skipping...', this.config.service, this.config.name);
