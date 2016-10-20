@@ -44,11 +44,10 @@ function Domotiga(log, config) {
                     that.log('getState GetValue failed: %s', error.message);
                     callback(error);
                 } else {
-                    var state = 0;
-
                     if (result.toLowerCase() == "on")
-                        state = 1;
-                    done(null, state);
+                        done(null, 1);
+                    else
+                        done(null, 0);        
                 }
             })
         }, {
