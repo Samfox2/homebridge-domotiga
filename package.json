@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "jsonrequest": "^3.0.1",
-    "util": "^0.10.3"
+    "util": "^0.10.3",
+    "polling-to-event": ">=2.0.2"
   }
 }
 
