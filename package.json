@@ -20,7 +20,8 @@
   "dependencies": {
     "jsonrequest": "^3.0.1",
     "util": "^0.10.3",
-    "polling-to-event": ">=2.0.2"
+    "polling-to-event": ">=2.0.2",
+    "chalk": "^1.1.3"
   }
 }
 
