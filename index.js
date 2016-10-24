@@ -2,6 +2,7 @@ var Service, Characteristic;
 var JSONRequest = require("jsonrequest");
 var inherits = require('util').inherits;
 var pollingtoevent = require('polling-to-event');
+var chalk = require('chalk');
 
 // Get data from config file 
 function Domotiga(log, config) {
@@ -40,7 +41,7 @@ function Domotiga(log, config) {
         var statusemitter = pollingtoevent(function(done) {
             that.domotigaGetValue(that.primaryValue, function(error, result) {
                 if (error) {
-                    that.log('getState GetValue failed: %s', error.message);
+                    that.log(chalk.red('getState GetValue failed: %s'), error.message);
                     callback(error);
                 } else {
                         done(null, result);
@@ -262,7 +263,7 @@ Domotiga.prototype = {
         }, function(err, data) {
             //that.log("data:", data);
             if (err) {
-                that.log("Sorry err: ", err);
+                that.log(chalk.red("Sorry err: "), err);
                 callback(err);
             } else {
                 callback();
@@ -286,7 +287,7 @@ Domotiga.prototype = {
         that.log("getting Temperature for " + that.config.name);
         this.domotigaGetValue(that.config.valueTemperature, function(error, result) {
             if (error) {
-                that.log('CurrentTemperature GetValue failed: %s', error.message);
+                that.log(chalk.red('CurrentTemperature GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 callback(null, Number(result));
@@ -304,7 +305,7 @@ Domotiga.prototype = {
         that.log("getting CurrentAirPressure for " + that.config.name);
         this.domotigaGetValue(that.config.valueAirPressure, function(error, result) {
             if (error) {
-                that.log('CurrentAirPressure GetValue failed: %s', error.message);
+                that.log(chalk.red('CurrentAirPressure GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 callback(null, Number(result));
@@ -316,7 +317,7 @@ Domotiga.prototype = {
         that.log("getting ContactState for " + that.config.name);
         this.domotigaGetValue(that.config.valueContact, function(error, result) {
             if (error) {
-                that.log('getGetContactState GetValue failed: %s', error.message);
+                that.log(chalk.red('getGetContactState GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -331,7 +332,7 @@ Domotiga.prototype = {
         that.log("getting LeakSensorState for " + that.config.name);
         this.domotigaGetValue(that.config.valueLeakSensor, function(error, result) {
             if (error) {
-                that.log('getLeakSensorState GetValue failed: %s', error.message);
+                that.log(chalk.red('getLeakSensorState GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (Number(result) == 0)
@@ -346,7 +347,7 @@ Domotiga.prototype = {
         that.log("getting OutletState for " + that.config.name);
         this.domotigaGetValue(that.config.valueOutlet, function(error, result) {
             if (error) {
-                that.log('getGetOutletState GetValue failed: %s', error.message);
+                that.log(chalk.red('getGetOutletState GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -375,7 +376,7 @@ Domotiga.prototype = {
                 that.log("Successfully set outlet state on the '%s' to %s", that.config.name, outletState);
                 callback(null);
             } else {
-                that.log("Error setting outlet state to %s on the '%s'", outletState, that.config.name);
+                that.log(chalk.red("Error setting outlet state to %s on the '%s'"), outletState, that.config.name);
                 callback(err);
             }
         }.bind(this));
@@ -385,7 +386,7 @@ Domotiga.prototype = {
         that.log("getting OutletInUse for " + that.config.name);
         this.domotigaGetValue(that.config.valueOutlet, function(error, result) {
             if (error) {
-                that.log('getOutletInUse GetValue failed: %s', error.message);
+                that.log(chalk.red('getOutletInUse GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -401,7 +402,7 @@ Domotiga.prototype = {
 
         this.domotigaGetValue(that.config.valueAirQuality, function(error, result) {
             if (error) {
-                that.log('CurrentAirQuality GetValue failed: %s', error.message);
+                that.log(chalk.red('CurrentAirQuality GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 voc = Number(result);
@@ -433,7 +434,7 @@ Domotiga.prototype = {
         that.log("getting Eve room airquality for " + that.config.name);
         this.domotigaGetValue(that.config.valueAirQuality, function(error, result) {
             if (error) {
-                that.log('CurrentEveAirQuality GetValue failed: %s', error.message);
+                that.log(chalk.red('CurrentEveAirQuality GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 voc = Number(result);
@@ -449,7 +450,7 @@ Domotiga.prototype = {
         that.log("getting EvePowerConsumption for " + that.config.name);
         this.domotigaGetValue(that.config.valuePowerConsumption, function(error, result) {
             if (error) {
-                that.log('PowerConsumption GetValue failed: %s', error.message);
+                that.log(chalk.red('PowerConsumption GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 callback(null, Math.round(Number(result))); // W
@@ -462,7 +463,7 @@ Domotiga.prototype = {
         that.log("getting EveTotalPowerConsumption for " + that.config.name);
         this.domotigaGetValue(that.config.valueTotalPowerConsumption, function(error, result) {
             if (error) {
-                that.log('EveTotalPowerConsumption GetValue failed: %s', error.message);
+                that.log(chalk.red('EveTotalPowerConsumption GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 callback(null, Math.round(Number(result) * 1000.0) / 1000.0); // kWh
@@ -474,7 +475,7 @@ Domotiga.prototype = {
         that.log("getting Battery level for " + that.config.name);
         this.domotigaGetValue(that.config.valueBattery, function(error, result) {
             if (error) {
-                that.log('CurrentBattery GetValue failed: %s', error.message);
+                that.log(chalk.red('CurrentBattery GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 //that.log('CurrentBattery level Number(result): %s', Number(result));
@@ -493,7 +494,7 @@ Domotiga.prototype = {
         that.log("getting BatteryStatus for " + that.config.name);
         this.domotigaGetValue(that.config.valueBattery, function(error, result) {
             if (error) {
-                that.log('BatteryStatus GetValue failed: %s', error.message);
+                that.log(chalk.red('BatteryStatus GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 var value = Number(result);
@@ -509,7 +510,7 @@ Domotiga.prototype = {
         that.log("getting MotionDetected for " + that.config.name);
         this.domotigaGetValue(that.config.valueMotionSensor, function(error, result) {
             if (error) {
-                that.log('getMotionDetected GetValue failed: %s', error.message);
+                that.log(chalk.red('getMotionDetected GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (Number(result) == 0)
@@ -524,7 +525,7 @@ Domotiga.prototype = {
         that.log("getting SwitchState for " + that.config.name);
         this.domotigaGetValue(that.config.valueSwitch, function(error, result) {
             if (error) {
-                that.log('getSwitchState GetValue failed: %s', error.message);
+                that.log(chalk.red('getSwitchState GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -553,7 +554,7 @@ Domotiga.prototype = {
                 that.log("Successfully set switch state on the '%s' to %s", that.config.name, switchOn);
                 callback(null);
             } else {
-                that.log("Error setting switch state to %s on the '%s'", switchOn, that.config.name);
+                that.log(chalk.red("Error setting switch state to %s on the '%s'"), switchOn, that.config.name);
                 callback(err);
             }
         }.bind(this));
@@ -563,7 +564,7 @@ Domotiga.prototype = {
         that.log("getting DoorbellState for " + that.config.name);
         this.domotigaGetValue(that.config.valueDoorbell, function(error, result) {
             if (error) {
-                that.log('getDoorbellOn GetValue failed: %s', error.message);
+                that.log(chalk.red('getDoorbellOn GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on")
@@ -579,7 +580,7 @@ Domotiga.prototype = {
         that.log("getting DoorbellState for " + that.config.name);
         this.domotigaGetValue(that.config.valueDoorbell, function(error, result) {
             if (error) {
-                that.log('triggerProgrammableSwitchEvent GetValue failed: %s', error.message);
+                that.log(chalk.red('triggerProgrammableSwitchEvent GetValue failed: %s'), error.message);
                 callback(error);
             } else {
                 if (result.toLowerCase() == "on") {
@@ -697,7 +698,7 @@ Domotiga.prototype = {
                 break;
 
             default:
-                this.log('Service %s %s unknown, skipping...', this.config.service, this.config.name);
+                this.log(chalk.yellow('Service %s %s unknown, skipping...'), this.config.service, this.config.name);
                 break;
         }
 
