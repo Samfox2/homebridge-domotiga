@@ -61,10 +61,10 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
 
 // Get data from config file and configure accessory
 DomotigaPlatform.prototype.addAccessory = function (data) {
-    if (!this.accessories[data.id]) {
-        var uuid = UUIDGen.generate(data.id);
+    if (!this.accessories[data.name]) {
+        var uuid = UUIDGen.generate(data.name);
 
-        var newAccessory = new Accessory(data.id, uuid, 8);
+        var newAccessory = new Accessory(data.name, uuid, 8);
 
         newAccessory.reachable = true;
         newAccessory.context.name = data.name || NA;
@@ -235,30 +235,26 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         newAccessory.addService(primaryservice, data.name);
         accessory.on('identify', this.identify.bind(this, accessory.context));
 
-        ////newAccessory.context.id = data.id;
-        //newAccessory.addService(this.primaryservice, data.name);
-        ////this.setService(newAccessory);
 
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
     }
     else {
-        var newAccessory = this.accessories[data.id];
+        var newAccessory = this.accessories[data.name];
 
         newAccessory.updateReachability(true);
     }
 
     this.getInitState(newAccessory, data);
 
-    this.accessories[data.id] = newAccessory;
+    this.accessories[data.name] = newAccessory;
 }
 
 DomotigaPlatform.prototype.removeAccessory = function (accessory) {
     if (accessory) {
         var name = accessory.context.name;
-        var id = accessory.context.id;
         this.log.warn("Removing Domotigadevice: " + name + ". No longer reachable or configured.");
         this.api.unregisterPlatformAccessories("homebridge-domotiga", "DomotiGa", [accessory]);
-        delete this.accessories[id];
+        delete this.accessories[name];
     }
 }
 
@@ -280,43 +276,13 @@ DomotigaPlatform.prototype.getInitState = function (accessory, data) {
     accessory.context.model = "CT-065W";
     info.setCharacteristic(Characteristic.Model, accessory.context.model);
 
-    info.setCharacteristic(Characteristic.SerialNumber, accessory.context.id);
+    info.setCharacteristic(Characteristic.SerialNumber, accessory.context.name);
 
     accessory.getService(Service.Switch)
         .getCharacteristic(Characteristic.On)
         .getValue();
 }
 
-DomotigaPlatform.prototype.setPowerState = function (thisdevice, powerState, callback) {
-
-    var message = this.createMessage('set', thisdevice.id, powerState);
-    var retry_count = 3;
-
-    this.sendMessage(message, thisdevice, retry_count, function (err, message) {
-        if (!err) {
-            this.log("Setting %s switch with ID %s to: %s", thisdevice.name, thisdevice.id, (powerState ? "ON" : "OFF"));
-        }
-        callback(err, null);
-    }.bind(this));
-
-}
-
-DomotigaPlatform.prototype.getPowerState = function (thisdevice, callback) {
-
-    var status = false;
-
-    var message = this.createMessage('get', thisdevice.id);
-    var retry_count = 3;
-
-    this.sendMessage(message, thisdevice, retry_count, function (err, message) {
-        if (!err) {
-            status = this.readState(message);
-            this.log("Status of %s switch with ID %s is: %s", thisdevice.name, thisdevice.id, (status ? "ON" : "OFF"));
-        }
-        callback(err, status);
-    }.bind(this));
-
-}
 
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisdevice, callback) {
 
