@@ -177,10 +177,8 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 //    break;
 
             default:
-                this.log('Service %s %s unknown, skipping...', newAccessory.context.service, newAccessory.context.name);
+                this.log.error('Service %s %s unknown, skipping...', newAccessory.context.service, newAccessory.context.name);
                 break;
-
-
         }
 
 
@@ -258,15 +256,6 @@ DomotigaPlatform.prototype.removeAccessory = function (accessory) {
     }
 }
 
-DomotigaPlatform.prototype.setService = function (accessory) {
-    accessory.getService(Service.Switch)
-        .getCharacteristic(Characteristic.On)
-        .on('set', this.setPowerState.bind(this, accessory.context))
-        .on('get', this.getPowerState.bind(this, accessory.context));
-
-    accessory.on('identify', this.identify.bind(this, accessory.context));
-}
-
 DomotigaPlatform.prototype.getInitState = function (accessory, data) {
     var info = accessory.getService(Service.AccessoryInformation);
 
@@ -282,7 +271,6 @@ DomotigaPlatform.prototype.getInitState = function (accessory, data) {
         .getCharacteristic(Characteristic.On)
         .getValue();
 }
-
 
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisdevice, callback) {
 
@@ -309,8 +297,6 @@ DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisdevice, ca
         }
     }.bind(this));
 }
-
-
 
 DomotigaPlatform.prototype.getTemperatureUnits = function (thisdevice, callback) {
     this.log("getting Temperature unit for " + thisdevice.name);
@@ -615,7 +601,6 @@ DomotigaPlatform.prototype.triggerProgrammableSwitchEvent = function (thisdevice
     }.bind(this));
 }
 
-
 DomotigaPlatform.prototype.identify = function (thisdevice, paired, callback) {
     this.log("Identify requested for " + thisdevice.name);
     callback();
@@ -666,8 +651,6 @@ DomotigaPlatform.prototype.domotigaGetValue = function (deviceValueNo, callback)
         }
     });
 }
-
-
 
 //DomotigaPlatform.prototype.readState = function (message) {
 //    return (message.readUInt8(129)) ? true : false;
