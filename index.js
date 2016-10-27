@@ -259,17 +259,15 @@ DomotigaPlatform.prototype.removeAccessory = function (accessory) {
 DomotigaPlatform.prototype.getInitState = function (accessory, data) {
     var info = accessory.getService(Service.AccessoryInformation);
 
-    accessory.context.manufacturer = "ECO devices";
     info.setCharacteristic(Characteristic.Manufacturer, accessory.context.manufacturer);
 
-    accessory.context.model = "CT-065W";
     info.setCharacteristic(Characteristic.Model, accessory.context.model);
 
     info.setCharacteristic(Characteristic.SerialNumber, accessory.context.name);
 
-    accessory.getService(Service.Switch)
-        .getCharacteristic(Characteristic.On)
-        .getValue();
+    //accessory.getService(Service.Switch)
+    //    .getCharacteristic(Characteristic.On)
+    //    .getValue();
 }
 
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisdevice, callback) {
