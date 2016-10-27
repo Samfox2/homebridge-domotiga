@@ -11,6 +11,113 @@ module.exports = function (homebridge) {
     Characteristic = homebridge.hap.Characteristic;
     UUIDGen = homebridge.hap.uuid;
 
+    ////////////////////////////// Custom characteristics //////////////////////////////
+    EvePowerConsumption = function () {
+        Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
+        this.setProps({
+            format: Characteristic.Formats.UINT16,
+            unit: "watts",
+            maxValue: 1000000000,
+            minValue: 0,
+            minStep: 1,
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    inherits(EvePowerConsumption, Characteristic);
+
+    EveTotalPowerConsumption = function () {
+        Characteristic.call(this, 'Total Consumption', 'E863F10C-079E-48FF-8F27-9C2605A29F52');
+        this.setProps({
+            format: Characteristic.Formats.FLOAT, // Deviation from Eve Energy observed type
+            unit: "kilowatthours",
+            maxValue: 1000000000,
+            minValue: 0,
+            minStep: 0.001,
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    inherits(EveTotalPowerConsumption, Characteristic);
+
+    EveRoomAirQuality = function () {
+        Characteristic.call(this, 'Eve Air Quality', 'E863F10B-079E-48FF-8F27-9C2605A29F52');
+        this.setProps({
+            format: Characteristic.Formats.UINT16,
+            unit: "ppm",
+            maxValue: 5000,
+            minValue: 0,
+            minStep: 1,
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    inherits(EveRoomAirQuality, Characteristic);
+
+    EveBatteryLevel = function () {
+        Characteristic.call(this, 'Eve Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
+        this.setProps({
+            format: Characteristic.Formats.UINT16,
+            unit: "PERCENTAGE",
+            maxValue: 100,
+            minValue: 0,
+            minStep: 1,
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    inherits(EveBatteryLevel, Characteristic);
+
+    EveAirPressure = function () {
+        //todo: only rough guess of extreme values -> use correct min/max if known
+        Characteristic.call(this, 'Eve AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
+        this.setProps({
+            format: Characteristic.Formats.UINT16,
+            unit: "hPa",
+            maxValue: 1085,
+            minValue: 870,
+            minStep: 1,
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    inherits(EveAirPressure, Characteristic);
+
+
+    ////////////////////////////// Custom services //////////////////////////////
+    PowerMeterService = function (displayName, subtype) {
+        Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
+        // Required Characteristics
+        this.addCharacteristic(EvePowerConsumption);
+        // Optional Characteristics
+        this.addOptionalCharacteristic(EveTotalPowerConsumption);
+    };
+    inherits(PowerMeterService, Service);
+
+    //Eve service (custom UUID)
+    EveRoomService = function (displayName, subtype) {
+        Service.call(this, displayName, 'E863F002-079E-48FF-8F27-9C2605A29F52', subtype);
+        // Required Characteristics
+        this.addCharacteristic(EveRoomAirQuality);
+        // Optional Characteristics
+        this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
+    };
+    inherits(EveRoomService, Service);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //Eve service (custom UUID)
+    EveWeatherService = function (displayName, subtype) {
+        Service.call(this, displayName, 'E863F001-079E-48FF-8F27-9C2605A29F52', subtype);
+        // Required Characteristics
+        this.addCharacteristic(EveAirPressure);
+        // Optional Characteristics
+        this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
+        this.addOptionalCharacteristic(Characteristic.CurrentTemperature);
+        this.addOptionalCharacteristic(EveBatteryLevel);
+    };
+    inherits(EveWeatherService, Service);
+
+
     homebridge.registerPlatform("homebridge-domotiga", "DomotiGa", DomotigaPlatform);
 }
 
