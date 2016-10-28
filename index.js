@@ -707,13 +707,13 @@ DomotigaPlatform.prototype.identify = function (thisdevice, paired, callback) {
 }
 
 // Set value at domotiga database
-DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, value, callback) {
+DomotigaPlatform.prototype.domotigaSetValue = function (thisdevice, deviceValueNo, value, callback) {
 
     JSONRequest('http://' + this.host + ':' + this.port, {
         jsonrpc: "2.0",
         method: "device.set",
         params: {
-            "device_id": device,
+            "device_id": thisdevice.device,
             "valuenum": deviceValueNo,
             "value": value
         },
@@ -730,13 +730,13 @@ DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, v
 }
 
 // Get value from domotiga database
-DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, callback) {
+DomotigaPlatform.prototype.domotigaGetValue = function (thisdevice, deviceValueNo, callback) {
 
 	JSONRequest('http://' + this.host + ':' + this.port, {
         jsonrpc: "2.0",
         method: "device.get",
         params: {
-            "device_id": device
+            "device_id": thisdevice.device
         },
         id: 1
     }, function (err, data) {
