@@ -41,8 +41,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Combined AirQualitySensor livingroom",
-                    "host": "DomotiGa",
-                    "port": "9090",
                     "service": "AirQualitySensor",
                     "device": "83",
                     "valueAirQuality": "1",
@@ -55,8 +53,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Combined AirQualitySensor with ppm display",
-                    "host": "DomotiGa",
-                    "port": "9090",
                     "service": "FakeEveAirQualitySensor",
                     "device": "89",
                     "valueAirQuality": "1",
@@ -69,8 +65,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "AirQualitySensor bedroom without battery",
-                    "host": "DomotiGa",
-                    "port": "9090",
                     "service": "AirQualitySensor",
                     "device": "82",
                     "valueAirQuality": "1"
@@ -78,8 +72,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "PC",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "Contact",
                     "device": "77",
                     "valueContact": "1",
@@ -89,8 +81,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Printer",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "Switch",
                     "device": "79",
                     "valueSwitch": "1"
@@ -98,8 +88,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Utility room",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "LeakSensor",
                     "device": "25",
                     "valueLeakSensor": "1",
@@ -109,8 +97,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Entrance",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "MotionSensor",
                     "device": "26",
                     "valueMotionSensor": "1",
@@ -120,8 +106,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Outlet",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "Outlet",
                     "device": "72",
                     "valueOutlet": "1",
@@ -131,8 +115,6 @@
                 {
                     "accessory": "Domotiga",
                     "name": "Powermeter basement",
-                    "host": "192.168.0.xxx",
-                    "port": "9090",
                     "service": "Powermeter",
                     "device": "44",
                     "valuePowerConsumption": "1",
