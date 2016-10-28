@@ -2,7 +2,6 @@ var Service, Characteristic;
 var JSONRequest = require("jsonrequest");
 var inherits = require('util').inherits;
 var pollingtoevent = require('polling-to-event');
-var chalk = require('chalk');
 
 // Get data from config file 
 function Domotiga(log, config) {
