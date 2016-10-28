@@ -369,7 +369,7 @@ Domotiga.prototype = {
         var callbackWasCalled = false;
         that.domotigaSetValue(that.config.valueOutlet, outletState, function(err) {
             if (callbackWasCalled)
-                that.log.warning("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+                that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
 
             callbackWasCalled = true;
             if (!err) {
@@ -547,7 +547,7 @@ Domotiga.prototype = {
         var callbackWasCalled = false;
         that.domotigaSetValue(that.config.valueSwitch, switchState, function (err) {
             if (callbackWasCalled) {
-                that.log.warning("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+                that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
             }
             callbackWasCalled = true;
             if (!err) {
@@ -698,7 +698,7 @@ Domotiga.prototype = {
                 break;
 
             default:
-                that.log.warning('WARN: Service %s %s unknown, skipping...', this.config.service, this.config.name);
+                that.log.warn('WARN: Service %s %s unknown, skipping...', this.config.service, this.config.name);
                 break;
         }
 
