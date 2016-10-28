@@ -141,7 +141,7 @@ function DomotigaPlatform(log, config, api) {
 DomotigaPlatform.prototype.configureAccessory = function (accessory) {
     var accessoryId = accessory.context.name;
 
-    this.setService(accessory);
+    //this.setService(accessory);
     this.accessories[accessoryId] = accessory;
 }
 
