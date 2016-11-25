@@ -138,6 +138,7 @@ function DomotigaPlatform(log, config, api) {
     }
 }
 
+// Method to restore accessories from cache
 DomotigaPlatform.prototype.configureAccessory = function (accessory) {
     var accessoryId = accessory.context.name;
 
@@ -230,12 +231,6 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
             break;
             // for testing purposes only:
-        case "Doorbell":
-            this.primaryservice = accessory.getService(Service.Doorbell);
-            this.primaryservice.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-                .on('set', this.triggerProgrammableSwitchEvent.bind(this, accessory.context));
-            break;
-
         default:
             this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
             break;
@@ -291,19 +286,21 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 }
 
 
-
+// Method to setup accesories from config.json
 DomotigaPlatform.prototype.didFinishLaunching = function () {
 
     if (!this.devices.length) {
         this.log.error("No devices configured. Please check your 'config.json' file!");
     }
 
+    // Add or update accessories defined in config.json
     for (var i in this.devices) {
         var data = this.devices[i];
         this.log("Adding device: " + data.name);
         this.addAccessory(data);
     }
 
+    // Remove extra accessories in cache
     for (var id in this.accessories) {
         var device = this.accessories[id];
         if (!device.reachable) {
@@ -312,14 +309,29 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
     }
 }
 
-// Get data from config file and configure accessory
+// Method to add and update HomeKit accessories
 DomotigaPlatform.prototype.addAccessory = function (data) {
+
+    // Confirm variable type
+    if (data.polling === true || (typeof (data.polling) === "string" && data.polling.toUpperCase() === "TRUE")) {
+        data.polling = true;
+    } else {
+        data.polling = false;
+    }
+
+    data.pollInMs = parseInt(data.interval) || 1;
+
     if (!this.accessories[data.name]) {
 
         var uuid = UUIDGen.generate(data.name);
+
+        // Setup accessory category.
         var newAccessory = new Accessory(data.name, uuid, 8);
 
+        // New accessory is always reachable
         newAccessory.reachable = true;
+
+        // Store and initialize variables into context
         newAccessory.context.name = data.name || NA;
         newAccessory.context.service = data.service;
         newAccessory.context.device = data.device;
@@ -338,163 +350,77 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         newAccessory.context.valueMotionSensor = data.valueMotionSensor;
         newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
         newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
-        newAccessory.context.valueDoorbell = data.valueDoorbell;
-        newAccessory.context.pollInMs = data.pollInMs;
+        newAccessory.context.polling = data.polling;
+        newAccessory.context.pollInMs = data.pollInMs || 1;
 
-        // Create primary service
-        switch (newAccessory.context.service) {
+        // Create primary service and setup listeners for different events 
+        this.setService(newAccessory);
 
-            case "TemperatureSensor":
-                this.primaryservice = new Service.TemperatureSensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
-                    .on('get', this.getCurrentTemperature.bind(this, newAccessory.context));
-                break;
-
-            case "HumiditySensor":
-                this.primaryservice = new Service.HumiditySensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                    .on('get', this.getCurrentRelativeHumidity.bind(this, newAccessory.context));
-                break;
-
-            case "Contact":
-                this.primaryservice = new Service.ContactSensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.ContactSensorState)
-                    .on('get', this.getContactState.bind(this, newAccessory.context));
-                this.primaryValue = this.config.valueContact;
-                break;
-
-            case "LeakSensor":
-                this.primaryservice = new Service.LeakSensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.LeakDetected)
-                    .on('get', this.getLeakSensorState.bind(this, newAccessory.context));
-                this.primaryValue = this.config.valueLeakSensor;
-                break;
-
-            case "MotionSensor":
-                this.primaryservice = new Service.MotionSensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.MotionDetected)
-                    .on('get', this.getMotionDetected.bind(this, newAccessory.context));
-                this.primaryValue = this.config.valueMotionSensor;
-                break;
-
-            case "Switch":
-                this.primaryservice = new Service.Switch(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.On)
-                    .on('get', this.getSwitchState.bind(this, newAccessory.context))
-                    .on('set', this.setSwitchState.bind(this, newAccessory.context));
-                this.primaryValue = this.config.valueSwitch;
-                break;
-
-            case "Outlet":
-                this.primaryservice = new Service.Outlet(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.On)
-                    .on('get', this.getOutletState.bind(this, newAccessory.context))
-                    .on('set', this.setOutletState.bind(this, newAccessory.context));
-                this.primaryValue = this.config.valueOutlet;
-                break;
-
-            case "AirQualitySensor":
-                this.primaryservice = new Service.AirQualitySensor(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.AirQuality)
-                    .on('get', this.getCurrentAirQuality.bind(this, newAccessory.context));
-                break;
-
-            case "FakeEveAirQualitySensor":
-                this.primaryservice = new EveRoomService("Eve Room");
-                this.primaryservice.getCharacteristic(EveRoomAirQuality)
-                    .on('get', this.getCurrentEveAirQuality.bind(this, newAccessory.context));
-                break;
-
-            case "FakeEveWeatherSensor":
-                this.primaryservice = new EveWeatherService("Eve Weather");
-                this.primaryservice.getCharacteristic(EveAirPressure)
-                    .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
-                break;
-
-            case "FakeEveWeatherSensorWithLog":
-                this.primaryservice = new EveWeatherService("Eve Weather");
-                this.primaryservice.getCharacteristic(EveAirPressure)
-                    .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
-                break;
-
-            case "Powermeter":
-                this.primaryservice = new PowerMeterService(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(EvePowerConsumption)
-                    .on('get', this.getEvePowerConsumption.bind(this, newAccessory.context));
-                break;
-                // for testing purposes only:
-            case "Doorbell":
-                this.primaryservice = new Service.Doorbell(newAccessory.context.service);
-                this.primaryservice.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-                    .on('set', this.triggerProgrammableSwitchEvent.bind(this, newAccessory.context));
-                break;
-
-            default:
-                this.log.error('Service %s %s unknown, skipping...', newAccessory.context.service, newAccessory.context.name);
-                break;
-        }
-
-
-
-        // Everything outside the primary service gets added as optional characteristics...
-        if (newAccessory.context.valueTemperature && (newAccessory.context.service != "TemperatureSensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature)
-                .on('get', this.getCurrentTemperature.bind(this, newAccessory.context));
-        }
-        if (newAccessory.context.valueHumidity && (newAccessory.context.service != "HumiditySensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity)
-                .on('get', this.getCurrentRelativeHumidity.bind(this, newAccessory.context));
-        }
-        if (newAccessory.context.valueBattery) {
-            this.primaryservice.addCharacteristic(Characteristic.BatteryLevel)
-                .on('get', this.getCurrentBatteryLevel.bind(this, newAccessory.context));
-        }
-        if (newAccessory.context.lowbattery) {
-            this.primaryservice.addCharacteristic(Characteristic.StatusLowBattery)
-                .on('get', this.getLowBatteryStatus.bind(this, newAccessory.context));
-        }
-        // Additional required characteristic for outlet
-        if (newAccessory.context.service == "Outlet") {
-            this.primaryservice.getCharacteristic(Characteristic.OutletInUse)
-                .on('get', this.getOutletInUse.bind(this, newAccessory.context));
-        }
-        // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueAirPressure &&
-            (newAccessory.context.service != "FakeEveWeatherSensor") && (newAccessory.context.service != "FakeEveWeatherSensorWithLog")) {
-            this.primaryservice.addCharacteristic(EveAirPressure)
-                .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
-        }
-        // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueAirQuality &&
-            (newAccessory.context.service != "AirQualitySensor") && (newAccessory.context.service != "FakeEveAirQualitySensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.AirQuality)
-                .on('get', this.getCurrentEveAirQuality.bind(this, newAccessory.context));
-        }
-        // Eve characteristic (custom UUID)
-        if (newAccessory.context.valuePowerConsumption && (newAccessory.context.service != "Powermeter")) {
-            this.primaryservice.addCharacteristic(EvePowerConsumption)
-                .on('get', this.getEvePowerConsumption.bind(this, newAccessory.context));
-        }
-        // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueTotalPowerConsumption) {
-            this.primaryservice.addCharacteristic(EveTotalPowerConsumption)
-                .on('get', this.getEveTotalPowerConsumption.bind(this, newAccessory.context));
-        }
-
-        newAccessory.addService(this.primaryservice, data.name);
-        newAccessory.on('identify', this.identify.bind(this, newAccessory.context));
-
+        // Register accessory in HomeKit
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
     }
     else {
+        // Retrieve accessory from cache
         var newAccessory = this.accessories[data.name];
+
+        // Accessory is reachable if it's found in config.json
         newAccessory.updateReachability(true);
+
+        // Update variables in context
+        newAccessory.context.name = data.name || NA;
+        newAccessory.context.service = data.service;
+        newAccessory.context.device = data.device;
+        newAccessory.context.manufacturer = data.manufacturer;
+        newAccessory.context.model = data.model;
+        newAccessory.context.valueTemperature = data.valueTemperature;
+        newAccessory.context.valueHumidity = data.valueHumidity;
+        newAccessory.context.valueAirPressure = data.valueAirPressure;
+        newAccessory.context.valueBattery = data.valueBattery;
+        newAccessory.context.lowbattery = data.lowbattery;
+        newAccessory.context.valueContact = data.valueContact;
+        newAccessory.context.valueSwitch = data.valueSwitch;
+        newAccessory.context.valueAirQuality = data.valueAirQuality;
+        newAccessory.context.valueOutlet = data.valueOutlet;
+        newAccessory.context.valueLeakSensor = data.valueLeakSensor;
+        newAccessory.context.valueMotionSensor = data.valueMotionSensor;
+        newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
+        newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
+        newAccessory.context.polling = data.polling;
+        newAccessory.context.pollInMs = data.pollInMs;
     }
 
+    // Retrieve initial state
     this.getInitState(newAccessory, data);
 
+    // Store accessory in cache
     this.accessories[data.name] = newAccessory;
+
+    // todo:
+    // Configure state polling
+    //if (data.polling) this.statePolling(data.name);
 }
+
+// todo: polling
+//// Method to determine current state
+//DomotigaPlatform.prototype.statePolling = function (name) {
+//    var self = this;
+//    var accessory = this.accessories[name];
+//    var thisSwitch = accessory.context;
+
+//    this.getState(thisSwitch, function (error, state) {
+//        // Update state if there's no error
+//        if (!error && state !== thisSwitch.state) {
+//            thisSwitch.state = state;
+//            accessory.getService(Service.Switch)
+//              .getCharacteristic(Characteristic.On)
+//              .getValue();
+//        }
+//    });
+
+//    // Setup for next polling
+//    setTimeout(this.statePolling.bind(this, name), thisSwitch.pollInMs * 1000);
+//}
+
 
 DomotigaPlatform.prototype.removeAccessory = function (accessory) {
     if (accessory) {
@@ -514,9 +440,85 @@ DomotigaPlatform.prototype.getInitState = function (accessory, data) {
 
     info.setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + accessory.context.device + accessory.context.name));
 
-    //accessory.getService(Service.Switch)
-    //    .getCharacteristic(Characteristic.On)
-    //    .getValue();
+    if (!data.polling) {
+
+        // Create primary service
+        switch (data.service) {
+
+            case "TemperatureSensor":
+                accessory.getService(Service.TemperatureSensor)
+                    .getCharacteristic(Characteristic.CurrentTemperature).getCurrentTemperature();
+                break;
+
+            case "HumiditySensor":
+                accessory.getService(Service.HumiditySensor)
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getCurrentRelativeHumidity();
+                break;
+
+
+            case "Contact":
+                accessory.getService(Service.ContactSensor)
+                    .getCharacteristic(Characteristic.ContactSensorState).getContactState();
+                break;
+
+
+            case "LeakSensor":
+                accessory.getService(Service.LeakSensor)
+                    .getCharacteristic(Characteristic.LeakDetected).getLeakSensorState();
+                break;
+
+
+            case "MotionSensor":
+                accessory.getService(Service.MotionSensor)
+                    .getCharacteristic(Characteristic.MotionDetected).getMotionDetected();
+                break;
+
+
+            case "Switch":
+                accessory.getService(Service.Switch)
+                    .getCharacteristic(Characteristic.On).getSwitchState();
+                break;
+
+
+            case "Outlet":
+                accessory.getService(Service.Outlet)
+                    .getCharacteristic(Characteristic.On).getOutletState();
+                break;
+
+
+            case "AirQualitySensor":
+                accessory.getService(Service.AirQualitySensor)
+                    .getCharacteristic(Characteristic.AirQuality).getCurrentAirQuality();
+                break;
+
+
+            case "FakeEveAirQualitySensor":
+                accessory.getService(Service.EveRoomService)
+                    .getCharacteristic(EveRoomAirQuality).getCurrentEveAirQuality();
+                break;
+
+
+            case "FakeEveWeatherSensor":
+                accessory.getService(Service.EveWeatherService)
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
+                break;
+
+
+            case "FakeEveWeatherSensorWithLog":
+                accessory.getService(Service.EveWeatherService)
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
+                break;
+
+            case "Powermeter":
+                accessory.getService(Service.PowerMeterService)
+                    .getCharacteristic(EvePowerConsumption).getEvePowerConsumption();
+                break;
+
+            default:
+                this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+                break;
+        }
+    }
 }
 
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisdevice, callback) {
@@ -810,44 +812,6 @@ DomotigaPlatform.prototype.setSwitchState = function (thisdevice, switchOn, call
     }.bind(this));
 }
 
-DomotigaPlatform.prototype.triggerProgrammableSwitchEventsave = function (thisdevice, callback) {
-    this.log("getting DoorbellState for " + thisdevice.name);
-    this.domotigaGetValue(thisdevice.device, thisdevice.valueDoorbell, function (error, result) {
-        if (error) {
-            this.log.error('getDoorbellOn GetValue failed: %s', error.message);
-            callback(error);
-        } else {
-            if (result.toLowerCase() == "on")
-                callback(null, 1);
-            else
-                callback(null, 0);
-        }
-    }.bind(this));
-}
-
-// for testing purposes only:
-DomotigaPlatform.prototype.triggerProgrammableSwitchEvent = function (thisdevice, callback) {
-    this.log("getting DoorbellState for " + thisdevice.name);
-    this.domotigaGetValue(thisdevice.device, thisdevice.valueDoorbell, function (error, result) {
-        if (error) {
-            this.log.error('triggerProgrammableSwitchEvent GetValue failed: %s', error.message);
-            callback(error);
-        } else {
-            if (result.toLowerCase() == "on") {
-                this.getService(Service.Doorbell.setCharacteristic(Characteristic.ProgrammableSwitchEvent, 1));
-                this.log("Ding");
-
-                setTimeout(function () {
-                    this.getService(Service.Doorbell.setCharacteristic(Characteristic.ProgrammableSwitchEvent, 0));
-                    this.log("Dong");
-                }, 10000);
-            } else {
-                callback(null, 0);
-            }
-        }
-    }.bind(this));
-}
-
 DomotigaPlatform.prototype.identify = function (thisdevice, paired, callback) {
     this.log("Identify requested for " + thisdevice.name);
     callback();
@@ -906,3 +870,243 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
 //DomotigaPlatform.prototype.readName = function (message) {
 //    return (message.toString('ascii', 48, 79));
 //}
+
+
+
+
+
+// Method to handle plugin configuration in HomeKit app
+DomotigaPlatform.prototype.configurationRequestHandler = function (context, request, callback) {
+    if (request && request.type === "Terminate") {
+        return;
+    }
+
+    // Instruction
+    if (!context.step) {
+        var instructionResp = {
+            "type": "Interface",
+            "interface": "instruction",
+            "title": "Before You Start...",
+            "detail": "Please make sure homebridge is running with elevated privileges.",
+            "showNextButton": true
+        }
+
+        context.step = 1;
+        callback(instructionResp);
+    } else {
+        switch (context.step) {
+            case 1:
+                // Operation choices
+                var respDict = {
+                    "type": "Interface",
+                    "interface": "list",
+                    "title": "What do you want to do?",
+                    "items": [
+                      "Add New Device",
+                      "Modify Existing Device",
+                      "Remove Existing Device"
+                    ]
+                }
+
+                context.step = 2;
+                callback(respDict);
+                break;
+            case 2:
+                var selection = request.response.selections[0];
+                if (selection === 0) {
+                    // Info for new accessory
+                    var respDict = {
+                        "type": "Interface",
+                        "interface": "input",
+                        "title": "New Device",
+                        "items": [{
+                            "id": "name",
+                            "title": "Name (Required)",
+                            "placeholder": "HTPC"
+                        }]
+                    };
+
+                    context.operation = 0;
+                    context.step = 3;
+                    callback(respDict);
+                } else {
+                    var self = this;
+                    var names = Object.keys(this.accessories).map(function (k) { return self.accessories[k].context.name });
+
+                    if (names.length > 0) {
+                        // Select existing accessory for modification or removal
+                        if (selection === 1) {
+                            var title = "Witch device do you want to modify?";
+                            context.operation = 1;
+                        } else {
+                            var title = "Witch device do you want to remove?";
+                            context.operation = 2;
+                        }
+                        var respDict = {
+                            "type": "Interface",
+                            "interface": "list",
+                            "title": title,
+                            "items": names
+                        };
+
+                        context.list = names;
+                        context.step = 3;
+                    } else {
+                        var respDict = {
+                            "type": "Interface",
+                            "interface": "instruction",
+                            "title": "Unavailable",
+                            "detail": "No device is configured.",
+                            "showNextButton": true
+                        };
+
+                        context.step = 1;
+                    }
+                    callback(respDict);
+                }
+                break;
+            case 3:
+                if (context.operation === 2) {
+                    // Remove selected accessory from HomeKit
+                    var selection = context.list[request.response.selections[0]];
+                    var accessory = this.accessories[selection];
+
+                    this.removeAccessory(accessory);
+                    var respDict = {
+                        "type": "Interface",
+                        "interface": "instruction",
+                        "title": "Success",
+                        "detail": "The device is now removed.",
+                        "showNextButton": true
+                    };
+
+                    context.step = 5;
+                }
+                else {
+                    if (context.operation === 0) {
+                        var data = request.response.inputs;
+                    } else if (context.operation === 1) {
+                        var selection = context.list[request.response.selections[0]];
+                        var data = this.accessories[selection].context;
+                    }
+
+                        //    if (data.name) {
+                        //        // Add/Modify info of selected accessory
+                        //        var respDict = {
+                        //            "type": "Interface",
+                        //            "interface": "input",
+                        //            "title": data.name,
+                        //            "items": [{
+                        //                "id": "on_cmd",
+                        //                "title": "CMD to Turn On",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "wakeonlan XX:XX:XX:XX:XX:XX"
+                        //            }, {
+                        //                "id": "off_cmd",
+                        //                "title": "CMD to Turn Off",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "net rpc shutdown -I XXX.XXX.XXX.XXX -U user%password"
+                        //            }, {
+                        //                "id": "state_cmd",
+                        //                "title": "CMD to Check ON State",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "ping -c 2 -W 1 XXX.XXX.XXX.XXX | grep -i '2 received'"
+                        //            }, {
+                        //                "id": "polling",
+                        //                "title": "Enable Polling (true/false)",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "false"
+                        //            }, {
+                        //                "id": "interval",
+                        //                "title": "Polling Interval",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "1"
+                        //            }, {
+                        //                "id": "manufacturer",
+                        //                "title": "Manufacturer",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "Default-Manufacturer"
+                        //            }, {
+                        //                "id": "model",
+                        //                "title": "Model",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "Default-Model"
+                        //            }, {
+                        //                "id": "serial",
+                        //                "title": "Serial",
+                        //                "placeholder": context.operation ? "Leave blank if unchanged" : "Default-SerialNumber"
+                        //            }]
+                        //        };
+
+                        //        delete context.list;
+                        //        delete context.operation;
+                        //        context.name = data.name;
+                        //        context.step = 4;
+                        //    } 
+                    else {
+                        // Error if required info is missing
+                        var respDict = {
+                            "type": "Interface",
+                            "interface": "instruction",
+                            "title": "Error",
+                            "detail": "Name of the device is missing.",
+                            "showNextButton": true
+                        };
+
+                        context.step = 1;
+                    }
+                }
+                callback(respDict);
+                break;
+                //case 4:
+                //    var userInputs = request.response.inputs;
+                //    var newSwitch = {};
+
+                //    // Setup input for addAccessory
+                //    if (this.accessories[context.name]) {
+                //        newSwitch = JSON.parse(JSON.stringify(this.accessories[context.name].context));
+                //    }
+
+                //    newAccessory.name = context.name;
+                //    newAccessory.on_cmd = userInputs.on_cmd || newSwitch.on_cmd;
+                //    newAccessory.off_cmd = userInputs.off_cmd || newSwitch.off_cmd;
+                //    newAccessory.state_cmd = userInputs.state_cmd || newSwitch.state_cmd;
+                //    newAccessory.polling = userInputs.polling || newSwitch.polling;
+                //    newAccessory.interval = userInputs.interval || newSwitch.interval;
+                //    newAccessory.manufacturer = userInputs.manufacturer;
+                //    newAccessory.model = userInputs.model;
+                //    newAccessory.serial = userInputs.serial;
+
+                //    // Register or update accessory in HomeKit
+                //    this.addAccessory(newAccessory);
+                //    var respDict = {
+                //        "type": "Interface",
+                //        "interface": "instruction",
+                //        "title": "Success",
+                //        "detail": "The new device is now updated.",
+                //        "showNextButton": true
+                //    };
+
+                //    context.step = 5;
+                //    callback(respDict);
+                //    break;
+                //case 5:
+                //    // Update config.json accordingly
+                //    var self = this;
+                //    delete context.step;
+                //    var newConfig = this.config;
+                //    var newSwitches = Object.keys(this.accessories).map(function (k) {
+                //        var accessory = self.accessories[k];
+                //        var data = {
+                //            'name': accessory.context.name,
+                //            'on_cmd': accessory.context.on_cmd,
+                //            'off_cmd': accessory.context.off_cmd,
+                //            'state_cmd': accessory.context.state_cmd,
+                //            'polling': accessory.context.polling,
+                //            'interval': accessory.context.interval,
+                //            'manufacturer': accessory.context.manufacturer,
+                //            'model': accessory.context.model,
+                //            'serial': accessory.context.serial
+                //        };
+                //        return data;
+                //    });
+
+                //    newConfig.switches = newSwitches;
+                //    callback(null, "platform", true, newConfig);
+                //    break;
+        }
+    }
+}
