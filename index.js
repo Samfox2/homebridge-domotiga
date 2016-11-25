@@ -447,71 +447,71 @@ DomotigaPlatform.prototype.getInitState = function (accessory, data) {
 
             case "TemperatureSensor":
                 accessory.getService(Service.TemperatureSensor)
-                    .getCharacteristic(Characteristic.CurrentTemperature).getCurrentTemperature();
+                    .getCharacteristic(Characteristic.CurrentTemperature).getCurrentTemperature(this, accessory.context);
                 break;
 
             case "HumiditySensor":
                 accessory.getService(Service.HumiditySensor)
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getCurrentRelativeHumidity();
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getCurrentRelativeHumidity(this, accessory.context);
                 break;
 
 
             case "Contact":
                 accessory.getService(Service.ContactSensor)
-                    .getCharacteristic(Characteristic.ContactSensorState).getContactState();
+                    .getCharacteristic(Characteristic.ContactSensorState).getContactState(this, accessory.context);
                 break;
 
 
             case "LeakSensor":
                 accessory.getService(Service.LeakSensor)
-                    .getCharacteristic(Characteristic.LeakDetected).getLeakSensorState();
+                    .getCharacteristic(Characteristic.LeakDetected).getLeakSensorState(this, accessory.context);
                 break;
 
 
             case "MotionSensor":
                 accessory.getService(Service.MotionSensor)
-                    .getCharacteristic(Characteristic.MotionDetected).getMotionDetected();
+                    .getCharacteristic(Characteristic.MotionDetected).getMotionDetected(this, accessory.context);
                 break;
 
 
             case "Switch":
                 accessory.getService(Service.Switch)
-                    .getCharacteristic(Characteristic.On).getSwitchState();
+                    .getCharacteristic(Characteristic.On).getSwitchState(this, accessory.context);
                 break;
 
 
             case "Outlet":
                 accessory.getService(Service.Outlet)
-                    .getCharacteristic(Characteristic.On).getOutletState();
+                    .getCharacteristic(Characteristic.On).getOutletState(this, accessory.context);
                 break;
 
 
             case "AirQualitySensor":
                 accessory.getService(Service.AirQualitySensor)
-                    .getCharacteristic(Characteristic.AirQuality).getCurrentAirQuality();
+                    .getCharacteristic(Characteristic.AirQuality).getCurrentAirQuality(this, accessory.context);
                 break;
 
 
             case "FakeEveAirQualitySensor":
                 accessory.getService(Service.EveRoomService)
-                    .getCharacteristic(EveRoomAirQuality).getCurrentEveAirQuality();
+                    .getCharacteristic(EveRoomAirQuality).getCurrentEveAirQuality(this, accessory.context);
                 break;
 
 
             case "FakeEveWeatherSensor":
                 accessory.getService(Service.EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure(this, accessory.context);
                 break;
 
 
             case "FakeEveWeatherSensorWithLog":
                 accessory.getService(Service.EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure(this, accessory.context);
                 break;
 
             case "Powermeter":
                 accessory.getService(Service.PowerMeterService)
-                    .getCharacteristic(EvePowerConsumption).getEvePowerConsumption();
+                    .getCharacteristic(EvePowerConsumption).getEvePowerConsumption(this, accessory.context);
                 break;
 
             default:
