@@ -140,10 +140,10 @@ function DomotigaPlatform(log, config, api) {
 
 // Method to restore accessories from cache
 DomotigaPlatform.prototype.configureAccessory = function (accessory) {
-    var accessoryId = accessory.context.name;
+    var accessoryName  = accessory.context.name;
 
     this.setService(accessory);
-    this.accessories[accessoryId] = accessory;
+    this.accessories[accessoryName ] = accessory;
 }
 
 
@@ -314,6 +314,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
             this.primaryservice.addCharacteristic(EveTotalPowerConsumption);
         }
 
+        // Setup HomeKit switch service
+        newAccessory.addService(this.primaryservice, data.name);
+	    
         // Setup listeners for different switch events
         this.setService(newAccessory);
 
@@ -392,12 +395,13 @@ DomotigaPlatform.prototype.removeAccessory = function (accessory) {
     }
 }
 
-DomotigaPlatform.prototype.setService_save = function (accessory) {
+// Method to setup listeners for different events
+DomotigaPlatform.prototype.setService = function (accessory) {
 
     // Create primary service
     switch (accessory.context.service) {
 
-        case "TemperatureSensor":
+	case "TemperatureSensor":
             this.primaryservice = accessory.getService(Service.TemperatureSensor);
             this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
                 .on('get', this.getCurrentTemperature.bind(this, accessory.context));
@@ -1210,3 +1214,4 @@ DomotigaPlatform.prototype.configurationRequestHandler = function (context, requ
         }
     }
 }
+
