@@ -130,7 +130,7 @@ function DomotigaPlatform(log, config, api) {
 
     // Device specific configuration
     this.devices = this.config.devices || [];
-    this.accessories = [];
+    this.accessories = {};
 
     if (api) {
         this.api = api;
@@ -144,145 +144,6 @@ DomotigaPlatform.prototype.configureAccessory = function (accessory) {
 
     this.setService(accessory);
     this.accessories[accessoryId] = accessory;
-}
-
-
-DomotigaPlatform.prototype.setService = function (accessory) {
-
-    // Create primary service
-    switch (accessory.context.service) {
-
-        case "TemperatureSensor":
-            this.primaryservice = new Service.TemperatureSensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
-                .on('get', this.getCurrentTemperature.bind(this, accessory.context));
-            break;
-
-        case "HumiditySensor":
-            this.primaryservice = new Service.HumiditySensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
-            break;
-
-        case "Contact":
-            this.primaryservice = new Service.ContactSensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.ContactSensorState)
-                .on('get', this.getContactState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueContact;
-            break;
-
-        case "LeakSensor":
-            this.primaryservice = new Service.LeakSensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.LeakDetected)
-                .on('get', this.getLeakSensorState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueLeakSensor;
-            break;
-
-        case "MotionSensor":
-            this.primaryservice = new Service.MotionSensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.MotionDetected)
-                .on('get', this.getMotionDetected.bind(this, accessory.context));
-            this.primaryValue = this.config.valueMotionSensor;
-            break;
-
-        case "Switch":
-            this.primaryservice = new Service.Switch(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.On)
-                .on('get', this.getSwitchState.bind(this, accessory.context))
-                .on('set', this.setSwitchState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueSwitch;
-            break;
-
-        case "Outlet":
-            this.primaryservice = new Service.Outlet(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.On)
-                .on('get', this.getOutletState.bind(this, accessory.context))
-                .on('set', this.setOutletState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueOutlet;
-            break;
-
-        case "AirQualitySensor":
-            this.primaryservice = new Service.AirQualitySensor(accessory.context.service);
-            this.primaryservice.getCharacteristic(Characteristic.AirQuality)
-                .on('get', this.getCurrentAirQuality.bind(this, accessory.context));
-            break;
-
-        case "FakeEveAirQualitySensor":
-            this.primaryservice = new EveRoomService(accessory.context.service);
-            this.primaryservice.getCharacteristic(EveRoomAirQuality)
-                .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
-            break;
-
-        case "FakeEveWeatherSensor":
-            this.primaryservice = new EveWeatherService(accessory.context.service);
-            this.primaryservice.getCharacteristic(EveAirPressure)
-                .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
-            break;
-
-        case "FakeEveWeatherSensorWithLog":
-            this.primaryservice = new EveWeatherService(accessory.context.service);
-            this.primaryservice.getCharacteristic(EveAirPressure)
-                .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
-            break;
-
-        case "Powermeter":
-            this.primaryservice = new PowerMeterService(accessory.context.service);
-            this.primaryservice.getCharacteristic(EvePowerConsumption)
-                .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
-            break;
-            
-        default:
-            this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
-            break;
-    }
-
-
-    // Everything outside the primary service gets added as optional characteristics...
-    if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
-        this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature)
-            .on('get', this.getCurrentTemperature.bind(this, accessory.context));
-    }
-    if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
-        this.primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity)
-            .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
-    }
-    if (accessory.context.valueBattery) {
-        this.primaryservice.addCharacteristic(Characteristic.BatteryLevel)
-            .on('get', this.getCurrentBatteryLevel.bind(this, accessory.context));
-    }
-    if (accessory.context.lowbattery) {
-        this.primaryservice.addCharacteristic(Characteristic.StatusLowBattery)
-            .on('get', this.getLowBatteryStatus.bind(this, accessory.context));
-    }
-    // Additional required characteristic for outlet
-    if (accessory.context.service == "Outlet") {
-        this.primaryservice.addCharacteristic(Characteristic.OutletInUse)
-            .on('get', this.getOutletInUse.bind(this, accessory.context));
-    }
-    // Eve characteristic (custom UUID)
-    if (accessory.context.valueAirPressure &&
-        (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
-        this.primaryservice.addCharacteristic(EveAirPressure)
-            .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
-    }
-    // Eve characteristic (custom UUID)
-    if (accessory.context.valueAirQuality &&
-        (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
-        this.primaryservice.addCharacteristic(Characteristic.AirQuality)
-            .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
-    }
-    // Eve characteristic (custom UUID)
-    if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
-        this.primaryservice.addCharacteristic(EvePowerConsumption)
-            .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
-    }
-    // Eve characteristic (custom UUID)
-    if (accessory.context.valueTotalPowerConsumption) {
-        this.primaryservice.addCharacteristic(EveTotalPowerConsumption)
-            .on('get', this.getEveTotalPowerConsumption.bind(this, accessory.context));
-    }
-
-    accessory.on('identify', this.identify.bind(this, accessory.context));
 }
 
 
@@ -301,13 +162,14 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
     }
 
     // Remove extra accessories in cache
-    for (var id in this.accessories) {
-        var device = this.accessories[id];
-        if (!device.reachable) {
-            this.removeAccessory(device);
+    for (var name in this.accessories) {
+        var accessory = this.accessories[name];
+        if (!accessory.reachable) {
+            this.removeAccessory(accessory);
         }
     }
 }
+
 
 // Method to add and update HomeKit accessories
 DomotigaPlatform.prototype.addAccessory = function (data) {
@@ -319,7 +181,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         data.polling = false;
     }
 
-    data.pollInMs = parseInt(data.interval) || 1;
+    data.pollInMs = parseInt(data.pollInMs) || 1;
 
     if (!this.accessories[data.name]) {
 
@@ -353,8 +215,146 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         newAccessory.context.polling = data.polling;
         newAccessory.context.pollInMs = data.pollInMs || 1;
 
-        // Create primary service and setup listeners for different events 
-        this.setService(newAccessory);
+        // Setup HomeKit service(-s)
+        switch (newAccessory.context.service) {
+
+            case "TemperatureSensor":
+                this.primaryservice = new Service.TemperatureSensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+                    .on('get', this.getCurrentTemperature.bind(this, newAccessory.context));
+                break;
+
+            case "HumiditySensor":
+                this.primaryservice = new Service.HumiditySensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .on('get', this.getCurrentRelativeHumidity.bind(this, newAccessory.context));
+                break;
+
+            case "Contact":
+                this.primaryservice = new Service.ContactSensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.ContactSensorState)
+                    .on('get', this.getContactState.bind(this, newAccessory.context));
+                this.primaryValue = this.config.valueContact;
+                break;
+
+            case "LeakSensor":
+                this.primaryservice = new Service.LeakSensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.LeakDetected)
+                    .on('get', this.getLeakSensorState.bind(this, newAccessory.context));
+                this.primaryValue = this.config.valueLeakSensor;
+                break;
+
+            case "MotionSensor":
+                this.primaryservice = new Service.MotionSensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.MotionDetected)
+                    .on('get', this.getMotionDetected.bind(this, newAccessory.context));
+                this.primaryValue = this.config.valueMotionSensor;
+                break;
+
+            case "Switch":
+                this.primaryservice = new Service.Switch(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.On)
+                    .on('get', this.getSwitchState.bind(this, newAccessory.context))
+                    .on('set', this.setSwitchState.bind(this, newAccessory.context));
+                this.primaryValue = this.config.valueSwitch;
+                break;
+
+            case "Outlet":
+                this.primaryservice = new Service.Outlet(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.On)
+                    .on('get', this.getOutletState.bind(this, newAccessory.context))
+                    .on('set', this.setOutletState.bind(this, newAccessory.context));
+                this.primaryValue = this.config.valueOutlet;
+                break;
+
+            case "AirQualitySensor":
+                this.primaryservice = new Service.AirQualitySensor(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(Characteristic.AirQuality)
+                    .on('get', this.getCurrentAirQuality.bind(this, newAccessory.context));
+                break;
+
+            case "FakeEveAirQualitySensor":
+                this.primaryservice = new EveRoomService("Eve Room");
+                this.primaryservice.getCharacteristic(EveRoomAirQuality)
+                    .on('get', this.getCurrentEveAirQuality.bind(this, newAccessory.context));
+                break;
+
+            case "FakeEveWeatherSensor":
+                this.primaryservice = new EveWeatherService("Eve Weather");
+                this.primaryservice.getCharacteristic(EveAirPressure)
+                    .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
+                break;
+
+            case "FakeEveWeatherSensorWithLog":
+                this.primaryservice = new EveWeatherService("Eve Weather");
+                this.primaryservice.getCharacteristic(EveAirPressure)
+                    .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
+                break;
+
+            case "Powermeter":
+                this.primaryservice = new PowerMeterService(newAccessory.context.service);
+                this.primaryservice.getCharacteristic(EvePowerConsumption)
+                    .on('get', this.getEvePowerConsumption.bind(this, newAccessory.context));
+                break;
+
+            default:
+                this.log.error('Service %s %s unknown, skipping...', newAccessory.context.service, newAccessory.context.name);
+                break;
+        }
+
+
+
+        // Everything outside the primary service gets added as optional characteristics...
+        if (newAccessory.context.valueTemperature && (newAccessory.context.service != "TemperatureSensor")) {
+            this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature)
+                .on('get', this.getCurrentTemperature.bind(this, newAccessory.context));
+        }
+        if (newAccessory.context.valueHumidity && (newAccessory.context.service != "HumiditySensor")) {
+            this.primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .on('get', this.getCurrentRelativeHumidity.bind(this, newAccessory.context));
+        }
+        if (newAccessory.context.valueBattery) {
+            this.primaryservice.addCharacteristic(Characteristic.BatteryLevel)
+                .on('get', this.getCurrentBatteryLevel.bind(this, newAccessory.context));
+        }
+        if (newAccessory.context.lowbattery) {
+            this.primaryservice.addCharacteristic(Characteristic.StatusLowBattery)
+                .on('get', this.getLowBatteryStatus.bind(this, newAccessory.context));
+        }
+        // Additional required characteristic for outlet
+        if (newAccessory.context.service == "Outlet") {
+            this.primaryservice.getCharacteristic(Characteristic.OutletInUse)
+                .on('get', this.getOutletInUse.bind(this, newAccessory.context));
+        }
+        // Eve characteristic (custom UUID)
+        if (newAccessory.context.valueAirPressure &&
+            (newAccessory.context.service != "FakeEveWeatherSensor") && (newAccessory.context.service != "FakeEveWeatherSensorWithLog")) {
+            this.primaryservice.addCharacteristic(EveAirPressure)
+                .on('get', this.getCurrentAirPressure.bind(this, newAccessory.context));
+        }
+        // Eve characteristic (custom UUID)
+        if (newAccessory.context.valueAirQuality &&
+            (newAccessory.context.service != "AirQualitySensor") && (newAccessory.context.service != "FakeEveAirQualitySensor")) {
+            this.primaryservice.addCharacteristic(Characteristic.AirQuality)
+                .on('get', this.getCurrentEveAirQuality.bind(this, newAccessory.context));
+        }
+        // Eve characteristic (custom UUID)
+        if (newAccessory.context.valuePowerConsumption && (newAccessory.context.service != "Powermeter")) {
+            this.primaryservice.addCharacteristic(EvePowerConsumption)
+                .on('get', this.getEvePowerConsumption.bind(this, newAccessory.context));
+        }
+        // Eve characteristic (custom UUID)
+        if (newAccessory.context.valueTotalPowerConsumption) {
+            this.primaryservice.addCharacteristic(EveTotalPowerConsumption)
+                .on('get', this.getEveTotalPowerConsumption.bind(this, newAccessory.context));
+        }
+
+        newAccessory.addService(this.primaryservice, data.name);
+        newAccessory.on('identify', this.identify.bind(this, newAccessory.context));
+
+
+        // todo: Move the whole stuff to setService routine
+        //this.setService(newAccessory);
 
         // Register accessory in HomeKit
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
@@ -365,30 +365,29 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
         // Accessory is reachable if it's found in config.json
         newAccessory.updateReachability(true);
-
-        // Update variables in context
-        newAccessory.context.name = data.name || NA;
-        newAccessory.context.service = data.service;
-        newAccessory.context.device = data.device;
-        newAccessory.context.manufacturer = data.manufacturer;
-        newAccessory.context.model = data.model;
-        newAccessory.context.valueTemperature = data.valueTemperature;
-        newAccessory.context.valueHumidity = data.valueHumidity;
-        newAccessory.context.valueAirPressure = data.valueAirPressure;
-        newAccessory.context.valueBattery = data.valueBattery;
-        newAccessory.context.lowbattery = data.lowbattery;
-        newAccessory.context.valueContact = data.valueContact;
-        newAccessory.context.valueSwitch = data.valueSwitch;
-        newAccessory.context.valueAirQuality = data.valueAirQuality;
-        newAccessory.context.valueOutlet = data.valueOutlet;
-        newAccessory.context.valueLeakSensor = data.valueLeakSensor;
-        newAccessory.context.valueMotionSensor = data.valueMotionSensor;
-        newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
-        newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
-        newAccessory.context.polling = data.polling;
-        newAccessory.context.pollInMs = data.pollInMs;
-
     }
+
+    // Update variables in context
+    newAccessory.context.name = data.name || NA;
+    newAccessory.context.service = data.service;
+    newAccessory.context.device = data.device;
+    newAccessory.context.manufacturer = data.manufacturer;
+    newAccessory.context.model = data.model;
+    newAccessory.context.valueTemperature = data.valueTemperature;
+    newAccessory.context.valueHumidity = data.valueHumidity;
+    newAccessory.context.valueAirPressure = data.valueAirPressure;
+    newAccessory.context.valueBattery = data.valueBattery;
+    newAccessory.context.lowbattery = data.lowbattery;
+    newAccessory.context.valueContact = data.valueContact;
+    newAccessory.context.valueSwitch = data.valueSwitch;
+    newAccessory.context.valueAirQuality = data.valueAirQuality;
+    newAccessory.context.valueOutlet = data.valueOutlet;
+    newAccessory.context.valueLeakSensor = data.valueLeakSensor;
+    newAccessory.context.valueMotionSensor = data.valueMotionSensor;
+    newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
+    newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
+    newAccessory.context.polling = data.polling;
+    newAccessory.context.pollInMs = data.pollInMs;
 
     // Retrieve initial state
     this.getInitState(newAccessory, data);
@@ -432,87 +431,226 @@ DomotigaPlatform.prototype.removeAccessory = function (accessory) {
     }
 }
 
-DomotigaPlatform.prototype.getInitState = function (accessory, data) {
-    var info = accessory.getService(Service.AccessoryInformation);
+DomotigaPlatform.prototype.setService_save = function (accessory) {
 
-    info.setCharacteristic(Characteristic.Manufacturer, accessory.context.manufacturer);
+    // Create primary service
+    switch (accessory.context.service) {
 
-    info.setCharacteristic(Characteristic.Model, accessory.context.model);
+        case "TemperatureSensor":
+            this.primaryservice = accessory.getService(Service.TemperatureSensor);
+            this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+                .on('get', this.getCurrentTemperature.bind(this, accessory.context));
+            break;
 
-    info.setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + accessory.context.device + accessory.context.name));
+        case "HumiditySensor":
+            this.primaryservice = accessory.getService(Service.HumiditySensor);
+            this.primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
+            break;
 
-    if (!data.polling) {
+        case "Contact":
+            this.primaryservice = accessory.getService(Service.ContactSensor);
+            this.primaryservice.getCharacteristic(Characteristic.ContactSensorState)
+                .on('get', this.getContactState.bind(this, accessory.context));
+            this.primaryValue = this.config.valueContact;
+            break;
+
+        case "LeakSensor":
+            this.primaryservice = accessory.getService(Service.LeakSensor);
+            this.primaryservice.getCharacteristic(Characteristic.LeakDetected)
+                .on('get', this.getLeakSensorState.bind(this, accessory.context));
+            this.primaryValue = this.config.valueLeakSensor;
+            break;
+
+        case "MotionSensor":
+            this.primaryservice = accessory.getService(Service.MotionSensor);
+            this.primaryservice.getCharacteristic(Characteristic.MotionDetected)
+                .on('get', this.getMotionDetected.bind(this, accessory.context));
+            this.primaryValue = this.config.valueMotionSensor;
+            break;
+
+        case "Switch":
+            this.primaryservice = accessory.getService(Service.Switch);
+            this.primaryservice.getCharacteristic(Characteristic.On)
+                .on('get', this.getSwitchState.bind(this, accessory.context))
+                .on('set', this.setSwitchState.bind(this, accessory.context));
+            this.primaryValue = this.config.valueSwitch;
+            break;
+
+        case "Outlet":
+            this.primaryservice = accessory.getService(Service.Outlet);
+            this.primaryservice.getCharacteristic(Characteristic.On)
+                .on('get', this.getOutletState.bind(this, accessory.context))
+                .on('set', this.setOutletState.bind(this, accessory.context));
+            this.primaryValue = this.config.valueOutlet;
+            break;
+
+        case "AirQualitySensor":
+            this.primaryservice = accessory.getService(Service.AirQualitySensor);
+            this.primaryservice.getCharacteristic(Characteristic.AirQuality)
+                .on('get', this.getCurrentAirQuality.bind(this, accessory.context));
+            break;
+
+        case "FakeEveAirQualitySensor":
+            this.primaryservice = accessory.getService(EveRoomService);
+            this.primaryservice.getCharacteristic(EveRoomAirQuality)
+                .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
+            break;
+
+        case "FakeEveWeatherSensor":
+            this.primaryservice = accessory.getService(EveWeatherService);
+            this.primaryservice.getCharacteristic(EveAirPressure)
+                .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
+            break;
+
+        case "FakeEveWeatherSensorWithLog":
+            this.primaryservice = accessory.getService(EveWeatherService);
+            this.primaryservice.getCharacteristic(EveAirPressure)
+                .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
+            break;
+
+        case "Powermeter":
+            this.primaryservice = accessory.getService(PowerMeterService);
+            this.primaryservice.getCharacteristic(EvePowerConsumption)
+                .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
+            break;
+            // for testing purposes only:
+        default:
+            this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+            break;
+    }
+
+
+    // Everything outside the primary service gets added as optional characteristics...
+    if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
+        this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+            .on('get', this.getCurrentTemperature.bind(this, accessory.context));
+    }
+    if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
+        this.primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
+            .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
+    }
+    if (accessory.context.valueBattery) {
+        this.primaryservice.getCharacteristic(Characteristic.BatteryLevel)
+            .on('get', this.getCurrentBatteryLevel.bind(this, accessory.context));
+    }
+    if (accessory.context.lowbattery) {
+        this.primaryservice.getCharacteristic(Characteristic.StatusLowBattery)
+            .on('get', this.getLowBatteryStatus.bind(this, accessory.context));
+    }
+    // Additional required characteristic for outlet
+    if (accessory.context.service == "Outlet") {
+        this.primaryservice.getCharacteristic(Characteristic.OutletInUse)
+            .on('get', this.getOutletInUse.bind(this, accessory.context));
+    }
+    // Eve characteristic (custom UUID)
+    if (accessory.context.valueAirPressure &&
+        (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
+        this.primaryservice.getCharacteristic(EveAirPressure)
+            .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
+    }
+    // Eve characteristic (custom UUID)
+    if (accessory.context.valueAirQuality &&
+        (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
+        this.primaryservice.getCharacteristic(Characteristic.AirQuality)
+            .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
+    }
+    // Eve characteristic (custom UUID)
+    if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
+        this.primaryservice.getCharacteristic(EvePowerConsumption)
+            .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
+    }
+    // Eve characteristic (custom UUID)
+    if (accessory.context.valueTotalPowerConsumption) {
+        this.primaryservice.getCharacteristic(EveTotalPowerConsumption)
+            .on('get', this.getEveTotalPowerConsumption.bind(this, accessory.context));
+    }
+
+    accessory.on('identify', this.identify.bind(this, accessory.context));
+}
+
+
+DomotigaPlatform.prototype.getInitState = function (accessory) {
+
+    // Update HomeKit accessory information
+    accessory.getService(Service.AccessoryInformation)
+        .setCharacteristic(Characteristic.Manufacturer, accessory.context.manufacturer)
+        .setCharacteristic(Characteristic.Model, accessory.context.model)
+        .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device " + accessory.context.device + accessory.context.name));
+
+    // Retrieve initial state if polling is disabled
+    if (!accessory.context.polling) {
 
         // Create primary service
-        switch (data.service) {
+        switch (accessory.context.service) {
 
             case "TemperatureSensor":
                 accessory.getService(Service.TemperatureSensor)
-                    .getCharacteristic(Characteristic.CurrentTemperature).getCurrentTemperature(this, accessory.context);
+                    .getCharacteristic(Characteristic.CurrentTemperature).getCurrentTemperature();
                 break;
 
             case "HumiditySensor":
                 accessory.getService(Service.HumiditySensor)
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getCurrentRelativeHumidity(this, accessory.context);
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getCurrentRelativeHumidity();
                 break;
 
 
             case "Contact":
                 accessory.getService(Service.ContactSensor)
-                    .getCharacteristic(Characteristic.ContactSensorState).getContactState(this, accessory.context);
+                    .getCharacteristic(Characteristic.ContactSensorState).getContactState();
                 break;
 
 
             case "LeakSensor":
                 accessory.getService(Service.LeakSensor)
-                    .getCharacteristic(Characteristic.LeakDetected).getLeakSensorState(this, accessory.context);
+                    .getCharacteristic(Characteristic.LeakDetected).getLeakSensorState();
                 break;
 
 
             case "MotionSensor":
                 accessory.getService(Service.MotionSensor)
-                    .getCharacteristic(Characteristic.MotionDetected).getMotionDetected(this, accessory.context);
+                    .getCharacteristic(Characteristic.MotionDetected).getMotionDetected();
                 break;
 
 
             case "Switch":
                 accessory.getService(Service.Switch)
-                    .getCharacteristic(Characteristic.On).getSwitchState(this, accessory.context);
+                    .getCharacteristic(Characteristic.On).getSwitchState();
                 break;
 
 
             case "Outlet":
                 accessory.getService(Service.Outlet)
-                    .getCharacteristic(Characteristic.On).getOutletState(this, accessory.context);
+                    .getCharacteristic(Characteristic.On).getOutletState();
                 break;
 
 
             case "AirQualitySensor":
                 accessory.getService(Service.AirQualitySensor)
-                    .getCharacteristic(Characteristic.AirQuality).getCurrentAirQuality(this, accessory.context);
+                    .getCharacteristic(Characteristic.AirQuality).getCurrentAirQuality();
                 break;
 
 
             case "FakeEveAirQualitySensor":
                 accessory.getService(Service.EveRoomService)
-                    .getCharacteristic(EveRoomAirQuality).getCurrentEveAirQuality(this, accessory.context);
+                    .getCharacteristic(EveRoomAirQuality).getCurrentEveAirQuality();
                 break;
 
 
             case "FakeEveWeatherSensor":
                 accessory.getService(Service.EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getCurrentAirPressure(this, accessory.context);
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
                 break;
 
 
             case "FakeEveWeatherSensorWithLog":
                 accessory.getService(Service.EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getCurrentAirPressure(this, accessory.context);
+                    .getCharacteristic(EveAirPressure).getCurrentAirPressure();
                 break;
 
             case "Powermeter":
                 accessory.getService(Service.PowerMeterService)
-                    .getCharacteristic(EvePowerConsumption).getEvePowerConsumption(this, accessory.context);
+                    .getCharacteristic(EvePowerConsumption).getEvePowerConsumption();
                 break;
 
             default:
