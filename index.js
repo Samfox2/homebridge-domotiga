@@ -615,6 +615,7 @@ Domotiga.prototype = {
             case "TemperatureSensor":
                 this.primaryservice = new Service.TemperatureSensor(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+                .setProps({ minValue: -55, maxValue: 125 })
                     .on('get', this.getCurrentTemperature.bind(this));
                 break;
 
@@ -713,6 +714,7 @@ Domotiga.prototype = {
 
         if (this.config.valueTemperature && (this.config.service != "TemperatureSensor")) {
             service.addCharacteristic(Characteristic.CurrentTemperature)
+            .setProps({ minValue: -55, maxValue: 125 })
                 .on('get', this.getCurrentTemperature.bind(this));
         }
         if (this.config.valueHumidity && (this.config.service != "HumiditySensor")) {
