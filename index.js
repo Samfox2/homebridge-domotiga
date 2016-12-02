@@ -206,44 +206,46 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.polling = data.polling;
         accessory.context.pollInMs = data.pollInMs || 1;
 
+	var primaryservice;
+	    
         // Setup HomeKit service(-s)
         switch (accessory.context.service) {
 
             case "TemperatureSensor":
-                this.primaryservice = new Service.TemperatureSensor(accessory.context.service);
+               primaryservice = new Service.TemperatureSensor(accessory.context.service);
                 break;
 
             case "HumiditySensor":
-                this.primaryservice = new Service.HumiditySensor(accessory.context.service);
+                primaryservice = new Service.HumiditySensor(accessory.context.service);
                 break;
 
             case "Contact":
-                this.primaryservice = new Service.ContactSensor(accessory.context.service);
+                primaryservice = new Service.ContactSensor(accessory.context.service);
                 this.primaryValue = this.config.valueContact;
                 break;
 
             case "LeakSensor":
-                this.primaryservice = new Service.LeakSensor(accessory.context.service);
+                primaryservice = new Service.LeakSensor(accessory.context.service);
                 this.primaryValue = this.config.valueLeakSensor;
                 break;
 
             case "MotionSensor":
-                this.primaryservice = new Service.MotionSensor(accessory.context.service);
+                primaryservice = new Service.MotionSensor(accessory.context.service);
                 this.primaryValue = this.config.valueMotionSensor;
                 break;
 
             case "Switch":
-                this.primaryservice = new Service.Switch(accessory.context.service);
+                primaryservice = new Service.Switch(accessory.context.service);
                 this.primaryValue = this.config.valueSwitch;
                 break;
 
             case "Outlet":
-                this.primaryservice = new Service.Outlet(accessory.context.service);
+                primaryservice = new Service.Outlet(accessory.context.service);
                 this.primaryValue = this.config.valueOutlet;
                 break;
 
             case "AirQualitySensor":
-                this.primaryservice = new Service.AirQualitySensor(accessory.context.service);
+                primaryservice = new Service.AirQualitySensor(accessory.context.service);
                 break;
 
             case "FakeEveAirQualitySensor":
@@ -251,15 +253,15 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 break;
 
             case "FakeEveWeatherSensor":
-                this.primaryservice = new EveWeatherService("Eve Weather");
+                primaryservice = new EveWeatherService("Eve Weather");
                 break;
 
             case "FakeEveWeatherSensorWithLog":
-                this.primaryservice = new EveWeatherService("Eve Weather");
+                primaryservice = new EveWeatherService("Eve Weather");
                 break;
 
             case "Powermeter":
-                this.primaryservice = new PowerMeterService(accessory.context.service);
+                primaryservice = new PowerMeterService(accessory.context.service);
                 break;
 
             default:
@@ -269,38 +271,38 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
         // Everything outside the primary service gets added as optional characteristics...
         if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
+            primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
         }
         if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity);
+            primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity);
         }
         if (accessory.context.valueBattery) {
-            this.primaryservice.addCharacteristic(Characteristic.BatteryLevel);
+            primaryservice.addCharacteristic(Characteristic.BatteryLevel);
         }
         if (accessory.context.lowbattery) {
-            this.primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
+            primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
         }
         // Additional required characteristic for outlet
         if (accessory.context.service == "Outlet") {
-            this.primaryservice.getCharacteristic(Characteristic.OutletInUse);
+            primaryservice.getCharacteristic(Characteristic.OutletInUse);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
             (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
-            this.primaryservice.addCharacteristic(EveAirPressure);
+            primaryservice.addCharacteristic(EveAirPressure);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirQuality &&
             (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
-            this.primaryservice.addCharacteristic(Characteristic.AirQuality);
+            primaryservice.addCharacteristic(Characteristic.AirQuality);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
-            this.primaryservice.addCharacteristic(EvePowerConsumption);
+            primaryservice.addCharacteristic(EvePowerConsumption);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueTotalPowerConsumption) {
-            this.primaryservice.addCharacteristic(EveTotalPowerConsumption);
+            primaryservice.addCharacteristic(EveTotalPowerConsumption);
         }
 
         // Setup HomeKit switch service
