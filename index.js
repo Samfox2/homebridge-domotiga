@@ -377,6 +377,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 	case "TemperatureSensor":
             primaryservice = accessory.getService(Service.TemperatureSensor);
             primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+		.setProps({ minValue: -55, maxValue: 100 })
                 .on('get', this.getCurrentTemperature.bind(this, accessory.context));
             break;
 
@@ -462,6 +463,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     // Everything outside the primary service gets added as optional characteristics...
     if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
         primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+	    .setProps({ minValue: -55, maxValue: 100 })
             .on('get', this.getCurrentTemperature.bind(this, accessory.context));
     }
     if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
