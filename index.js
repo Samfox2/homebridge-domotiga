@@ -183,7 +183,8 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
     data.pollInMs = parseInt(data.pollInMs) || 1;
     
-    var newAccessory;
+    // Retrieve accessory from cache
+    var newAccessory = this.accessories[data.name];
 	
     if (!this.accessories[data.name]) {
 
@@ -278,8 +279,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 break;
         }
 
-
-
         // Everything outside the primary service gets added as optional characteristics...
         if (newAccessory.context.valueTemperature && (newAccessory.context.service != "TemperatureSensor")) {
             this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
@@ -325,35 +324,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Register accessory in HomeKit
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
     }
-    else {
-        // Retrieve accessory from cache
-        newAccessory = this.accessories[data.name];
-
-        // Accessory is reachable if it's found in config.json
-        newAccessory.updateReachability(true);
-    }
-
-    // Update variables in context
-    newAccessory.context.name = data.name || NA;
-    newAccessory.context.service = data.service;
-    newAccessory.context.device = data.device;
-    newAccessory.context.manufacturer = data.manufacturer;
-    newAccessory.context.model = data.model;
-    newAccessory.context.valueTemperature = data.valueTemperature;
-    newAccessory.context.valueHumidity = data.valueHumidity;
-    newAccessory.context.valueAirPressure = data.valueAirPressure;
-    newAccessory.context.valueBattery = data.valueBattery;
-    newAccessory.context.lowbattery = data.lowbattery;
-    newAccessory.context.valueContact = data.valueContact;
-    newAccessory.context.valueSwitch = data.valueSwitch;
-    newAccessory.context.valueAirQuality = data.valueAirQuality;
-    newAccessory.context.valueOutlet = data.valueOutlet;
-    newAccessory.context.valueLeakSensor = data.valueLeakSensor;
-    newAccessory.context.valueMotionSensor = data.valueMotionSensor;
-    newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
-    newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
-    newAccessory.context.polling = data.polling;
-    newAccessory.context.pollInMs = data.pollInMs;
 
     // Retrieve initial state
     this.getInitState(newAccessory, data);
