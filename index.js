@@ -182,13 +182,15 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     }
 
     data.pollInMs = parseInt(data.pollInMs) || 1;
-
+    
+    var newAccessory;
+	
     if (!this.accessories[data.name]) {
 
         var uuid = UUIDGen.generate(data.name);
 
         // Setup accessory category.
-        var newAccessory = new Accessory(data.name, uuid, 8);
+        newAccessory = new Accessory(data.name, uuid, 8);
 
         // New accessory is always reachable
         newAccessory.reachable = true;
@@ -325,7 +327,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     }
     else {
         // Retrieve accessory from cache
-        var newAccessory = this.accessories[data.name];
+        newAccessory = this.accessories[data.name];
 
         // Accessory is reachable if it's found in config.json
         newAccessory.updateReachability(true);
