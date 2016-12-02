@@ -177,78 +177,78 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     this.log("Initializing platform accessory '" + data.name + "'...");
   
     // Retrieve accessory from cache
-    var newAccessory = this.accessories[data.name];
+    var accessory = this.accessories[data.name];
 	
     if (!this.accessories[data.name]) {
 
         var uuid = UUIDGen.generate(data.name);
 
         // Setup accessory category.
-        newAccessory = new Accessory(data.name, uuid, 8);
+        accessory = new Accessory(data.name, uuid, 8);
 
         // New accessory is always reachable
-        newAccessory.reachable = true;
+        accessory.reachable = true;
 
         // Store and initialize variables into context
-        newAccessory.context.name = data.name || NA;
-        newAccessory.context.service = data.service;
-        newAccessory.context.device = data.device;
-        newAccessory.context.manufacturer = data.manufacturer;
-        newAccessory.context.model = data.model;
-        newAccessory.context.valueTemperature = data.valueTemperature;
-        newAccessory.context.valueHumidity = data.valueHumidity;
-        newAccessory.context.valueAirPressure = data.valueAirPressure;
-        newAccessory.context.valueBattery = data.valueBattery;
-        newAccessory.context.lowbattery = data.lowbattery;
-        newAccessory.context.valueContact = data.valueContact;
-        newAccessory.context.valueSwitch = data.valueSwitch;
-        newAccessory.context.valueAirQuality = data.valueAirQuality;
-        newAccessory.context.valueOutlet = data.valueOutlet;
-        newAccessory.context.valueLeakSensor = data.valueLeakSensor;
-        newAccessory.context.valueMotionSensor = data.valueMotionSensor;
-        newAccessory.context.valuePowerConsumption = data.valuePowerConsumption;
-        newAccessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
-        newAccessory.context.polling = data.polling;
-        newAccessory.context.pollInMs = data.pollInMs || 1;
+        accessory.context.name = data.name || NA;
+        accessory.context.service = data.service;
+        accessory.context.device = data.device;
+        accessory.context.manufacturer = data.manufacturer;
+        accessory.context.model = data.model;
+        accessory.context.valueTemperature = data.valueTemperature;
+        accessory.context.valueHumidity = data.valueHumidity;
+        accessory.context.valueAirPressure = data.valueAirPressure;
+        accessory.context.valueBattery = data.valueBattery;
+        accessory.context.lowbattery = data.lowbattery;
+        accessory.context.valueContact = data.valueContact;
+        accessory.context.valueSwitch = data.valueSwitch;
+        accessory.context.valueAirQuality = data.valueAirQuality;
+        accessory.context.valueOutlet = data.valueOutlet;
+        accessory.context.valueLeakSensor = data.valueLeakSensor;
+        accessory.context.valueMotionSensor = data.valueMotionSensor;
+        accessory.context.valuePowerConsumption = data.valuePowerConsumption;
+        accessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
+        accessory.context.polling = data.polling;
+        accessory.context.pollInMs = data.pollInMs || 1;
 
         // Setup HomeKit service(-s)
-        switch (newAccessory.context.service) {
+        switch (accessory.context.service) {
 
             case "TemperatureSensor":
-                this.primaryservice = new Service.TemperatureSensor(newAccessory.context.service);
+                this.primaryservice = new Service.TemperatureSensor(accessory.context.service);
                 break;
 
             case "HumiditySensor":
-                this.primaryservice = new Service.HumiditySensor(newAccessory.context.service);
+                this.primaryservice = new Service.HumiditySensor(accessory.context.service);
                 break;
 
             case "Contact":
-                this.primaryservice = new Service.ContactSensor(newAccessory.context.service);
+                this.primaryservice = new Service.ContactSensor(accessory.context.service);
                 this.primaryValue = this.config.valueContact;
                 break;
 
             case "LeakSensor":
-                this.primaryservice = new Service.LeakSensor(newAccessory.context.service);
+                this.primaryservice = new Service.LeakSensor(accessory.context.service);
                 this.primaryValue = this.config.valueLeakSensor;
                 break;
 
             case "MotionSensor":
-                this.primaryservice = new Service.MotionSensor(newAccessory.context.service);
+                this.primaryservice = new Service.MotionSensor(accessory.context.service);
                 this.primaryValue = this.config.valueMotionSensor;
                 break;
 
             case "Switch":
-                this.primaryservice = new Service.Switch(newAccessory.context.service);
+                this.primaryservice = new Service.Switch(accessory.context.service);
                 this.primaryValue = this.config.valueSwitch;
                 break;
 
             case "Outlet":
-                this.primaryservice = new Service.Outlet(newAccessory.context.service);
+                this.primaryservice = new Service.Outlet(accessory.context.service);
                 this.primaryValue = this.config.valueOutlet;
                 break;
 
             case "AirQualitySensor":
-                this.primaryservice = new Service.AirQualitySensor(newAccessory.context.service);
+                this.primaryservice = new Service.AirQualitySensor(accessory.context.service);
                 break;
 
             case "FakeEveAirQualitySensor":
@@ -264,58 +264,58 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 break;
 
             case "Powermeter":
-                this.primaryservice = new PowerMeterService(newAccessory.context.service);
+                this.primaryservice = new PowerMeterService(accessory.context.service);
                 break;
 
             default:
-                this.log.error('Service %s %s unknown, skipping...', newAccessory.context.service, newAccessory.context.name);
+                this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
                 break;
         }
 
         // Everything outside the primary service gets added as optional characteristics...
-        if (newAccessory.context.valueTemperature && (newAccessory.context.service != "TemperatureSensor")) {
+        if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
             this.primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
         }
-        if (newAccessory.context.valueHumidity && (newAccessory.context.service != "HumiditySensor")) {
+        if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
             this.primaryservice.addCharacteristic(Characteristic.CurrentRelativeHumidity);
         }
-        if (newAccessory.context.valueBattery) {
+        if (accessory.context.valueBattery) {
             this.primaryservice.addCharacteristic(Characteristic.BatteryLevel);
         }
-        if (newAccessory.context.lowbattery) {
+        if (accessory.context.lowbattery) {
             this.primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
         }
         // Additional required characteristic for outlet
-        if (newAccessory.context.service == "Outlet") {
+        if (accessory.context.service == "Outlet") {
             this.primaryservice.getCharacteristic(Characteristic.OutletInUse);
         }
         // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueAirPressure &&
-            (newAccessory.context.service != "FakeEveWeatherSensor") && (newAccessory.context.service != "FakeEveWeatherSensorWithLog")) {
+        if (accessory.context.valueAirPressure &&
+            (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
             this.primaryservice.addCharacteristic(EveAirPressure);
         }
         // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueAirQuality &&
-            (newAccessory.context.service != "AirQualitySensor") && (newAccessory.context.service != "FakeEveAirQualitySensor")) {
+        if (accessory.context.valueAirQuality &&
+            (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
             this.primaryservice.addCharacteristic(Characteristic.AirQuality);
         }
         // Eve characteristic (custom UUID)
-        if (newAccessory.context.valuePowerConsumption && (newAccessory.context.service != "Powermeter")) {
+        if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
             this.primaryservice.addCharacteristic(EvePowerConsumption);
         }
         // Eve characteristic (custom UUID)
-        if (newAccessory.context.valueTotalPowerConsumption) {
+        if (accessory.context.valueTotalPowerConsumption) {
             this.primaryservice.addCharacteristic(EveTotalPowerConsumption);
         }
 
         // Setup HomeKit switch service
-        newAccessory.addService(this.primaryservice, data.name);
+        accessory.addService(this.primaryservice, data.name);
 	    
         // Setup listeners for different switch events
-        this.setService(newAccessory);
+        this.setService(accessory);
 
         // Register accessory in HomeKit
-        this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
+        this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [accessory]);
     }
 
     // Confirm variable type
@@ -328,10 +328,10 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
 	
     // Retrieve initial state
-    this.getInitState(newAccessory, data);
+    this.getInitState(accessory, data);
 
     // Store accessory in cache
-    this.accessories[data.name] = newAccessory;
+    this.accessories[data.name] = accessory;
 
     // todo:
     // Configure state polling
