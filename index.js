@@ -306,7 +306,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
 
         // Setup HomeKit switch service
-        accessory.addService(this.primaryservice, data.name);
+        accessory.addService(primaryservice, data.name);
 	    
         // Setup listeners for different switch events
         this.setService(accessory);
