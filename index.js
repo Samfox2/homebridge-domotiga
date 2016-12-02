@@ -25,7 +25,6 @@ function Domotiga(log, config) {
         valueMotionSensor: config.valueMotionSensor,
         valuePowerConsumption: config.valuePowerConsumption,
         valueTotalPowerConsumption: config.valueTotalPowerConsumption,
-        valueDoorbell: config.valueDoorbell,
         pollInMs: config.pollInMs,
         name: config.name || NA,
         lowbattery: config.lowbattery
@@ -559,45 +558,6 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    triggerProgrammableSwitchEventsave: function(callback) {
-        var that = this;
-        that.log("getting DoorbellState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueDoorbell, function(error, result) {
-            if (error) {
-                that.log.error('getDoorbellOn GetValue failed: %s', error.message);
-                callback(error);
-            } else {
-                if (result.toLowerCase() == "on")
-                    callback(null, 1);
-                else
-                    callback(null, 0);
-            }
-        }.bind(this));
-    },
-    // for testing purposes only:
-    triggerProgrammableSwitchEvent: function(callback) {
-        var that = this;
-        that.log("getting DoorbellState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueDoorbell, function(error, result) {
-            if (error) {
-                that.log.error('triggerProgrammableSwitchEvent GetValue failed: %s', error.message);
-                callback(error);
-            } else {
-                if (result.toLowerCase() == "on") {
-                    this.getService(Service.Doorbell.setCharacteristic(Characteristic.ProgrammableSwitchEvent, 1));
-                    that.log("Ding");
-
-                    setTimeout(function() {
-                        this.getService(Service.Doorbell.setCharacteristic(Characteristic.ProgrammableSwitchEvent, 0));
-                        that.log("Dong");
-                    }, 10000);
-                } else {
-                    callback(null, 0);
-                }
-            }
-        }.bind(this));
-    },
-
     getServices: function() {
         // You can OPTIONALLY create an information service if you wish to override
         // the default values for things like serial number, model, etc.
@@ -690,12 +650,6 @@ Domotiga.prototype = {
                 this.primaryservice = new PowerMeterService(this.config.service);
                 this.primaryservice.getCharacteristic(EvePowerConsumption)
                     .on('get', this.getEvePowerConsumption.bind(this));
-                break;
-            // for testing purposes only:
-            case "Doorbell":
-                this.primaryservice = new Service.Doorbell(this.config.service);
-                this.primaryservice.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-                    .on('set', this.triggerProgrammableSwitchEvent.bind(this));
                 break;
 
             default:
