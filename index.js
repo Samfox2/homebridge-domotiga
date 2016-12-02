@@ -173,16 +173,9 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
 
 // Method to add and update HomeKit accessories
 DomotigaPlatform.prototype.addAccessory = function (data) {
-
-    // Confirm variable type
-    if (data.polling === true || (typeof (data.polling) === "string" && data.polling.toUpperCase() === "TRUE")) {
-        data.polling = true;
-    } else {
-        data.polling = false;
-    }
-
-    data.pollInMs = parseInt(data.pollInMs) || 1;
-    
+     
+    this.log("Initializing platform accessory '" + data.name + "'...");
+  
     // Retrieve accessory from cache
     var newAccessory = this.accessories[data.name];
 	
@@ -325,6 +318,15 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [newAccessory]);
     }
 
+    // Confirm variable type
+    if (data.polling === true || (typeof (data.polling) === "string" && data.polling.toUpperCase() === "TRUE")) {
+        data.polling = true;
+    } else {
+        data.polling = false;
+    }
+    data.pollInMs = parseInt(data.pollInMs) || 1;
+
+	
     // Retrieve initial state
     this.getInitState(newAccessory, data);
 
