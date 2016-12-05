@@ -117,7 +117,7 @@ module.exports = function (homebridge) {
     };
     inherits(EveWeatherService, Service);
 
-    homebridge.registerPlatform("homebridge-domotiga", "DomotiGa", DomotigaPlatform);
+    homebridge.registerPlatform("homebridge-domotiga", "DomotiGa", DomotigaPlatform, true);
 }
 
 function DomotigaPlatform(log, config, api) {
@@ -152,11 +152,7 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
     }
 
     // Add or update accessories defined in config.json
-    for (var i in this.devices) {
-        var data = this.devices[i];
-        this.log("Adding device: " + data.name);
-        this.addAccessory(data);
-    }
+    for (var i in this.devices) this.addAccessory(this.devices[i]);
 
     // Remove extra accessories in cache
     for (var name in this.accessories) {
@@ -168,12 +164,12 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
 
 // Method to add and update HomeKit accessories
 DomotigaPlatform.prototype.addAccessory = function (data) {
-     
+
     this.log("Initializing platform accessory '" + data.name + "'...");
-  
+
     // Retrieve accessory from cache
     var accessory = this.accessories[data.name];
-	
+
     if (!accessory) {
 
         var uuid = UUIDGen.generate(data.name);
@@ -206,13 +202,13 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.polling = data.polling;
         accessory.context.pollInMs = data.pollInMs || 1;
 
-	var primaryservice;
-	    
+        var primaryservice;
+
         // Setup HomeKit service(-s)
         switch (accessory.context.service) {
 
             case "TemperatureSensor":
-               primaryservice = new Service.TemperatureSensor(accessory.context.service);
+                primaryservice = new Service.TemperatureSensor(accessory.context.service);
                 break;
 
             case "HumiditySensor":
@@ -307,7 +303,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
         // Setup HomeKit switch service
         accessory.addService(primaryservice, data.name);
-	    
+
         // Setup listeners for different switch events
         this.setService(accessory);
 
@@ -323,7 +319,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     }
     data.pollInMs = parseInt(data.pollInMs) || 1;
 
-	
+
     // Retrieve initial state
     this.getInitState(accessory);
 
@@ -374,7 +370,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 
     switch (accessory.context.service) {
 
-	case "TemperatureSensor":
+        case "TemperatureSensor":
             primaryservice = accessory.getService(Service.TemperatureSensor);
             primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
 		.setProps({ minValue: -55, maxValue: 100 })
