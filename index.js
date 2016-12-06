@@ -208,40 +208,40 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         switch (accessory.context.service) {
 
             case "TemperatureSensor":
-                primaryservice = new Service.TemperatureSensor(accessory.context.service);
+                primaryservice = new Service.TemperatureSensor(accessory.context.name);
                 break;
 
             case "HumiditySensor":
-                primaryservice = new Service.HumiditySensor(accessory.context.service);
+                primaryservice = new Service.HumiditySensor(accessory.context.name);
                 break;
 
             case "Contact":
-                primaryservice = new Service.ContactSensor(accessory.context.service);
+                primaryservice = new Service.ContactSensor(accessory.context.name);
                 this.primaryValue = this.config.valueContact;
                 break;
 
             case "LeakSensor":
-                primaryservice = new Service.LeakSensor(accessory.context.service);
+                primaryservice = new Service.LeakSensor(accessory.context.name);
                 this.primaryValue = this.config.valueLeakSensor;
                 break;
 
             case "MotionSensor":
-                primaryservice = new Service.MotionSensor(accessory.context.service);
+                primaryservice = new Service.MotionSensor(accessory.context.name);
                 this.primaryValue = this.config.valueMotionSensor;
                 break;
 
             case "Switch":
-                primaryservice = new Service.Switch(accessory.context.service);
+                primaryservice = new Service.Switch(accessory.context.name);
                 this.primaryValue = this.config.valueSwitch;
                 break;
 
             case "Outlet":
-                primaryservice = new Service.Outlet(accessory.context.service);
+                primaryservice = new Service.Outlet(accessory.context.name);
                 this.primaryValue = this.config.valueOutlet;
                 break;
 
             case "AirQualitySensor":
-                primaryservice = new Service.AirQualitySensor(accessory.context.service);
+                primaryservice = new Service.AirQualitySensor(accessory.context.name);
                 break;
 
             case "FakeEveAirQualitySensor":
@@ -257,7 +257,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 break;
 
             case "Powermeter":
-                primaryservice = new PowerMeterService(accessory.context.service);
+                primaryservice = new PowerMeterService(accessory.context.name);
                 break;
 
             default:
