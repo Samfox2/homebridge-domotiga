@@ -575,24 +575,24 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
 
 
             case "FakeEveAirQualitySensor":
-                primaryservice = accessory.getService(Service.EveRoomService)
+                primaryservice = accessory.getService(EveRoomService)
                     .getCharacteristic(EveRoomAirQuality).getValue();
                 break;
 
 
             case "FakeEveWeatherSensor":
-                primaryservice = accessory.getService(Service.EveWeatherService)
+                primaryservice = accessory.getService(EveWeatherService)
                     .getCharacteristic(EveAirPressure).getValue();
                 break;
 
 
             case "FakeEveWeatherSensorWithLog":
-                primaryservice = accessory.getService(Service.EveWeatherService)
+                primaryservice = accessory.getService(EveWeatherService)
                     .getCharacteristic(EveAirPressure).getValue();
                 break;
 
             case "Powermeter":
-                primaryservice = accessory.getService(Service.PowerMeterService)
+                primaryservice = accessory.getService(PowerMeterService)
                     .getCharacteristic(EvePowerConsumption).getValue();
                 break;
 
