@@ -1043,10 +1043,10 @@ DomotigaPlatform.prototype.configurationRequestHandler = function (context, requ
                     if (names.length > 0) {
                         // Select existing accessory for modification or removal
                         if (selection === 1) {
-                            var title = "Witch device do you want to modify?";
+                            var title = "Which device do you want to modify?";
                             context.operation = 1;
                         } else {
-                            var title = "Witch device do you want to remove?";
+                            var title = "Which device do you want to remove?";
                             context.operation = 2;
                         }
                         var respDict = {
