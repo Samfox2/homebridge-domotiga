@@ -2,7 +2,6 @@
 var Accessory, Service, Characteristic, UUIDGen;
 var JSONRequest = require("jsonrequest");
 var inherits = require('util').inherits;
-var pollingtoevent = require('polling-to-event');
 
 module.exports = function (homebridge) {
 
@@ -217,27 +216,22 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
             case "Contact":
                 primaryservice = new Service.ContactSensor(accessory.context.name);
-                this.primaryValue = this.config.valueContact;
                 break;
 
             case "LeakSensor":
                 primaryservice = new Service.LeakSensor(accessory.context.name);
-                this.primaryValue = this.config.valueLeakSensor;
                 break;
 
             case "MotionSensor":
                 primaryservice = new Service.MotionSensor(accessory.context.name);
-                this.primaryValue = this.config.valueMotionSensor;
                 break;
 
             case "Switch":
                 primaryservice = new Service.Switch(accessory.context.name);
-                this.primaryValue = this.config.valueSwitch;
                 break;
 
             case "Outlet":
                 primaryservice = new Service.Outlet(accessory.context.name);
-                this.primaryValue = this.config.valueOutlet;
                 break;
 
             case "AirQualitySensor":
@@ -280,7 +274,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
         // Additional required characteristic for outlet
         if (accessory.context.service == "Outlet") {
-            primaryservice.getCharacteristic(Characteristic.OutletInUse);
+            primaryservice.addCharacteristic(Characteristic.OutletInUse);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
@@ -391,29 +385,24 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice = accessory.getService(Service.ContactSensor);
             primaryservice.getCharacteristic(Characteristic.ContactSensorState)
                 .on('get', this.getContactState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueContact;
             break;
 
         case "LeakSensor":
             primaryservice = accessory.getService(Service.LeakSensor);
             primaryservice.getCharacteristic(Characteristic.LeakDetected)
                 .on('get', this.getLeakSensorState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueLeakSensor;
             break;
 
         case "MotionSensor":
             primaryservice = accessory.getService(Service.MotionSensor);
             primaryservice.getCharacteristic(Characteristic.MotionDetected)
                 .on('get', this.getMotionDetected.bind(this, accessory.context));
-            this.primaryValue = this.config.valueMotionSensor;
             break;
 
         case "Switch":
             primaryservice = accessory.getService(Service.Switch);
             primaryservice.getCharacteristic(Characteristic.On)
                 .on('get', this.getSwitchState.bind(this, accessory.context))
-                .on('set', this.setSwitchState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueSwitch;
             break;
 
         case "Outlet":
@@ -421,7 +410,6 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.On)
                 .on('get', this.getOutletState.bind(this, accessory.context))
                 .on('set', this.setOutletState.bind(this, accessory.context));
-            this.primaryValue = this.config.valueOutlet;
             break;
 
         case "AirQualitySensor":
@@ -460,7 +448,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     }
 
 
-    // Everything outside the primary service gets added as optional characteristics...
+    // Additional/optional characteristics...
     if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
         primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
 	    .setProps({ minValue: -55, maxValue: 100 })
@@ -528,72 +516,72 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         switch (accessory.context.service) {
 
             case "TemperatureSensor":
-                primaryservice = accessory.getService(Service.TemperatureSensor)
-                    .getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                primaryservice = accessory.getService(Service.TemperatureSensor);
+                primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
                 break;
 
             case "HumiditySensor":
-                primaryservice = accessory.getService(Service.HumiditySensor)
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+                primaryservice = accessory.getService(Service.HumiditySensor);
+                primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
                 break;
 
 
             case "Contact":
-                primaryservice = accessory.getService(Service.ContactSensor)
-                    .getCharacteristic(Characteristic.ContactSensorState).getValue();
+                primaryservice = accessory.getService(Service.ContactSensor);
+                primaryservice.getCharacteristic(Characteristic.ContactSensorState).getValue();
                 break;
 
 
             case "LeakSensor":
-                primaryservice = accessory.getService(Service.LeakSensor)
-                    .getCharacteristic(Characteristic.LeakDetected).getValue();
+                primaryservice = accessory.getService(Service.LeakSensor);
+                primaryservice.getCharacteristic(Characteristic.LeakDetected).getValue();
                 break;
 
 
             case "MotionSensor":
-                primaryservice = accessory.getService(Service.MotionSensor)
-                    .getCharacteristic(Characteristic.MotionDetected).getValue();
+                primaryservice = accessory.getService(Service.MotionSensor);
+                primaryservice.getCharacteristic(Characteristic.MotionDetected).getValue();
                 break;
 
 
             case "Switch":
-                primaryservice = accessory.getService(Service.Switch)
-                    .getCharacteristic(Characteristic.On).getValue();
+                primaryservice = accessory.getService(Service.Switch);
+                primaryservice.getCharacteristic(Characteristic.On).getValue();
                 break;
 
 
             case "Outlet":
-                primaryservice = accessory.getService(Service.Outlet)
-                    .getCharacteristic(Characteristic.On).getValue();
+                primaryservice = accessory.getService(Service.Outlet);
+                primaryservice.getCharacteristic(Characteristic.On).getValue();
                 break;
 
 
             case "AirQualitySensor":
-                primaryservice = accessory.getService(Service.AirQualitySensor)
-                    .getCharacteristic(Characteristic.AirQuality).getValue();
+                primaryservice = accessory.getService(Service.AirQualitySensor);
+                primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
                 break;
 
 
             case "FakeEveAirQualitySensor":
-                primaryservice = accessory.getService(EveRoomService)
-                    .getCharacteristic(EveRoomAirQuality).getValue();
+                primaryservice = accessory.getService(EveRoomService);
+                primaryservice.getCharacteristic(EveRoomAirQuality).getValue();
                 break;
 
 
             case "FakeEveWeatherSensor":
-                primaryservice = accessory.getService(EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getValue();
+                primaryservice = accessory.getService(EveWeatherService);
+                primaryservice.getCharacteristic(EveAirPressure).getValue();
                 break;
 
 
             case "FakeEveWeatherSensorWithLog":
-                primaryservice = accessory.getService(EveWeatherService)
-                    .getCharacteristic(EveAirPressure).getValue();
+                primaryservice = accessory.getService(EveWeatherService);
+                primaryservice.getCharacteristic(EveAirPressure).getValue();
                 break;
 
             case "Powermeter":
-                primaryservice = accessory.getService(PowerMeterService)
-                    .getCharacteristic(EvePowerConsumption).getValue();
+                primaryservice = accessory.getService(PowerMeterService);
+                primaryservice.getCharacteristic(EvePowerConsumption).getValue();
                 break;
 
             default:
@@ -601,7 +589,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 break;
         }
 
-        // Optional characteristics...
+        // Additional/optional characteristics...
         if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
             primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
         }
