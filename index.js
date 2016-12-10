@@ -177,9 +177,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Setup accessory category.
         accessory = new Accessory(data.name, uuid, 8);
 
-        // New accessory is always reachable
-        accessory.reachable = true;
-
         // Store and initialize variables into context
         accessory.context.name = data.name || NA;
         accessory.context.service = data.service;
@@ -299,6 +296,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Setup HomeKit switch service
         accessory.addService(primaryservice, data.name);
 
+        // New accessory is always reachable
+        accessory.reachable = true;
+
         // Setup listeners for different switch events
         this.setService(accessory);
 
@@ -306,14 +306,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         this.api.registerPlatformAccessories("homebridge-domotiga", "DomotiGa", [accessory]);
     }
 
-    // Confirm variable type
-    if (data.polling === true || (typeof (data.polling) === "string" && data.polling.toUpperCase() === "TRUE")) {
-        data.polling = true;
-    } else {
-        data.polling = false;
-    }
-    data.pollInMs = parseInt(data.pollInMs) || 1;
-
+  // Confirm variable type
+    data.polling = data.polling === true;
+    data.pollInMs = parseInt(data.pollInMs, 10) || 1;
 
     // Retrieve initial state
     this.getInitState(accessory);
@@ -321,7 +316,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     // Store accessory in cache
     this.accessories[data.name] = accessory;
 
-    // todo:
     // Configure state polling
     if (data.polling) this.doPolling(data.name);
 }
@@ -334,7 +328,8 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // Clear polling
     clearTimeout(this.polling[name]);
 
-    this.updateState(accessory);
+	// todo
+    //this.updateState(accessory);
 
     // Setup for next polling
     this.polling[name] = setTimeout(this.doPolling.bind(this, name), accessory.pollInMs * 1000);
@@ -616,54 +611,57 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
             primaryservice.getCharacteristic(EveTotalPowerConsumption).getValue();
         }
     }
+
+  // Configured accessory is reachable
+  accessory.updateReachability(true);	
 }
 
-DomotigaPlatform.prototype.updateState = function (accessory) {
+DomotigaPlatform.prototype.updateState = function (thisdevice, callback) {
 
-    if (accessory.context.valueTemperature)
-        this.dogetCurrentTemperature(accessory);
+    if (thisdevice.valueTemperature)
+        this.dogetCurrentTemperature(error,thisdevice);
 
-    if (accessory.context.valueHumidity)
-        this.dogetCurrentRelativeHumidity(accessory);
+    if (thisdevice.valueHumidity)
+        this.dogetCurrentRelativeHumidity(error,thisdevice);
 
-    if (accessory.context.valueContact)
-        this.dogetContactState(accessory);
+    if (thisdevice.valueContact)
+        this.dogetContactState(error,thisdevice);
 
-    if (accessory.context.valueLeakSensor)
-        this.dogetLeakSensorState(accessory);
+    if (thisdevice.valueLeakSensor)
+        this.dogetLeakSensorState(error,thisdevice);
 
-    if (accessory.context.valueMotionSensor)
-        this.dogetMotionDetected(accessory);
+    if (thisdevice.valueMotionSensor)
+        this.dogetMotionDetected(error,thisdevice);
 
-    if (accessory.context.valueSwitch)
-        this.dogetSwitchState(accessory);
+    if (thisdevice.valueSwitch)
+        this.dogetSwitchState(error,thisdevice);
 
-    if (accessory.context.valueOutlet) {
-        this.dogetOutletState(accessory);
-        this.dogetOutletInUse(accessory);
+    if (thisdevice.valueOutlet) {
+        this.dogetOutletState(error,thisdevice);
+        this.dogetOutletInUse(error,thisdevice);
     }
 
-    if (accessory.context.valueAirQuality) {
-        if (accessory.context.service == "FakeEveAirQualitySensor")
-            this.dogetCurrentEveAirQuality(accessory);
+    if (thisdevice.valueAirQuality) {
+        if (thisdevice.service == "FakeEveAirQualitySensor")
+            this.dogetCurrentEveAirQuality(error,thisdevice);
         else
-            this.dogetCurrentAirQuality(accessory);
+            this.dogetCurrentAirQuality(error,thisdevice);
     }
 
-    if (accessory.context.valueAirPressure)
-        this.dogetCurrentAirPressure(accessory);
+    if (thisdevice.valueAirPressure)
+        this.dogetCurrentAirPressure(error,thisdevice);
     
-    if (accessory.context.valuePowerConsumption)
-        this.dogetEvePowerConsumption(accessory);
+    if (thisdevice.valuePowerConsumption)
+        this.dogetEvePowerConsumption(error,thisdevice);
     
-    if (accessory.context.valueBattery)
-        this.dogetCurrentBatteryLevel(accessory);
+    if (thisdevice.valueBattery)
+        this.dogetCurrentBatteryLevel(error,thisdevice);
 
-    if (accessory.context.lowbattery)
-        this.dogetLowBatteryStatus(accessory);
+    if (thisdevice.lowbattery)
+        this.dogetLowBatteryStatus(error,thisdevice);
 
-    if (accessory.context.valueTotalPowerConsumption)
-        this.dogetEveTotalPowerConsumption(accessory);
+    if (thisdevice.valueTotalPowerConsumption)
+        this.dogetEveTotalPowerConsumption(error,thisdevice);
 }
 
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisdevice, callback) {
@@ -688,7 +686,7 @@ DomotigaPlatform.prototype.dogetCurrentTemperature = function (thisdevice, callb
             callback(error);
         } else {
             thisdevice.CurrentTemperature = Number(result);
-            callback(error, thisdevice.CurrentTemperature);
+            callback(null, thisdevice.CurrentTemperature);
         }
     }.bind(this));
 }
@@ -708,6 +706,7 @@ DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisdevice, ca
     }
 }
 
+
 DomotigaPlatform.prototype.dogetCurrentRelativeHumidity = function (thisdevice, callback) {
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueHumidity, function (error, result) {
@@ -716,7 +715,8 @@ DomotigaPlatform.prototype.dogetCurrentRelativeHumidity = function (thisdevice, 
             callback(error);
         } else {
             thisdevice.CurrentRelativeHumidity = Number(result);
-            callback(error, thisdevice.CurrentRelativeHumidity);
+            this.log('Humidity: %s for %s', thisdevice.CurrentRelativeHumidity, thisdevice.name);
+            callback(null, thisdevice.CurrentRelativeHumidity);
         }
     }.bind(this));
 }
@@ -1034,11 +1034,11 @@ DomotigaPlatform.prototype.getCurrentBatteryLevel = function (thisdevice, callba
     this.log("getting Battery level for " + thisdevice.name);
     if (thisdevice.polling) {
         // Get state directly from cache if polling is enabled
-        callback(null, thisdevice.StatusLowBattery);
+        callback(null, thisdevice.CurrentBatteryLevel);
     } else {
         this.dogetCurrentBatteryLevel(thisdevice, function (error, state) {
-            //thisdevice.StatusLowBattery = state;
-            callback(error, thisdevice.StatusLowBattery);
+            //thisdevice.CurrentBatteryLevel = state;
+            callback(error, thisdevice.CurrentBatteryLevel);
         });
     }
 }
@@ -1050,14 +1050,15 @@ DomotigaPlatform.prototype.dogetCurrentBatteryLevel = function (thisdevice, call
                 this.log.error('CurrentBattery GetValue failed: %s', error.message);
                 callback(error);
             } else {
+                thisdevice.lastBatteryLevel = (Number(result));
                 //this.log('CurrentBattery level Number(result): %s', Number(result));
-                thisdevice.StatusLowBattery = parseInt(Number(result) * 100 / 5000, 10);
-                this.log('CurrentBattery level: %s', thisdevice.StatusLowBattery);
-                if (thisdevice.StatusLowBattery > 100)
-                    thisdevice.StatusLowBattery = 100;
-                else if (thisdevice.StatusLowBattery < 0)
-                    thisdevice.StatusLowBattery = 0;
-                callback(null, thisdevice.StatusLowBattery);
+                thisdevice.CurrentBatteryLevel = parseInt(thisdevice.lastBatteryLevel * 100 / 5000, 10);
+                this.log('CurrentBattery level: %s', thisdevice.CurrentBatteryLevel);
+                if (thisdevice.CurrentBatteryLevel > 100)
+                    thisdevice.CurrentBatteryLevel = 100;
+                else if (thisdevice.CurrentBatteryLevel < 0)
+                    thisdevice.CurrentBatteryLevel = 0;
+                callback(null, thisdevice.CurrentBatteryLevel);
             }
         }.bind(this));
 }
@@ -1077,20 +1078,13 @@ DomotigaPlatform.prototype.getLowBatteryStatus = function (thisdevice, callback)
 }
 
 DomotigaPlatform.prototype.dogetLowBatteryStatus = function (thisdevice, callback) {
-        this.domotigaGetValue(thisdevice.device, thisdevice.valueBattery, function (error, result) {
-            if (error) {
-                this.log.error('BatteryStatus GetValue failed: %s', error.message);
-                callback(error);
-            } else {
-                var value = Number(result);
-                if (isNaN(value) || value < Number(thisdevice.lowbattery))
-                    thisdevice.StatusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
-                else
-                    thisdevice.StatusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
+        
+    if (thisdevice.lastBatteryLevel < Number(thisdevice.lowbattery))
+        thisdevice.StatusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
+    else
+        thisdevice.StatusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
 
-                callback(null, thisdevice.StatusLowBattery);
-            }
-        }.bind(this));
+    //callback(null, thisdevice.StatusLowBattery);
 }
 
 DomotigaPlatform.prototype.dogetMotionDetected = function (thisdevice, callback) {
