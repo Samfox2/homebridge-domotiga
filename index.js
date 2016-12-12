@@ -4,8 +4,12 @@ var JSONRequest = require("jsonrequest");
 var inherits = require('util').inherits;
 
 module.exports = function (homebridge) {
-
+    console.log("homebridge API version: " + homebridge.version);
+    
+    // Accessory must be created from PlatformAccessory Constructor    
     Accessory = homebridge.platformAccessory;
+    
+    // Service and Characteristic are from hap-nodejs    
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
     UUIDGen = homebridge.hap.uuid;
@@ -116,6 +120,7 @@ module.exports = function (homebridge) {
     };
     inherits(EveWeatherService, Service);
 
+    // Consider platform plugin as dynamic platform plugin
     homebridge.registerPlatform("homebridge-domotiga", "DomotiGa", DomotigaPlatform, true);
 }
 
