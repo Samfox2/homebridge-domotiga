@@ -56,7 +56,6 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Sensor gardenhouse",
                 "service": "HumiditySensor",
                 "manufacturer": "DIY",
@@ -67,7 +66,6 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Combined AirQualitySensor livingroom",
                 "service": "AirQualitySensor",
                 "device": "83",
@@ -79,7 +77,6 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Combined AirQualitySensor with ppm display",
                 "service": "FakeEveAirQualitySensor",
                 "device": "89",
@@ -91,14 +88,12 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "AirQualitySensor bedroom without battery",
                 "service": "AirQualitySensor",
                 "device": "82",
                 "valueAirQuality": "1"
             },
             {
-                "accessory": "Domotiga",
                 "name": "PC",
                 "service": "Contact",
                 "device": "77",
@@ -107,14 +102,12 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Printer",
                 "service": "Switch",
                 "device": "79",
                 "valueSwitch": "1"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Utility room",
                 "service": "LeakSensor",
                 "device": "25",
@@ -123,7 +116,6 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Entrance",
                 "service": "MotionSensor",
                 "device": "26",
@@ -132,7 +124,6 @@ Configuration sample:
                 "lowbattery": "3000"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Outlet",
                 "service": "Outlet",
                 "device": "72",
@@ -141,7 +132,6 @@ Configuration sample:
                 "valueTotalPowerConsumption": "7"
             },
             {
-                "accessory": "Domotiga",
                 "name": "Powermeter basement",
                 "service": "Powermeter",
                 "device": "44",
@@ -155,7 +145,7 @@ Configuration sample:
 
 Fields:
 
-* ```"accessory":``` Must always be "Domotiga" (required)
+* ```"platform":``` Must always be Domotiga  (required)
 * ```"name":``` Can be anything
 * ```"host":``` The hostname or ip of the machine running Domotiga (required)
 * ```"port":``` The port that Domotiga is using (usually 9090) (required)
