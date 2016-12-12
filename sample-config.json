@@ -28,7 +28,6 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Sensor gardenhouse",
                     "service": "HumiditySensor",
                     "manufacturer": "DIY",
@@ -39,7 +38,6 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Combined AirQualitySensor livingroom",
                     "service": "AirQualitySensor",
                     "device": "83",
@@ -51,7 +49,6 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Combined AirQualitySensor with ppm display",
                     "service": "FakeEveAirQualitySensor",
                     "device": "89",
@@ -63,14 +60,12 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "AirQualitySensor bedroom without battery",
                     "service": "AirQualitySensor",
                     "device": "82",
                     "valueAirQuality": "1"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "PC",
                     "service": "Contact",
                     "device": "77",
@@ -79,14 +74,12 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Printer",
                     "service": "Switch",
                     "device": "79",
                     "valueSwitch": "1"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Utility room",
                     "service": "LeakSensor",
                     "device": "25",
@@ -95,7 +88,6 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Entrance",
                     "service": "MotionSensor",
                     "device": "26",
@@ -104,7 +96,6 @@
                     "lowbattery": "3000"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Outlet",
                     "service": "Outlet",
                     "device": "72",
@@ -113,7 +104,6 @@
                     "valueTotalPowerConsumption": "7"
                 },
                 {
-                    "accessory": "Domotiga",
                     "name": "Powermeter basement",
                     "service": "Powermeter",
                     "device": "44",
