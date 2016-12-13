@@ -686,7 +686,7 @@ DomotigaPlatform.prototype.dogetCurrentTemperature = function (thisdevice, callb
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueTemperature, function (error, result) {
         if (error) {
-            this.log.error('doCurrentTemperature GetValue failed: %s', error.message);
+            this.log.error('%s: doCurrentTemperature GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.CurrentTemperature = Number(result);
@@ -715,7 +715,7 @@ DomotigaPlatform.prototype.dogetCurrentRelativeHumidity = function (thisdevice, 
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueHumidity, function (error, result) {
         if (error) {
-            this.log.error('doCurrentRelativeHumidity GetValue failed: %s for %s', error.message, thisdevice.name);
+            this.log.error('%s: doCurrentRelativeHumidity GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.CurrentRelativeHumidity = Number(result);
@@ -749,7 +749,7 @@ DomotigaPlatform.prototype.dogetCurrentAirPressure = function (thisdevice, callb
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueAirPressure, function (error, result) {
         if (error) {
-            this.log.error('doCurrentAirPressure GetValue failed: %s', error.message);
+            this.log.error('%s: doCurrentAirPressure GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.CurrentAirPressure = Number(result);
@@ -775,7 +775,7 @@ DomotigaPlatform.prototype.getContactState = function (thisdevice, callback) {
 DomotigaPlatform.prototype.dogetContactState = function (thisdevice, callback) {
     this.domotigaGetValue(thisdevice.device, thisdevice.valueContact, function (error, result) {
         if (error) {
-            this.log.error('dogetGetContactState GetValue failed: %s', error.message);
+            this.log.error('%s: dogetGetContactState GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (result.toLowerCase() == "on")
@@ -806,7 +806,7 @@ DomotigaPlatform.prototype.getLeakSensorState = function (thisdevice, callback) 
 DomotigaPlatform.prototype.dogetLeakSensorState = function (thisdevice, callback) {
     this.domotigaGetValue(thisdevice.device, thisdevice.valueLeakSensor, function (error, result) {
         if (error) {
-            this.log.error('dogetLeakSensorState GetValue failed: %s', error.message);
+            this.log.error('%s: dogetLeakSensorState GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (Number(result) == 0)
@@ -836,7 +836,7 @@ DomotigaPlatform.prototype.getOutletState = function (thisdevice, callback) {
 DomotigaPlatform.prototype.dogetOutletState = function (thisdevice, callback) {
     this.domotigaGetValue(thisdevice.device, thisdevice.valueOutlet, function (error, result) {
         if (error) {
-            this.log.error('dogetGetOutletState GetValue failed: %s', error.message);
+            this.log.error('%s: dogetGetOutletState GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (result.toLowerCase() == "on")
@@ -890,7 +890,7 @@ DomotigaPlatform.prototype.getOutletInUse = function (thisdevice, callback) {
 DomotigaPlatform.prototype.dogetOutletInUse = function (thisdevice, callback) {
     this.domotigaGetValue(thisdevice.device, thisdevice.valueOutlet, function (error, result) {
         if (error) {
-            this.log.error('dogetOutletInUse GetValue failed: %s', error.message);
+            this.log.error('%s: dogetOutletInUse GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (result.toLowerCase() == "on")
@@ -920,7 +920,7 @@ DomotigaPlatform.prototype.getCurrentAirQuality = function (thisdevice, callback
 DomotigaPlatform.prototype.dogetCurrentAirQuality = function (thisdevice, callback) {
     this.domotigaGetValue(thisdevice.device, thisdevice.valueAirQuality, function (error, result) {
         if (error) {
-            this.log.error('doCurrentAirQuality GetValue failed: %s', error.message);
+            this.log.error('%s: doCurrentAirQuality GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             voc = Number(result);
@@ -968,7 +968,7 @@ DomotigaPlatform.prototype.dogetCurrentEveAirQuality = function (thisdevice, cal
     //      > 2000 : Bad	
     this.domotigaGetValue(thisdevice.device, thisdevice.valueAirQuality, function (error, result) {
         if (error) {
-            this.log.error('doCurrentEveAirQuality GetValue failed: %s', error.message);
+            this.log.error('%s: doCurrentEveAirQuality GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.AirQuality = Number(result);
@@ -999,7 +999,7 @@ DomotigaPlatform.prototype.dogetEvePowerConsumption = function (thisdevice, call
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valuePowerConsumption, function (error, result) {
         if (error) {
-            this.log.error('doPowerConsumption GetValue failed: %s', error.message);
+            this.log.error('%s: doPowerConsumption GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.PowerConsumption = Math.round(Number(result)); // W
@@ -1028,7 +1028,7 @@ DomotigaPlatform.prototype.dogetEveTotalPowerConsumption = function (thisdevice,
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueTotalPowerConsumption, function (error, result) {
         if (error) {
-            this.log.error('doEveTotalPowerConsumption GetValue failed: %s', error.message);
+            this.log.error('%s: doEveTotalPowerConsumption GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.TotalPowerConsumption = Math.round(Number(result) * 1000.0) / 1000.0; // kWh
@@ -1056,7 +1056,7 @@ DomotigaPlatform.prototype.dogetCurrentBatteryLevel = function (thisdevice, call
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueBattery, function (error, result) {
         if (error) {
-            this.log.error('doCurrentBattery GetValue failed: %s', error.message);
+            this.log.error('%s: doCurrentBattery GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             thisdevice.lastBatteryLevel = (Number(result));
@@ -1114,7 +1114,7 @@ DomotigaPlatform.prototype.dogetMotionDetected = function (thisdevice, callback)
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueMotionSensor, function (error, result) {
         if (error) {
-            this.log.error('dogetMotionDetected GetValue failed: %s', error.message);
+            this.log.error('%s: dogetMotionDetected GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (Number(result) == 0)
@@ -1144,7 +1144,7 @@ DomotigaPlatform.prototype.dogetSwitchState = function (thisdevice, callback) {
 
     this.domotigaGetValue(thisdevice.device, thisdevice.valueSwitch, function (error, result) {
         if (error) {
-            this.log.error('getSwitchState GetValue failed: %s', error.message);
+            this.log.error('%s: getSwitchState GetValue failed: %s', thisdevice.name, error.message);
             callback(error);
         } else {
             if (result.toLowerCase() == "on")
