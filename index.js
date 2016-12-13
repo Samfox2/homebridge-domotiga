@@ -328,6 +328,8 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
 // Method to determine current state
 DomotigaPlatform.prototype.doPolling = function (name) {
+    this.log("Polling... ");
+
     var accessory = this.accessories[name];
 
     // Clear polling
@@ -1210,10 +1212,35 @@ DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, v
     });
 }
 
+//// Get value from domotiga database
+//DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, callback) {
+
+//    JSONRequest('http://' + this.host + ':' + this.port, {
+//        jsonrpc: "2.0",
+//        method: "device.get",
+//        params: {
+//            "device_id": device
+//        },
+//        id: 1
+//    }, function (err, data) {
+//        if (err) {
+//            //this.log.error("Sorry err: ", err);
+//            callback(err);
+//        } else {
+//            item = Number(deviceValueNo) - 1;
+//            //this.log("data.result:", data.result);
+//            //this.log( "data.result.values[item].value", data.result.values[item].value);
+//            callback(null, data.result.values[item].value);
+//        }
+//    });
+//}
+
 // Get value from domotiga database
 DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, callback) {
+    
+    var self = this;
 
-    JSONRequest('http://' + this.host + ':' + this.port, {
+    JSONRequest('http://' + self.host + ':' + self.port, {
         jsonrpc: "2.0",
         method: "device.get",
         params: {
@@ -1222,17 +1249,16 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
         id: 1
     }, function (err, data) {
         if (err) {
-            //this.log.error("Sorry err: ", err);
+            self.log.error("Sorry err: ", err);
             callback(err);
         } else {
             item = Number(deviceValueNo) - 1;
-            //this.log("data.result:", data.result);
-            //this.log( "data.result.values[item].value", data.result.values[item].value);
+            //self.log("data.result:", data.result);
+            //self.log( "data.result.values[item].value", data.result.values[item].value);
             callback(null, data.result.values[item].value);
         }
     });
 }
-
 
 // Method to handle plugin configuration in HomeKit app
 DomotigaPlatform.prototype.configurationRequestHandler = function (context, request, callback) {
