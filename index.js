@@ -334,7 +334,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.on('identify', this.identify.bind(this, accessory.context));
 
         // Setup HomeKit switch service
-        accessory.addService(primaryservice, data.name);
+        accessory.addService(accessory.primaryservice, data.name);
 
         // New accessory is always reachable
         accessory.reachable = true;
