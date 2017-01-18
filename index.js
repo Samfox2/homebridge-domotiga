@@ -759,8 +759,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 break;
 
             case "Powermeter":
-                primaryservice = accessory.getService(PowerMeterService);
-                primaryservice.getCharacteristic(EvePowerConsumption).getValue();
+                accessory.primaryservice.getCharacteristic(EvePowerConsumption).getValue();
                 break;
 
             default:
