@@ -16,7 +16,10 @@ The latest version (work in progress) supports following (primary) services:
 - ```LeakSensor``` (leaksensor state) 
 - ```MotionSensor``` (motionsensor state) 
 - ```Switch``` (get/set switch state) 
-- ```Outlet``` (get/set outlet state) 
+- ```Outlet``` (get/set outlet state)
+- ```Door``` (get/set door position) 
+- ```Window``` (get/set window position) 
+- ```WindowCovering``` (get/set window covering positon) 
 - ```Powermeter``` (power consumption) 
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
