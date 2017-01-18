@@ -319,7 +319,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
     // Store and initialize variables into context
     accessory.context.cacheCurrentTemperature = 0;
-    accessory.context.cacheCurrentRelativeHumidity = 0;
+    accessory.context.cacheCurrentRelativeHumidity = 99;
     accessory.context.cacheCurrentAirPressure = 1000;
     accessory.context.cacheContactSensorState = Characteristic.ContactSensorState.CONTACT_DETECTED;
     accessory.context.cacheLeakSensorState = Characteristic.LeakDetected.LEAK_NOT_DETECTED;
@@ -371,7 +371,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "TemperatureSensor":
             primaryservice = accessory.getService(Service.TemperatureSensor);
-            this.pollCurrentTemperature(thisDevice, function (error, value) {
+            this.getCurrentTemperature(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
@@ -382,7 +382,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "HumiditySensor":
             primaryservice = accessory.getService(Service.HumiditySensor);
-            this.pollCurrentRelativeHumidity(thisDevice, function (error, value) {
+            this.getCurrentRelativeHumidity(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                     thisDevice.cacheCurrentRelativeHumidity = value;
@@ -393,7 +393,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Contact":
             primaryservice = accessory.getService(Service.ContactSensor);
-            this.pollContactState(thisDevice, function (error, value) {
+            this.getContactState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheContactSensorState) {
                     thisDevice.cacheContactSensorState = value;
@@ -404,7 +404,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "LeakSensor":
             primaryservice = accessory.getService(Service.LeakSensor);
-            this.pollLeakSensorState(thisDevice, function (error, value) {
+            this.getLeakSensorState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheLeakDetected) {
                     thisDevice.cacheLeakSensorState = value;
@@ -415,7 +415,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "MotionSensor":
             primaryservice = accessory.getService(Service.MotionSensor);
-            this.pollMotionSensorState(thisDevice, function (error, value) {
+            this.getMotionSensorState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheMotionDetected) {
                     thisDevice.cacheMotionDetected = value;
@@ -426,7 +426,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Switch":
             primaryservice = accessory.getService(Service.Switch);
-            this.pollSwitchState(thisDevice, function (error, value) {
+            this.getSwitchState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheSwitchState) {
                     thisDevice.cacheSwitchState = value;
@@ -437,7 +437,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
-            this.pollOutletState(thisDevice, function (error, value) {
+            this.getOutletState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheOutletState) {
                     thisDevice.cacheOutletState = value;
@@ -448,7 +448,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "AirQualitySensor":
             primaryservice = accessory.getService(Service.AirQualitySensor);
-            this.pollCurrentAirQuality(thisDevice, function (error, value) {
+            this.getCurrentAirQuality(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentAirQuality = value;
@@ -459,7 +459,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "FakeEveAirQualitySensor":
             primaryservice = accessory.getService(EveRoomService);
-            this.pollCurrentEveAirQuality(thisDevice, function (error, value) {
+            this.getCurrentEveAirQuality(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentAirQuality = value;
@@ -470,7 +470,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "FakeEveWeatherSensor":
             primaryservice = accessory.getService(EveWeatherService);
-            this.pollCurrentAirPressure(thisDevice, function (error, value) {
+            this.getCurrentAirPressure(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                     thisDevice.cacheAirQuality = value;
@@ -481,7 +481,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Powermeter":
             primaryservice = accessory.getService(PowerMeterService);
-            this.pollEvePowerConsumption(thisDevice, function (error, value) {
+            this.getEvePowerConsumption(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cachePowerConsumption) {
                     thisDevice.cachePowerConsumption = value;
@@ -497,7 +497,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
     // Additional/optional characteristics...
     if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
-        this.pollCurrentTemperature(thisDevice, function (error, value) {
+        this.getCurrentTemperature(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentTemperature) {
                 thisDevice.cacheCurrentTemperature = value;
@@ -506,7 +506,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
-        this.pollCurrentRelativeHumidity(thisDevice, function (error, value) {
+        this.getCurrentRelativeHumidity(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                 thisDevice.cacheCurrentRelativeHumidity = value;
@@ -515,7 +515,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.valueBattery) {
-        this.pollCurrentBatteryLevel(thisDevice, function (error, value) {
+        this.getCurrentBatteryLevel(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentBatteryLevel) {
                 thisDevice.cacheCurrentBatteryLevel = value;
@@ -524,7 +524,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.lowbattery) {
-        this.pollLowBatteryStatus(thisDevice, function (error, value) {
+        this.getLowBatteryStatus(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheStatusLowBattery) {
                 thisDevice.cacheStatusLowBattery = value;
@@ -534,7 +534,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Additional required characteristic for outlet
     if (accessory.context.service == "Outlet") {
-        this.pollOutletInUse(thisDevice, function (error, value) {
+        this.getOutletInUse(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheOutletInUse) {
                 thisDevice.cacheOutletInUse = value;
@@ -545,7 +545,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirPressure &&
         (accessory.context.service != "FakeEveWeatherSensor")) {
-        this.pollCurrentAirPressure(thisDevice, function (error, value) {
+        this.getCurrentAirPressure(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                 thisDevice.cacheAirQuality = value;
@@ -566,7 +566,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
-        this.pollEvePowerConsumption(thisDevice, function (error, value) {
+        this.getEvePowerConsumption(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cachePowerConsumption) {
                 thisDevice.cachePowerConsumption = value;
@@ -576,7 +576,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueTotalPowerConsumption) {
-        this.pollEveTotalPowerConsumption(thisDevice, function (error, value) {
+        this.getEveTotalPowerConsumption(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheTotalPowerConsumption) {
                 thisDevice.cacheTotalPowerConsumption = value;
