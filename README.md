@@ -184,7 +184,7 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
-* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (opt. for "Switch", "Contact", "Outlet", "LeakSensor", "MotionSensor")
+* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (opt. for "Contact", "Door", "LeakSensor", "MotionSensor", "Outlet", "Switch", "Window", "WindowCovering" )
 
 
 Not yet supported by all homekit apps:
