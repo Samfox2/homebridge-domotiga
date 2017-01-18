@@ -177,6 +177,9 @@ Fields:
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
+* ```"valueDoor":```     Value no. of the door (required for "Door")
+* ```"valueWindow":```   Value no. of the window (required for "Window")
+* ```"valueWindowCovering":```   Value no. of the window covering (required for "Window Covering")
 * ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
