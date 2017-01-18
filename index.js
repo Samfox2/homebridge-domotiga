@@ -19,6 +19,9 @@ function Domotiga(log, config) {
         valueBattery: config.valueBattery,
         valueContact: config.valueContact,
         valueSwitch: config.valueSwitch,
+        valueDoor: config.valueDoor,
+        valueWindow: config.valueWindow,
+        valueWindowCovering: config.valueWindowCovering,
         valueAirQuality: config.valueAirQuality,
         valueOutlet: config.valueOutlet,
         valueLeakSensor: config.valueLeakSensor,
@@ -36,13 +39,13 @@ function Domotiga(log, config) {
 
         var pollingInterval = Number(this.config.pollInMs);
 
-        var statusemitter = pollingtoevent(function(done) {
-            that.domotigaGetValue(that.primaryValue, function(error, result) {
+        var statusemitter = pollingtoevent(function (done) {
+            that.domotigaGetValue(that.primaryValue, function (error, result) {
                 if (error) {
                     that.log.error('getState GetValue failed: %s', error.message);
                     callback(error);
                 } else {
-                        done(null, result);
+                    done(null, result);
                 }
             })
         }, {
@@ -51,9 +54,9 @@ function Domotiga(log, config) {
             longpollEventName: "statuspoll"
         });
 
-        statusemitter.on("statuspoll", function(data) {
+        statusemitter.on("statuspoll", function (data) {
             that.log(that.config.name, "received data:", "state is currently", data);
-
+            // Todo: cache values and only update database if value has changed
             switch (that.config.service) {
                 case "Switch":
                     if (that.primaryservice) {
@@ -62,6 +65,33 @@ function Domotiga(log, config) {
                         else
                             that.primaryservice.getCharacteristic(Characteristic.On).setValue(0);
                         that.log("Switching state...");
+                    }
+                    break;
+                case "Door":
+                    if (that.primaryservice) {
+                        if (data.toLowerCase() == "1")
+                            that.primaryservice.getCharacteristic(Characteristic.TargetPositon).setValue(100);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.Targetpositon).setValue(0);
+                        that.log("Switching door state...");
+                    }
+                    break;
+                case "Window":
+                    if (that.primaryservice) {
+                        if (data.toLowerCase() == "1")
+                            that.primaryservice.getCharacteristic(Characteristic.TargetPositon).setValue(100);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.Targetpositon).setValue(0);
+                        that.log("Switching window state...");
+                    }
+                    break;
+                case "WindowCovering":
+                    if (that.primaryservice) {
+                        if (data.toLowerCase() == "1")
+                            that.primaryservice.getCharacteristic(Characteristic.TargetPositon).setValue(100);
+                        else
+                            that.primaryservice.getCharacteristic(Characteristic.Targetpositon).setValue(0);
+                        that.log("Switching window covering state...");
                     }
                     break;
                 case "Outlet":
@@ -79,7 +109,7 @@ function Domotiga(log, config) {
                             that.primaryservice.getCharacteristic(Characteristic.ContactSensorState).setValue(Characteristic.ContactSensorState.CONTACT_DETECTED);
                         else
                             that.primaryservice.getCharacteristic(Characteristic.ContactSensorState).setValue(Characteristic.ContactSensorState.CONTACT_NOT_DETECTED);
-                        that.log("Changing oontact state...");
+                        that.log("Changing contact state...");
                     }
                     break;
                 case "LeakSensor":
@@ -88,7 +118,7 @@ function Domotiga(log, config) {
                             that.primaryservice.getCharacteristic(Characteristic.LeakDetected).setValue(Characteristic.LeakDetected.LEAK_NOT_DETECTED);
                         else
                             that.primaryservice.getCharacteristic(Characteristic.LeakDetected).setValue(Characteristic.LeakDetected.LEAK_DETECTED);
-                        
+
                         that.log("Changing leaksensor state...");
                     }
                     break;
@@ -108,12 +138,12 @@ function Domotiga(log, config) {
     }
 }
 
-module.exports = function(homebridge) {
+module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
     ////////////////////////////// Custom characteristics //////////////////////////////
-    EvePowerConsumption = function() {
+    EvePowerConsumption = function () {
         Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
             format: Characteristic.Formats.UINT16,
@@ -127,7 +157,7 @@ module.exports = function(homebridge) {
     };
     inherits(EvePowerConsumption, Characteristic);
 
-    EveTotalPowerConsumption = function() {
+    EveTotalPowerConsumption = function () {
         Characteristic.call(this, 'Total Consumption', 'E863F10C-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
             format: Characteristic.Formats.FLOAT, // Deviation from Eve Energy observed type
@@ -141,7 +171,7 @@ module.exports = function(homebridge) {
     };
     inherits(EveTotalPowerConsumption, Characteristic);
 
-    EveRoomAirQuality = function() {
+    EveRoomAirQuality = function () {
         Characteristic.call(this, 'Eve Air Quality', 'E863F10B-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
             format: Characteristic.Formats.UINT16,
@@ -155,7 +185,7 @@ module.exports = function(homebridge) {
     };
     inherits(EveRoomAirQuality, Characteristic);
 
-    EveBatteryLevel = function() {
+    EveBatteryLevel = function () {
         Characteristic.call(this, 'Eve Battery Level', 'E863F11B-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
             format: Characteristic.Formats.UINT16,
@@ -169,7 +199,7 @@ module.exports = function(homebridge) {
     };
     inherits(EveBatteryLevel, Characteristic);
 
-    EveAirPressure = function() {
+    EveAirPressure = function () {
         //todo: only rough guess of extreme values -> use correct min/max if known
         Characteristic.call(this, 'Eve AirPressure', 'E863F10F-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
@@ -186,7 +216,7 @@ module.exports = function(homebridge) {
 
 
     ////////////////////////////// Custom services //////////////////////////////
-    PowerMeterService = function(displayName, subtype) {
+    PowerMeterService = function (displayName, subtype) {
         Service.call(this, displayName, '00000001-0000-1777-8000-775D67EC4377', subtype);
         // Required Characteristics
         this.addCharacteristic(EvePowerConsumption);
@@ -196,7 +226,7 @@ module.exports = function(homebridge) {
     inherits(PowerMeterService, Service);
 
     //Eve service (custom UUID)
-    EveRoomService = function(displayName, subtype) {
+    EveRoomService = function (displayName, subtype) {
         Service.call(this, displayName, 'E863F002-079E-48FF-8F27-9C2605A29F52', subtype);
         // Required Characteristics
         this.addCharacteristic(EveRoomAirQuality);
@@ -207,7 +237,7 @@ module.exports = function(homebridge) {
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     //Eve service (custom UUID)
-    EveWeatherService = function(displayName, subtype) {
+    EveWeatherService = function (displayName, subtype) {
         Service.call(this, displayName, 'E863F001-079E-48FF-8F27-9C2605A29F52', subtype);
         // Required Characteristics
         this.addCharacteristic(EveAirPressure);
@@ -223,11 +253,11 @@ module.exports = function(homebridge) {
 
 
 Domotiga.prototype = {
-    identify: function(callback) {
+    identify: function (callback) {
         this.log("Identify requested!");
         callback(); // success
     },
-    domotigaGetValue: function(deviceValueNo, callback) {
+    domotigaGetValue: function (deviceValueNo, callback) {
         var that = this;
         JSONRequest('http://' + that.config.host + ':' + that.config.port, {
             jsonrpc: "2.0",
@@ -236,7 +266,7 @@ Domotiga.prototype = {
                 "device_id": that.config.device
             },
             id: 1
-        }, function(err, data) {
+        }, function (err, data) {
             if (err) {
                 that.log.error("Sorry err: ", err);
                 callback(err);
@@ -248,7 +278,7 @@ Domotiga.prototype = {
             }
         });
     },
-    domotigaSetValue: function(deviceValueNo, value, callback) {
+    domotigaSetValue: function (deviceValueNo, value, callback) {
         var that = this;
         JSONRequest('http://' + that.config.host + ':' + that.config.port, {
             jsonrpc: "2.0",
@@ -259,7 +289,7 @@ Domotiga.prototype = {
                 "value": value
             },
             id: 1
-        }, function(err, data) {
+        }, function (err, data) {
             //that.log("data:", data);
             if (err) {
                 that.log.error("Sorry err: ", err);
@@ -269,10 +299,10 @@ Domotiga.prototype = {
             }
         });
     },
-    getCurrentRelativeHumidity: function(callback) {
+    getCurrentRelativeHumidity: function (callback) {
         var that = this;
         that.log("getting CurrentRelativeHumidity for " + that.config.name);
-        this.domotigaGetValue(that.config.valueHumidity, function(error, result) {
+        this.domotigaGetValue(that.config.valueHumidity, function (error, result) {
             if (error) {
                 that.log.error('CurrentRelativeHumidity GetValue failed: %s', error.message);
                 callback(error);
@@ -281,10 +311,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getCurrentTemperature: function(callback) {
+    getCurrentTemperature: function (callback) {
         var that = this;
         that.log("getting Temperature for " + that.config.name);
-        this.domotigaGetValue(that.config.valueTemperature, function(error, result) {
+        this.domotigaGetValue(that.config.valueTemperature, function (error, result) {
             if (error) {
                 that.log.error('CurrentTemperature GetValue failed: %s', error.message);
                 callback(error);
@@ -293,16 +323,16 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getTemperatureUnits: function(callback) {
+    getTemperatureUnits: function (callback) {
         var that = this;
         that.log("getting Temperature unit for " + that.config.name);
         // 1 = F and 0 = C
         callback(null, 0);
     },
-    getCurrentAirPressure: function(callback) {
+    getCurrentAirPressure: function (callback) {
         var that = this;
         that.log("getting CurrentAirPressure for " + that.config.name);
-        this.domotigaGetValue(that.config.valueAirPressure, function(error, result) {
+        this.domotigaGetValue(that.config.valueAirPressure, function (error, result) {
             if (error) {
                 that.log.error('CurrentAirPressure GetValue failed: %s', error.message);
                 callback(error);
@@ -311,10 +341,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getContactState: function(callback) {
+    getContactState: function (callback) {
         var that = this;
         that.log("getting ContactState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueContact, function(error, result) {
+        this.domotigaGetValue(that.config.valueContact, function (error, result) {
             if (error) {
                 that.log.error('getGetContactState GetValue failed: %s', error.message);
                 callback(error);
@@ -326,10 +356,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getLeakSensorState: function(callback) {
+    getLeakSensorState: function (callback) {
         var that = this;
         that.log("getting LeakSensorState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueLeakSensor, function(error, result) {
+        this.domotigaGetValue(that.config.valueLeakSensor, function (error, result) {
             if (error) {
                 that.log.error('getLeakSensorState GetValue failed: %s', error.message);
                 callback(error);
@@ -341,10 +371,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getOutletState: function(callback) {
+    getOutletState: function (callback) {
         var that = this;
         that.log("getting OutletState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueOutlet, function(error, result) {
+        this.domotigaGetValue(that.config.valueOutlet, function (error, result) {
             if (error) {
                 that.log.error('getGetOutletState GetValue failed: %s', error.message);
                 callback(error);
@@ -356,7 +386,7 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    setOutletState: function(boolvalue, callback) {
+    setOutletState: function (boolvalue, callback) {
         var that = this;
         that.log("Setting outlet state for '%s' to %s", that.config.name, boolvalue);
 
@@ -366,7 +396,7 @@ Domotiga.prototype = {
             outletState = "Off";
 
         var callbackWasCalled = false;
-        that.domotigaSetValue(that.config.valueOutlet, outletState, function(err) {
+        that.domotigaSetValue(that.config.valueOutlet, outletState, function (err) {
             if (callbackWasCalled)
                 that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
 
@@ -380,10 +410,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getOutletInUse: function(callback) {
+    getOutletInUse: function (callback) {
         var that = this;
         that.log("getting OutletInUse for " + that.config.name);
-        this.domotigaGetValue(that.config.valueOutlet, function(error, result) {
+        this.domotigaGetValue(that.config.valueOutlet, function (error, result) {
             if (error) {
                 that.log.error('getOutletInUse GetValue failed: %s', error.message);
                 callback(error);
@@ -395,11 +425,11 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getCurrentAirQuality: function(callback) {
+    getCurrentAirQuality: function (callback) {
         var that = this;
         that.log("getting airquality for " + that.config.name);
 
-        this.domotigaGetValue(that.config.valueAirQuality, function(error, result) {
+        this.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
             if (error) {
                 that.log.error('CurrentAirQuality GetValue failed: %s', error.message);
                 callback(error);
@@ -422,7 +452,7 @@ Domotiga.prototype = {
         }.bind(this));
     },
     // Eve characteristic (custom UUID)    
-    getCurrentEveAirQuality: function(callback) {
+    getCurrentEveAirQuality: function (callback) {
         // Custom Eve intervals:
         //    0... 700 : Exzellent
         //  700...1100 : Good
@@ -431,7 +461,7 @@ Domotiga.prototype = {
         //      > 2000 : Bad	
         var that = this;
         that.log("getting Eve room airquality for " + that.config.name);
-        this.domotigaGetValue(that.config.valueAirQuality, function(error, result) {
+        this.domotigaGetValue(that.config.valueAirQuality, function (error, result) {
             if (error) {
                 that.log.error('CurrentEveAirQuality GetValue failed: %s', error.message);
                 callback(error);
@@ -444,10 +474,10 @@ Domotiga.prototype = {
         }.bind(this));
     },
     // Eve characteristic (custom UUID)    
-    getEvePowerConsumption: function(callback) {
+    getEvePowerConsumption: function (callback) {
         var that = this;
         that.log("getting EvePowerConsumption for " + that.config.name);
-        this.domotigaGetValue(that.config.valuePowerConsumption, function(error, result) {
+        this.domotigaGetValue(that.config.valuePowerConsumption, function (error, result) {
             if (error) {
                 that.log.error('PowerConsumption GetValue failed: %s', error.message);
                 callback(error);
@@ -457,10 +487,10 @@ Domotiga.prototype = {
         }.bind(this));
     },
     // Eve characteristic (custom UUID)   
-    getEveTotalPowerConsumption: function(callback) {
+    getEveTotalPowerConsumption: function (callback) {
         var that = this;
         that.log("getting EveTotalPowerConsumption for " + that.config.name);
-        this.domotigaGetValue(that.config.valueTotalPowerConsumption, function(error, result) {
+        this.domotigaGetValue(that.config.valueTotalPowerConsumption, function (error, result) {
             if (error) {
                 that.log.error('EveTotalPowerConsumption GetValue failed: %s', error.message);
                 callback(error);
@@ -469,10 +499,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getCurrentBatteryLevel: function(callback) {
+    getCurrentBatteryLevel: function (callback) {
         var that = this;
         that.log("getting Battery level for " + that.config.name);
-        this.domotigaGetValue(that.config.valueBattery, function(error, result) {
+        this.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log.error('CurrentBattery GetValue failed: %s', error.message);
                 callback(error);
@@ -488,10 +518,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getLowBatteryStatus: function(callback) {
+    getLowBatteryStatus: function (callback) {
         var that = this;
         that.log("getting BatteryStatus for " + that.config.name);
-        this.domotigaGetValue(that.config.valueBattery, function(error, result) {
+        this.domotigaGetValue(that.config.valueBattery, function (error, result) {
             if (error) {
                 that.log.error('BatteryStatus GetValue failed: %s', error.message);
                 callback(error);
@@ -504,10 +534,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getMotionDetected: function(callback) {
+    getMotionDetected: function (callback) {
         var that = this;
         that.log("getting MotionDetected for " + that.config.name);
-        this.domotigaGetValue(that.config.valueMotionSensor, function(error, result) {
+        this.domotigaGetValue(that.config.valueMotionSensor, function (error, result) {
             if (error) {
                 that.log.error('getMotionDetected GetValue failed: %s', error.message);
                 callback(error);
@@ -519,10 +549,10 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getSwitchState: function(callback) {
+    getSwitchState: function (callback) {
         var that = this;
         that.log("getting SwitchState for " + that.config.name);
-        this.domotigaGetValue(that.config.valueSwitch, function(error, result) {
+        this.domotigaGetValue(that.config.valueSwitch, function (error, result) {
             if (error) {
                 that.log.error('getSwitchState GetValue failed: %s', error.message);
                 callback(error);
@@ -558,7 +588,137 @@ Domotiga.prototype = {
             }
         }.bind(this));
     },
-    getServices: function() {
+    getDoorPositionState: function (callback) {
+        // At this time the value property of PositionState is always mapped to stopped
+        callback(null, Characteristic.PositionState.STOPPED);
+    },
+    getDoorPosition: function (callback) {
+        var that = this;
+        that.log("Getting DoorPosition for " + that.config.name);
+        this.domotigaGetValue(that.config.valueDoor, function (error, result) {
+            if (error) {
+                that.log.error('getDoorPosition GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "0")
+                    callback(null, 0);
+                else
+                    callback(null, 100);
+            }
+        }.bind(this));
+    },
+    setDoorPosition: function (targetPosition, callback) {
+        var that = this;
+        that.log("Setting door position for '%s' to %s", that.config.name, targetPosition);
+
+        // At this time we do not use percentage values: 1 = open, 0 = closed
+        if (targetPosition == 0)
+            doorPosition = "0";
+        else
+            doorPosition = "1";
+
+        var callbackWasCalled = false;
+        that.domotigaSetValue(that.config.valueDoor, doorPosition, function (err) {
+            if (callbackWasCalled) {
+                that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                that.log("Successfully set door position on the '%s' to %s", that.config.name, targetPosition);
+                callback(null);
+            } else {
+                that.log.error("Error setting door position to %s on the '%s'", targetPosition, that.config.name);
+                callback(err);
+            }
+        }.bind(this));
+    },
+    getWindowPositionState: function (callback) {
+        // At this time the value property of PositionState is always mapped to stopped
+        callback(null, Characteristic.PositionState.STOPPED);
+    },
+    getWindowPosition: function (callback) {
+        var that = this;
+        that.log("Getting WindowPosition for " + that.config.name);
+        this.domotigaGetValue(that.config.valueWindow, function (error, result) {
+            if (error) {
+                that.log.error('getWindowPosition GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "0")
+                    callback(null, 0);
+                else
+                    callback(null, 100);
+            }
+        }.bind(this));
+    },
+    setWindowPosition: function (targetPosition, callback) {
+        var that = this;
+        that.log("Setting window position for '%s' to %s", that.config.name, targetPosition);
+
+        if (targetPosition == 0)
+            windowPosition = "0";
+        else
+            windowPosition = "1";
+
+        var callbackWasCalled = false;
+        that.domotigaSetValue(that.config.valueWindow, windowPosition, function (err) {
+            if (callbackWasCalled) {
+                that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                that.log("Successfully set window position on the '%s' to %s", that.config.name, targetPosition);
+                callback(null);
+            } else {
+                that.log.error("Error setting window position to %s on the '%s'", targetPosition, that.config.name);
+                callback(err);
+            }
+        }.bind(this));
+    },
+    getWindowCoveringPositionState: function (callback) {
+        // At this time the value property of PositionState is always mapped to stopped
+        callback(null, Characteristic.PositionState.STOPPED);
+    },
+    getWindowCoveringPosition: function (callback) {
+        var that = this;
+        that.log("Getting window covering position for " + that.config.name);
+        this.domotigaGetValue(that.config.valueWindowCovering, function (error, result) {
+            if (error) {
+                that.log.error('getWindowCoveringPosition GetValue failed: %s', error.message);
+                callback(error);
+            } else {
+                if (result.toLowerCase() == "0")
+                    callback(null, 0);
+                else
+                    callback(null, 100);
+            }
+        }.bind(this));
+    },
+    setWindowCoveringPosition: function (targetPosition, callback) {
+        var that = this;
+        that.log("Setting window covering position for '%s' to %s", that.config.name, targetPosition);
+
+        if (targetPosition == 0)
+            coveringPosition = "0";
+        else
+            coveringPosition = "1";
+
+        var callbackWasCalled = false;
+        that.domotigaSetValue(that.config.valueWindowCovering, coveringPosition, function (err) {
+            if (callbackWasCalled) {
+                that.log.warn("WARN: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                that.log("Successfully set window covering position on the '%s' to %s", that.config.name, targetPosition);
+                callback(null);
+            } else {
+                that.log.error("Error setting window covering position to %s on the '%s'", targetPosition, that.config.name);
+                callback(err);
+            }
+        }.bind(this));
+    },
+    getServices: function () {
         // You can OPTIONALLY create an information service if you wish to override
         // the default values for things like serial number, model, etc.
         var informationService = new Service.AccessoryInformation();
@@ -614,11 +774,50 @@ Domotiga.prototype = {
                 this.primaryValue = this.config.valueSwitch;
                 break;
 
+            case "Door":
+                this.primaryservice = new Service.Door(this.config.service);
+                this.primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                    .on('get', this.getDoorPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                    .on('get', this.getDoorPosition.bind(this))
+                    .on('set', this.setDoorPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.PositionState)
+                    .on('get', this.getDoorPositionState.bind(this));
+                this.primaryValue = this.config.valueDoor;
+                break;
+
+            case "Window":
+                this.primaryservice = new Service.Window(this.config.service);
+                this.primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                    .on('get', this.getWindowPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                    .on('get', this.getWindowPosition.bind(this))
+                    .on('set', this.setWindowPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.PositionState)
+                    .on('get', this.getWindowPositionState.bind(this));
+                this.primaryValue = this.config.valueWindow;
+                break;
+
+            case "WindowCovering":
+                this.primaryservice = new Service.WindowCovering(this.config.service);
+                this.primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                    .on('get', this.getWindowCoveringPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                    .on('get', this.getWindowCoveringPosition.bind(this))
+                    .on('set', this.setWindowCoveringPosition.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.PositionState)
+                    .on('get', this.getWindowCoveringPositionState.bind(this));
+                this.primaryValue = this.config.valueWindowCovering;
+                break;
+                
             case "Outlet":
                 this.primaryservice = new Service.Outlet(this.config.service);
                 this.primaryservice.getCharacteristic(Characteristic.On)
                     .on('get', this.getOutletState.bind(this))
                     .on('set', this.setOutletState.bind(this));
+                this.primaryservice.getCharacteristic(Characteristic.OutletInUse)
+                    .on('get', this.getOutletInUse.bind(this));
+
                 this.primaryValue = this.config.valueOutlet;
                 break;
 
@@ -663,9 +862,10 @@ Domotiga.prototype = {
             return services;
         }
 
-        // Everything outside the primary service gets added as optional characteristics...
+
         var service = services[1];
 
+        // Add optional characteristics...
         if (this.config.valueTemperature && (this.config.service != "TemperatureSensor")) {
             service.addCharacteristic(Characteristic.CurrentTemperature)
             .setProps({ minValue: -55, maxValue: 125 })
@@ -683,11 +883,7 @@ Domotiga.prototype = {
             service.addCharacteristic(Characteristic.StatusLowBattery)
                 .on('get', this.getLowBatteryStatus.bind(this));
         }
-        // Additional required characteristic for outlet
-        if (this.config.service == "Outlet") {
-            service.getCharacteristic(Characteristic.OutletInUse)
-                .on('get', this.getOutletInUse.bind(this));
-        }
+
         // Eve characteristic (custom UUID)
         if (this.config.valueAirPressure &&
             (this.config.service != "FakeEveWeatherSensor") && (this.config.service != "FakeEveWeatherSensorWithLog")) {
