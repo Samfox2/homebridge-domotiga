@@ -357,13 +357,6 @@ DomotigaPlatform.prototype.removeAccessory = function (accessory) {
 // Method to setup listeners for different events
 DomotigaPlatform.prototype.setService = function (accessory) {
 
-    accessory.getService(Service.Switch)
-      .getCharacteristic(Characteristic.On)
-      .on('get', this.getPowerState.bind(this, accessory.context))
-      .on('set', this.setPowerState.bind(this, accessory.context));
-
-    accessory.on('identify', this.identify.bind(this, accessory.context));
-
     var primaryservice;
 
     // Setup HomeKit service(-s)
