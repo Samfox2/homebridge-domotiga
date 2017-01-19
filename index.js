@@ -598,7 +598,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         this.readCurrentAirPressure(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirPressure) {
-                thisDevice.cacheAirQuality = value;
+                thisDevice.cacheCurrentAirPressure = value;
                 primaryservice.getCharacteristic(EveAirPressure).getValue();
             }
         });
