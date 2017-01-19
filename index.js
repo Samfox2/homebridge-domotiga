@@ -682,6 +682,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice = accessory.getService(Service.Switch);
             primaryservice.getCharacteristic(Characteristic.On)
                 .on('get', this.getSwitchState.bind(this, accessory.context))
+                .on('set', this.setSwitchState.bind(this, accessory.context))
             break;
 
         case "Door":
@@ -1214,7 +1215,7 @@ DomotigaPlatform.prototype.readCurrentAirQuality = function (thisDevice, callbac
             callback(error);
         } else {
             voc = Number(result);
-            this.log('CurrentAirQuality level: %s', voc);
+            self.log('CurrentAirQuality level: %s', voc);
 
             var value;
 
@@ -1479,7 +1480,7 @@ DomotigaPlatform.prototype.readSwitchState = function (thisDevice, callback) {
 
             var value = (result.toLowerCase() == "on") ? 1 : 0;
 
-            this.log('%s: SwitchState: %s', thisDevice.name, value);
+            self.log('%s: SwitchState: %s', thisDevice.name, value);
             callback(null, value);
         }
     });
@@ -1520,7 +1521,7 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueSwitch, switchCommand, function (err) {
         if (callbackWasCalled) {
-            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
         }
         callbackWasCalled = true;
         if (!err) {
@@ -1549,7 +1550,7 @@ DomotigaPlatform.prototype.readDoorPosition = function (thisDevice, callback) {
         } else {
 
             var value = (result.toLowerCase() == "0") ? 0 : 100;
-            this.log('%s: door position: %s', thisDevice.name, value);
+            self.log('%s: door position: %s', thisDevice.name, value);
             callback(null, value);
         }
     });
@@ -1591,7 +1592,7 @@ DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPositio
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueDoor, doorPosition, function (err) {
         if (callbackWasCalled) {
-            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
         }
         callbackWasCalled = true;
         if (!err) {
@@ -1620,7 +1621,7 @@ DomotigaPlatform.prototype.readWindowPosition = function (thisDevice, callback) 
         } else {
 
             var value = (result.toLowerCase() == "0") ? 0 : 100;
-            this.log('%s: window position: %s', thisDevice.name, value);
+            self.log('%s: window position: %s', thisDevice.name, value);
             callback(null, value);
         }
     });
@@ -1662,7 +1663,7 @@ DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosit
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindow, windowPosition, function (err) {
         if (callbackWasCalled) {
-            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
         }
         callbackWasCalled = true;
         if (!err) {
@@ -1692,7 +1693,7 @@ DomotigaPlatform.prototype.readWindowCoveringPosition = function (thisDevice, ca
         } else {
 
             var value = (result.toLowerCase() == "0") ? 0 : 100;
-            this.log('%s: windowcovering position: %s', thisDevice.name, value);
+            self.log('%s: windowcovering position: %s', thisDevice.name, value);
             callback(null, value);
         }
     });
@@ -1734,7 +1735,7 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindowCovering, windowcoveringPosition, function (err) {
         if (callbackWasCalled) {
-            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
         }
         callbackWasCalled = true;
         if (!err) {
