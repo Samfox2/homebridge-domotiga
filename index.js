@@ -371,7 +371,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "TemperatureSensor":
             primaryservice = accessory.getService(Service.TemperatureSensor);
-            this.getCurrentTemperature(thisDevice, function (error, value) {
+            this.readCurrentTemperature(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
@@ -382,7 +382,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "HumiditySensor":
             primaryservice = accessory.getService(Service.HumiditySensor);
-            this.getCurrentRelativeHumidity(thisDevice, function (error, value) {
+            this.readCurrentRelativeHumidity(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                     thisDevice.cacheCurrentRelativeHumidity = value;
@@ -393,7 +393,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Contact":
             primaryservice = accessory.getService(Service.ContactSensor);
-            this.getContactState(thisDevice, function (error, value) {
+            this.readContactState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheContactSensorState) {
                     thisDevice.cacheContactSensorState = value;
@@ -404,7 +404,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "LeakSensor":
             primaryservice = accessory.getService(Service.LeakSensor);
-            this.getLeakSensorState(thisDevice, function (error, value) {
+            this.readLeakSensorState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheLeakDetected) {
                     thisDevice.cacheLeakSensorState = value;
@@ -415,7 +415,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "MotionSensor":
             primaryservice = accessory.getService(Service.MotionSensor);
-            this.getMotionSensorState(thisDevice, function (error, value) {
+            this.readMotionSensorState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheMotionDetected) {
                     thisDevice.cacheMotionDetected = value;
@@ -426,7 +426,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Switch":
             primaryservice = accessory.getService(Service.Switch);
-            this.getSwitchState(thisDevice, function (error, value) {
+            this.readSwitchState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheSwitchState) {
                     thisDevice.cacheSwitchState = value;
@@ -437,7 +437,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
-            this.getOutletState(thisDevice, function (error, value) {
+            this.readOutletState(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheOutletState) {
                     thisDevice.cacheOutletState = value;
@@ -448,7 +448,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "AirQualitySensor":
             primaryservice = accessory.getService(Service.AirQualitySensor);
-            this.getCurrentAirQuality(thisDevice, function (error, value) {
+            this.readCurrentAirQuality(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentAirQuality = value;
@@ -459,7 +459,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "FakeEveAirQualitySensor":
             primaryservice = accessory.getService(EveRoomService);
-            this.getCurrentEveAirQuality(thisDevice, function (error, value) {
+            this.readCurrentEveAirQuality(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentAirQuality = value;
@@ -470,7 +470,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "FakeEveWeatherSensor":
             primaryservice = accessory.getService(EveWeatherService);
-            this.getCurrentAirPressure(thisDevice, function (error, value) {
+            this.readCurrentAirPressure(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                     thisDevice.cacheAirQuality = value;
@@ -481,7 +481,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "Powermeter":
             primaryservice = accessory.getService(PowerMeterService);
-            this.getEvePowerConsumption(thisDevice, function (error, value) {
+            this.readEvePowerConsumption(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cachePowerConsumption) {
                     thisDevice.cachePowerConsumption = value;
@@ -497,7 +497,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
     // Additional/optional characteristics...
     if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
-        this.getCurrentTemperature(thisDevice, function (error, value) {
+        this.readCurrentTemperature(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentTemperature) {
                 thisDevice.cacheCurrentTemperature = value;
@@ -506,7 +506,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
-        this.getCurrentRelativeHumidity(thisDevice, function (error, value) {
+        this.readCurrentRelativeHumidity(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                 thisDevice.cacheCurrentRelativeHumidity = value;
@@ -515,7 +515,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.valueBattery) {
-        this.getCurrentBatteryLevel(thisDevice, function (error, value) {
+        this.readCurrentBatteryLevel(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentBatteryLevel) {
                 thisDevice.cacheCurrentBatteryLevel = value;
@@ -524,7 +524,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
     if (accessory.context.lowbattery) {
-        this.getLowBatteryStatus(thisDevice, function (error, value) {
+        this.readLowBatteryStatus(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheStatusLowBattery) {
                 thisDevice.cacheStatusLowBattery = value;
@@ -534,7 +534,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Additional required characteristic for outlet
     if (accessory.context.service == "Outlet") {
-        this.getOutletInUse(thisDevice, function (error, value) {
+        this.readOutletInUse(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheOutletInUse) {
                 thisDevice.cacheOutletInUse = value;
@@ -545,7 +545,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirPressure &&
         (accessory.context.service != "FakeEveWeatherSensor")) {
-        this.getCurrentAirPressure(thisDevice, function (error, value) {
+        this.readCurrentAirPressure(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                 thisDevice.cacheAirQuality = value;
@@ -556,7 +556,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirQuality &&
         (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
-        this.getCurrentEveAirQuality(thisDevice, function (error, value) {
+        this.readCurrentEveAirQuality(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                 thisDevice.cacheCurrentAirQuality = value;
@@ -566,7 +566,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
-        this.getEvePowerConsumption(thisDevice, function (error, value) {
+        this.readEvePowerConsumption(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cachePowerConsumption) {
                 thisDevice.cachePowerConsumption = value;
@@ -576,7 +576,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueTotalPowerConsumption) {
-        this.getEveTotalPowerConsumption(thisDevice, function (error, value) {
+        this.readEveTotalPowerConsumption(thisDevice, function (error, value) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheTotalPowerConsumption) {
                 thisDevice.cacheTotalPowerConsumption = value;
@@ -602,61 +602,61 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice = accessory.getService(Service.TemperatureSensor);
             primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
                 .setProps({ minValue: -55, maxValue: 100 })
-                .on('get', this.pollCurrentTemperature.bind(this, accessory.context));
+                .on('get', this.getCurrentTemperature.bind(this, accessory.context));
             break;
 
         case "HumiditySensor":
             primaryservice = accessory.getService(Service.HumiditySensor);
             primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                .on('get', this.pollCurrentRelativeHumidity.bind(this, accessory.context));
+                .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
             break;
 
         case "Contact":
             primaryservice = accessory.getService(Service.ContactSensor);
             primaryservice.getCharacteristic(Characteristic.ContactSensorState)
-                .on('get', this.pollContactState.bind(this, accessory.context));
+                .on('get', this.getContactState.bind(this, accessory.context));
 
         case "LeakSensor":
             primaryservice = accessory.getService(Service.LeakSensor);
             primaryservice.getCharacteristic(Characteristic.LeakDetected)
-                .on('get', this.pollLeakSensorState.bind(this, accessory.context));
+                .on('get', this.getLeakSensorState.bind(this, accessory.context));
             break;
 
         case "MotionSensor":
             primaryservice = accessory.getService(Service.MotionkSensor);
             primaryservice.getCharacteristic(Characteristic.MotionDetected)
-                .on('get', this.pollMotionSensorState.bind(this, accessory.context));
+                .on('get', this.getMotionSensorState.bind(this, accessory.context));
             break;
 
         case "Switch":
             primaryservice = accessory.getService(Service.Switch);
             primaryservice.getCharacteristic(Characteristic.On)
-                .on('get', this.pollSwitchState.bind(this, accessory.context))
+                .on('get', this.getSwitchState.bind(this, accessory.context))
             break;
 
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
             primaryservice.getCharacteristic(Characteristic.On)
-                .on('get', this.pollOutletState.bind(this, accessory.context))
+                .on('get', this.getOutletState.bind(this, accessory.context))
                 .on('set', this.setOutletState.bind(this, accessory.context));
             break;
 
         case "AirQualitySensor":
             primaryservice = accessory.getService(Service.AirQualitySensor);
             primaryservice.getCharacteristic(Characteristic.AirQuality)
-                .on('get', this.pollCurrentAirQuality.bind(this, accessory.context));
+                .on('get', this.getCurrentAirQuality.bind(this, accessory.context));
             break;
 
         case "FakeEveAirQualitySensor":
             primaryservice = accessory.getService(EveRoomService);
             primaryservice.getCharacteristic(EveRoomAirQuality)
-                .on('get', this.pollCurrentEveAirQuality.bind(this, accessory.context));
+                .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
             break;
 
         case "FakeEveWeatherSensor":
             primaryservice = accessory.getService(EveWeatherService);
             primaryservice.getCharacteristic(EveAirPressure)
-                .on('get', this.pollCurrentAirPressure.bind(this, accessory.context));
+                .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
             break;
 
         case "Powermeter":
@@ -674,36 +674,36 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
         primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
             .setProps({ minValue: -55, maxValue: 100 })
-            .on('get', this.pollCurrentTemperature.bind(this, accessory.context));
+            .on('get', this.getCurrentTemperature.bind(this, accessory.context));
     }
     if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
         primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-            .on('get', this.pollCurrentRelativeHumidity.bind(this, accessory.context));
+            .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
     }
     if (accessory.context.valueBattery) {
         primaryservice.getCharacteristic(Characteristic.BatteryLevel)
-            .on('get', this.pollCurrentBatteryLevel.bind(this, accessory.context));
+            .on('get', this.getCurrentBatteryLevel.bind(this, accessory.context));
     }
     if (accessory.context.lowbattery) {
         primaryservice.getCharacteristic(Characteristic.StatusLowBattery)
-            .on('get', this.pollLowBatteryStatus.bind(this, accessory.context));
+            .on('get', this.getLowBatteryStatus.bind(this, accessory.context));
     }
     // Additional required characteristic for outlet
     if (accessory.context.service == "Outlet") {
         primaryservice.getCharacteristic(Characteristic.OutletInUse)
-            .on('get', this.pollOutletInUse.bind(this, accessory.context));
+            .on('get', this.getOutletInUse.bind(this, accessory.context));
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirPressure &&
         (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
         primaryservice.getCharacteristic(EveAirPressure)
-            .on('get', this.pollCurrentAirPressure.bind(this, accessory.context));
+            .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirQuality &&
         (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
         primaryservice.getCharacteristic(Characteristic.AirQuality)
-            .on('get', this.pollCurrentEveAirQuality.bind(this, accessory.context));
+            .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
@@ -713,7 +713,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     // Eve characteristic (custom UUID)
     if (accessory.context.valueTotalPowerConsumption) {
         primaryservice.getCharacteristic(EveTotalPowerConsumption)
-            .on('get', this.pollEveTotalPowerConsumption.bind(this, accessory.context));
+            .on('get', this.getEveTotalPowerConsumption.bind(this, accessory.context));
     }
 
     accessory.on('identify', this.identify.bind(this, accessory.context));
@@ -851,7 +851,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
     accessory.updateReachability(true);
 }
 
-DomotigaPlatform.prototype.getCurrentTemperature = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentTemperature = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting Temperature...", thisDevice.name);
 
@@ -868,7 +868,7 @@ DomotigaPlatform.prototype.getCurrentTemperature = function (thisDevice, callbac
 }
 
 // Method to determine current temperature
-DomotigaPlatform.prototype.pollCurrentTemperature = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentTemperature = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
@@ -877,7 +877,7 @@ DomotigaPlatform.prototype.pollCurrentTemperature = function (thisDevice, callba
         callback(null, thisDevice.cacheCurrentTemperature);
     } else {
         // Check value if polling is disabled
-        this.getCurrentTemperature(thisDevice, function (error, value) {
+        this.readCurrentTemperature(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentTemperature = value;
             callback(error, thisDevice.cacheCurrentTemperature);
@@ -885,7 +885,7 @@ DomotigaPlatform.prototype.pollCurrentTemperature = function (thisDevice, callba
     }
 }
 
-DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentRelativeHumidity = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting CurrentRelativeHumidity...", thisDevice.name);
 
@@ -902,7 +902,7 @@ DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisDevice, ca
 }
 
 // Method to determine current relative humidity
-DomotigaPlatform.prototype.pollCurrentRelativeHumidity = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
@@ -911,7 +911,7 @@ DomotigaPlatform.prototype.pollCurrentRelativeHumidity = function (thisDevice, c
         callback(null, thisDevice.cacheCurrentRelativeHumidity);
     } else {
         // Check value if polling is disabled
-        this.getCurrentRelativeHumidity(thisDevice, function (error, value) {
+        this.readCurrentRelativeHumidity(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentRelativeHumidity = value;
             callback(error, thisDevice.cacheCurrentRelativeHumidity);
@@ -926,7 +926,7 @@ DomotigaPlatform.prototype.getTemperatureUnits = function (thisDevice, callback)
 }
 
 
-DomotigaPlatform.prototype.getCurrentAirPressure = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentAirPressure = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting CurrentAirPressure...", thisDevice.name);
 
@@ -942,7 +942,7 @@ DomotigaPlatform.prototype.getCurrentAirPressure = function (thisDevice, callbac
     });
 }
 
-DomotigaPlatform.prototype.pollCurrentAirPressure = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentAirPressure = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
@@ -951,7 +951,7 @@ DomotigaPlatform.prototype.pollCurrentAirPressure = function (thisDevice, callba
         callback(null, thisDevice.cacheCurrentAirPressure);
     } else {
         // Check value if polling is disabled
-        this.getCurrentAirPressure(thisDevice, function (error, value) {
+        this.readCurrentAirPressure(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentAirPressure = value;
             callback(error, thisDevice.cacheCurrentAirPressure);
@@ -959,13 +959,13 @@ DomotigaPlatform.prototype.pollCurrentAirPressure = function (thisDevice, callba
     }
 }
 
-DomotigaPlatform.prototype.getContactState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readContactState = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getContactState...", thisDevice.name);
+    self.log("%s: getting readContactState...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueContact, function (error, result) {
         if (error) {
-            self.log.error('%s: getGetContactState GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: getreadContactState GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = (result.toLowerCase() == "on") ? Characteristic.ContactSensorState.CONTACT_DETECTED : ContactSensorState.CONTACT_NOT_DETECTED;
@@ -976,16 +976,16 @@ DomotigaPlatform.prototype.getContactState = function (thisDevice, callback) {
     });
 }
 
-DomotigaPlatform.prototype.pollContactState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getContactState = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheContactSensorState is: %s', thisDevice.name, thisDevice.cacheContactSensorState);
+        self.log('%s: Cached ContactSensorState is: %s', thisDevice.name, thisDevice.cacheContactSensorState);
         callback(null, thisDevice.cacheContactSensorState);
     } else {
         // Check value if polling is disabled
-        this.getContactState(thisDevice, function (error, value) {
+        this.readContactState(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheContactSensorState = value;
             callback(error, thisDevice.cacheContactSensorState);
@@ -993,9 +993,9 @@ DomotigaPlatform.prototype.pollContactState = function (thisDevice, callback) {
     }
 }
 
-DomotigaPlatform.prototype.getLeakState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readLeakSensorState = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getLeakState...", thisDevice.name);
+    self.log("%s: getting readLeakSensorState...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueLeakSensor, function (error, result) {
         if (error) {
@@ -1010,16 +1010,16 @@ DomotigaPlatform.prototype.getLeakState = function (thisDevice, callback) {
     });
 }
 
-DomotigaPlatform.prototype.pollLeakState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getLeakSensorState = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheLeakSensorState is: %s', thisDevice.name, thisDevice.cacheLeakSensorState);
+        self.log('%s: Cached LeakSensorState is: %s', thisDevice.name, thisDevice.cacheLeakSensorState);
         callback(null, thisDevice.cacheLeakSensorState);
     } else {
         // Check value if polling is disabled
-        this.getLeakState(thisDevice, function (error, value) {
+        this.readLeakSensorState(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheLeakSensorState = value;
             callback(error, thisDevice.cacheLeakSensorState);
@@ -1027,13 +1027,13 @@ DomotigaPlatform.prototype.pollLeakState = function (thisDevice, callback) {
     }
 }
 
-DomotigaPlatform.prototype.getOutletState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readOutletState = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getOutletState...", thisDevice.name);
+    self.log("%s: getting readOutletState...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueOutlet, function (error, result) {
         if (error) {
-            self.log.error('%s: getOutletState GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readOutletState GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = (result.toLowerCase() == "on") ? 0 : 1;
@@ -1044,16 +1044,16 @@ DomotigaPlatform.prototype.getOutletState = function (thisDevice, callback) {
     });
 }
 
-DomotigaPlatform.prototype.pollOutletState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getOutletState = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheOutletState is: %s', thisDevice.name, thisDevice.cacheOutletState);
+        self.log('%s: Cached OutletState is: %s', thisDevice.name, thisDevice.cacheOutletState);
         callback(null, thisDevice.cacheOutletState);
     } else {
         // Check value if polling is disabled
-        this.getOutletState(thisDevice, function (error, value) {
+        this.readOutletState(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheOutletState = value;
             callback(error, thisDevice.cacheOutletState);
@@ -1065,28 +1065,27 @@ DomotigaPlatform.prototype.setOutletState = function (thisDevice, boolvalue, cal
     var self = this;
     self.log("%s: Setting outlet state to %s", thisDevice.name, boolvalue);
 
-    if (boolvalue == 1)
-        thisDevice.outletState = "On";
-    else
-        thisDevice.outletState = "Off";
+    thisDevice.cacheOutletState = boolvalue;
 
+    var OnOff = (boolvalue == 1) ? "On" : "Off";
+    
     var callbackWasCalled = false;
-    this.domotigaSetValue(thisDevice.device, thisDevice.valueOutlet, thisDevice.outletState, function (err) {
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueOutlet, OnOff, function (err) {
         if (callbackWasCalled)
             self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
 
         callbackWasCalled = true;
         if (!err) {
-            self.log("%s: Successfully set outlet state to %s", thisDevice.name, thisDevice.outletState);
+            self.log("%s: Successfully set outlet state to %s", thisDevice.name, OnOff);
             callback(null);
         } else {
-            self.log.error("%s: Error setting outlet state to %s", thisDevice.name, thisDevice.outletState);
+            self.log.error("%s: Error setting outlet state to %s", thisDevice.name, OnOff);
             callback(err);
         }
     });
 }
 
-DomotigaPlatform.prototype.getOutletInUse = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readOutletInUse = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting OutletInUse...", thisDevice.name);
 
@@ -1103,16 +1102,16 @@ DomotigaPlatform.prototype.getOutletInUse = function (thisDevice, callback) {
     });
 }
 
-DomotigaPlatform.prototype.pollOutletInUse = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getOutletInUse = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheOutletInUse is: %s', thisDevice.name, thisDevice.cacheOutletInUse);
+        self.log('%s: Cached OutletInUse is: %s', thisDevice.name, thisDevice.cacheOutletInUse);
         callback(null, thisDevice.cacheOutletInUse);
     } else {
         // Check value if polling is disabled
-        this.getOutletInUse(thisDevice, function (error, value) {
+        this.readOutletInUse(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheOutletInUse = value;
             callback(error, thisDevice.cacheOutletInUse);
@@ -1120,7 +1119,7 @@ DomotigaPlatform.prototype.pollOutletInUse = function (thisDevice, callback) {
     }
 }
 
-DomotigaPlatform.prototype.getCurrentAirQuality = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentAirQuality = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting CurrentAirQuality...", thisDevice.name);
 
@@ -1153,16 +1152,16 @@ DomotigaPlatform.prototype.getCurrentAirQuality = function (thisDevice, callback
     });
 }
 
-DomotigaPlatform.prototype.pollCurrentAirQuality = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentAirQuality = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheCurrentAirQuality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
+        self.log('%s: Cached CurrentAirQuality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
         callback(null, thisDevice.cacheCurrentAirQuality);
     } else {
         // Check value if polling is disabled
-        this.getCurrentAirQuality(thisDevice, function (error, value) {
+        this.readCurrentAirQuality(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentAirQuality = value;
             callback(error, thisDevice.cacheCurrentAirQuality);
@@ -1171,7 +1170,7 @@ DomotigaPlatform.prototype.pollCurrentAirQuality = function (thisDevice, callbac
 }
 
 // Eve characteristic (custom UUID)    
-DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentEveAirQuality = function (thisDevice, callback) {
     // Custom Eve intervals:
     //    0... 700 : Exzellent
     //  700...1100 : Good
@@ -1183,7 +1182,7 @@ DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callb
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueAirQuality, function (error, result) {
         if (error) {
-            self.log.error('%s: getCurrentEveAirQuality GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readCurrentEveAirQuality GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = Number(result);
@@ -1196,16 +1195,16 @@ DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callb
     });
 }
 
-DomotigaPlatform.prototype.pollCurrentEveAirQuality = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheCurrentAirQuality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
+        self.log('%s: Cached CurrentAirQuality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
         callback(null, thisDevice.cacheCurrentAirQuality);
     } else {
         // Check value if polling is disabled
-        this.getCurrentEveAirQuality(thisDevice, function (error, value) {
+        this.readCurrentEveAirQuality(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentAirQuality = value;
             callback(error, thisDevice.cacheCurrentAirQuality);
@@ -1214,13 +1213,13 @@ DomotigaPlatform.prototype.pollCurrentEveAirQuality = function (thisDevice, call
 }
 
 // Eve characteristic (custom UUID) 
-DomotigaPlatform.prototype.getEvePowerConsumption = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readEvePowerConsumption = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getEvePowerConsumption...", thisDevice.name);
+    self.log("%s: getting readEvePowerConsumption...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueOutlet, function (error, result) {
         if (error) {
-            self.log.error('%s: getEvePowerConsumption GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readEvePowerConsumption GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = Math.round(Number(result)); // W
@@ -1236,11 +1235,11 @@ DomotigaPlatform.prototype.pollEvePowerConsumption = function (thisDevice, callb
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cachePowerConsumption is: %s', thisDevice.name, thisDevice.cachePowerConsumption);
+        self.log('%s: Cached PowerConsumption is: %s', thisDevice.name, thisDevice.cachePowerConsumption);
         callback(null, thisDevice.cachePowerConsumption);
     } else {
         // Check value if polling is disabled
-        this.getEvePowerConsumption(thisDevice, function (error, value) {
+        this.readEvePowerConsumption(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cachePowerConsumption = value;
             callback(error, thisDevice.cachePowerConsumption);
@@ -1249,13 +1248,13 @@ DomotigaPlatform.prototype.pollEvePowerConsumption = function (thisDevice, callb
 }
 
 // Eve characteristic (custom UUID) 
-DomotigaPlatform.prototype.getEveTotalPowerConsumption = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readEveTotalPowerConsumption = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting EveTotalPowerConsumption...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueOutlet, function (error, result) {
         if (error) {
-            self.log.error('%s: getEvePowerConsumption GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readEvePowerConsumption GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = Math.round(Number(result) * 1000.0) / 1000.0; // kWh
@@ -1266,16 +1265,16 @@ DomotigaPlatform.prototype.getEveTotalPowerConsumption = function (thisDevice, c
     });
 }
 
-DomotigaPlatform.prototype.pollEveTotalPowerConsumption = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getEveTotalPowerConsumption = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheTotalPowerConsumption is: %s', thisDevice.name, thisDevice.cacheTotalPowerConsumption);
+        self.log('%s: Cached TotalPowerConsumption is: %s', thisDevice.name, thisDevice.cacheTotalPowerConsumption);
         callback(null, thisDevice.cacheTotalPowerConsumption);
     } else {
         // Check value if polling is disabled
-        this.getEveTotalPowerConsumption(thisDevice, function (error, value) {
+        this.readEveTotalPowerConsumption(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheTotalPowerConsumption = value;
             callback(error, thisDevice.cacheTotalPowerConsumption);
@@ -1283,13 +1282,13 @@ DomotigaPlatform.prototype.pollEveTotalPowerConsumption = function (thisDevice, 
     }
 }
 
-DomotigaPlatform.prototype.getCurrentBatteryLevel = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readCurrentBatteryLevel = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getCurrentBatteryLevel...", thisDevice.name);
+    self.log("%s: getting readCurrentBatteryLevel...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueBattery, function (error, result) {
         if (error) {
-            self.log.error('%s: getCurrentBatteryLevel GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readCurrentBatteryLevel GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             thisDevice.lastBatteryLevel = (Number(result));
@@ -1306,16 +1305,16 @@ DomotigaPlatform.prototype.getCurrentBatteryLevel = function (thisDevice, callba
     });
 }
 
-DomotigaPlatform.prototype.pollCurrentBatteryLevel = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getCurrentBatteryLevel = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheCurrentBatteryLevel is: %s', thisDevice.name, thisDevice.cacheCurrentBatteryLevel);
+        self.log('%s: Cached CurrentBatteryLevel is: %s', thisDevice.name, thisDevice.cacheCurrentBatteryLevel);
         callback(null, thisDevice.cacheCurrentBatteryLevel);
     } else {
         // Check value if polling is disabled
-        this.getCurrentBatteryLevel(thisDevice, function (error, value) {
+        this.readCurrentBatteryLevel(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheCurrentBatteryLevel = value;
             callback(error, thisDevice.cacheCurrentBatteryLevel);
@@ -1323,7 +1322,7 @@ DomotigaPlatform.prototype.pollCurrentBatteryLevel = function (thisDevice, callb
     }
 }
 
-DomotigaPlatform.prototype.getLowBatteryStatus = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readLowBatteryStatus = function (thisDevice, callback) {
     var self = this;
     self.log("%s: getting LowBatteryStatus...", thisDevice.name);
 
@@ -1331,16 +1330,16 @@ DomotigaPlatform.prototype.getLowBatteryStatus = function (thisDevice, callback)
     self.log('%s: StatusLowBattery: %s', thisDevice.name, value);
 }
 
-DomotigaPlatform.prototype.pollLowBatteryStatus = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getLowBatteryStatus = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheCurrentBatteryLevel is: %s', thisDevice.name, thisDevice.cacheStatusLowBattery);
+        self.log('%s: Cached CurrentBatteryLevel is: %s', thisDevice.name, thisDevice.cacheStatusLowBattery);
         callback(null, thisDevice.cacheStatusLowBattery);
     } else {
         // Check value if polling is disabled
-        this.getLowBatteryStatus(thisDevice, function (error, value) {
+        this.readLowBatteryStatus(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheStatusLowBattery = value;
             callback(error, thisDevice.cacheStatusLowBattery);
@@ -1348,13 +1347,13 @@ DomotigaPlatform.prototype.pollLowBatteryStatus = function (thisDevice, callback
     }
 }
 
-DomotigaPlatform.prototype.getMotionSensorState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readMotionSensorState = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getMotionSensorState...", thisDevice.name);
+    self.log("%s: getting readMotionSensorState...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueMotionSensor, function (error, result) {
         if (error) {
-            self.log.error('%s: getMotionSensorState GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readMotionSensorState GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
             var value = (Number(result) == 0) ? 1 : 0;
@@ -1365,16 +1364,16 @@ DomotigaPlatform.prototype.getMotionSensorState = function (thisDevice, callback
     });
 }
 
-DomotigaPlatform.prototype.pollMotionSensorState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getMotionSensorState = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheMotionDetected is: %s', thisDevice.name, thisDevice.cacheMotionDetected);
+        self.log('%s: Cached MotionDetected is: %s', thisDevice.name, thisDevice.cacheMotionDetected);
         callback(null, thisDevice.cacheMotionDetected);
     } else {
         // Check value if polling is disabled
-        this.getMotionSensorState(thisDevice, function (error, value) {
+        this.readMotionSensorState(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheMotionDetected = value;
             callback(error, thisDevice.cacheMotionDetected);
@@ -1382,13 +1381,13 @@ DomotigaPlatform.prototype.pollMotionSensorState = function (thisDevice, callbac
     }
 }
 
-DomotigaPlatform.prototype.getSwitchState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readSwitchState = function (thisDevice, callback) {
     var self = this;
-    self.log("%s: getting getSwitchState...", thisDevice.name);
+    self.log("%s: getting readSwitchState...", thisDevice.name);
 
     this.domotigaGetValue(thisDevice.device, thisDevice.valueSwitch, function (error, result) {
         if (error) {
-            self.log.error('%s: getSwitchState GetValue failed: %s', thisDevice.name, error.message);
+            self.log.error('%s: readSwitchState GetValue failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
 
@@ -1400,16 +1399,16 @@ DomotigaPlatform.prototype.getSwitchState = function (thisDevice, callback) {
     });
 }
 
-DomotigaPlatform.prototype.pollSwitchState = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getSwitchState = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: Cached cacheSwitchState is: %s', thisDevice.name, thisDevice.cacheSwitchState);
+        self.log('%s: Cached SwitchState is: %s', thisDevice.name, thisDevice.cacheSwitchState);
         callback(null, thisDevice.cacheSwitchState);
     } else {
         // Check value if polling is disabled
-        this.getSwitchState(thisDevice, function (error, value) {
+        this.readSwitchState(thisDevice, function (error, value) {
             // Update cache
             thisDevice.cacheSwitchState = value;
             callback(error, thisDevice.cacheSwitchState);
@@ -1428,6 +1427,9 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
     else {
         switchCommand = "Off";
     }
+
+    // Update cache
+    thisDevice.cacheSwitchState = switchOn;
 
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueSwitch, switchCommand, function (err) {
@@ -1492,8 +1494,6 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
         } else {
             let item = Number(deviceValueNo) - 1;
             //self.log("data.result:", data.result);
-            //self.log( "item: ",item);
-            //self.log( "data.result.values[item]", data.result.values[item]);
             //self.log( "data.result.values[item].value", data.result.values[item].value);
             callback(null, data.result.values[item].value);
         }
