@@ -337,9 +337,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     // Retrieve initial state
     this.getInitState(accessory);
 
-    // Store accessory in cache
-    this.accessories[data.name] = accessory;
-
     // Configure state polling
     if (data.polling) this.doPolling(data.name);
 }
@@ -1230,7 +1227,7 @@ DomotigaPlatform.prototype.readEvePowerConsumption = function (thisDevice, callb
     });
 }
 
-DomotigaPlatform.prototype.pollEvePowerConsumption = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getEvePowerConsumption = function (thisDevice, callback) {
     var self = this;
 
     if (thisDevice.polling) {
@@ -1328,6 +1325,7 @@ DomotigaPlatform.prototype.readLowBatteryStatus = function (thisDevice, callback
 
     var value = (thisDevice.lastBatteryLevel < Number(thisDevice.lowbattery)) ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
     self.log('%s: StatusLowBattery: %s', thisDevice.name, value);
+    callback(null, value);
 }
 
 DomotigaPlatform.prototype.getLowBatteryStatus = function (thisDevice, callback) {
@@ -1447,6 +1445,7 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
     });
 }
 
+// Method to handle identify request
 DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {
     this.log("%s: Identify requested", thisDevice.name);
     callback();
