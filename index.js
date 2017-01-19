@@ -195,6 +195,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.lowbattery = data.lowbattery;
         accessory.context.valueContact = data.valueContact;
         accessory.context.valueSwitch = data.valueSwitch;
+        accessory.context.valueDoor = data.valueDoor;
+        accessory.context.valueWindow = data.valueWindow;
+        accessory.context.valueWindowCovering = data.valueWindowCovering;
         accessory.context.valueAirQuality = data.valueAirQuality;
         accessory.context.valueOutlet = data.valueOutlet;
         accessory.context.valueLeakSensor = data.valueLeakSensor;
@@ -232,8 +235,30 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 primaryservice = new Service.Switch(accessory.context.name);
                 break;
 
+            case "Door":
+                primaryservice = new Service.Door(accessory.context.name);
+                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
+                primaryservice.addCharacteristic(Characteristic.TargetPosition);
+                primaryservice.addCharacteristic(Characteristic.PositionState);
+                break;
+
+            case "Window":
+                primaryservice = new Service.Window(accessory.context.name);
+                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
+                primaryservice.addCharacteristic(Characteristic.TargetPosition);
+                primaryservice.addCharacteristic(Characteristic.PositionState);
+                break;
+
+            case "WindowCovering":
+                primaryservice = new Service.WindowCovering(accessory.context.name);
+                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
+                primaryservice.addCharacteristic(Characteristic.TargetPosition);
+                primaryservice.addCharacteristic(Characteristic.PositionState);
+                break;
+
             case "Outlet":
                 primaryservice = new Service.Outlet(accessory.context.name);
+                primaryservice.addCharacteristic(Characteristic.OutletInUse);
                 break;
 
             case "AirQualitySensor":
@@ -269,10 +294,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
         if (accessory.context.lowbattery) {
             primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
-        }
-        // Additional required characteristic for outlet
-        if (accessory.context.service == "Outlet") {
-            primaryservice.addCharacteristic(Characteristic.OutletInUse);
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
@@ -329,6 +350,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheStatusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
     accessory.context.cacheMotionDetected = 0;
     accessory.context.cacheSwitchState = 0;
+    accessory.context.cacheDoorPosition = 0;
+    accessory.context.cacheWindowPosition = 0;
+    accessory.context.cacheWindowCoveringPosition = 0;
 
     // Retrieve initial state
     this.getInitState(accessory);
@@ -428,6 +452,42 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             });
             break;
 
+        case "Door":
+            primaryservice = accessory.getService(Service.Door);
+            this.readDoorPosition(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheDoorPosition) {
+                    thisDevice.cacheDoorPosition = value;
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                }
+            });
+            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            break;
+
+        case "Window":
+            primaryservice = accessory.getService(Service.Window);
+            this.readWindowPosition(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheWindowPosition) {
+                    thisDevice.cacheWindowPosition = value;
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                }
+            });
+            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            break;
+
+        case "WindowCovering":
+            primaryservice = accessory.getService(Service.WindowCovering);
+            this.readWindowPosition(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheWindowPosition) {
+                    thisDevice.cacheWindowPosition = value;
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                }
+            });
+            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            break;
+
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
             this.readOutletState(thisDevice, function (error, value) {
@@ -435,6 +495,13 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 if (!error && value !== thisDevice.cacheOutletState) {
                     thisDevice.cacheOutletState = value;
                     primaryservice.getCharacteristic(Characteristic.On).getValue();
+                }
+            });
+            this.readOutletInUse(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheOutletInUse) {
+                    thisDevice.cacheOutletInUse = value;
+                    primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
                 }
             });
             break;
@@ -522,16 +589,6 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             if (!error && value !== thisDevice.cacheStatusLowBattery) {
                 thisDevice.cacheStatusLowBattery = value;
                 primaryservice.getCharacteristic(Characteristic.StatusLowBattery).getValue();
-            }
-        });
-    }
-    // Additional required characteristic for outlet
-    if (accessory.context.service == "Outlet") {
-        this.readOutletInUse(thisDevice, function (error, value) {
-            // Update value if there's no error
-            if (!error && value !== thisDevice.cacheOutletInUse) {
-                thisDevice.cacheOutletInUse = value;
-                primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
             }
         });
     }
@@ -627,11 +684,46 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getSwitchState.bind(this, accessory.context))
             break;
 
+        case "Door":
+            primaryservice = accessory.getService(Service.Door);
+            primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                .on('get', this.getDoorPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                .on('get', this.getDoorPosition.bind(this, accessory.context))
+                .on('set', this.setDoorPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.PositionState)
+                .on('get', this.getDoorPositionState.bind(this, accessory.context))
+            break;
+
+        case "Window":
+            primaryservice = accessory.getService(Service.Window);
+            primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                .on('get', this.getWindowPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                .on('get', this.getWindowPosition.bind(this, accessory.context))
+                .on('set', this.setWindowPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.PositionState)
+                .on('get', this.getWindowPositionState.bind(this, accessory.context))
+            break;
+
+        case "WindowCovering":
+            primaryservice = accessory.getService(Service.WindowCovering);
+            primaryservice.getCharacteristic(Characteristic.CurrentPosition)
+                .on('get', this.getWindowCoveringPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TargetPosition)
+                .on('get', this.getWindowCoveringPosition.bind(this, accessory.context))
+                .on('set', this.setWindowCoveringPosition.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.PositionState)
+                .on('get', this.getWindowCoveringPositionState.bind(this, accessory.context))
+            break;
+
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
             primaryservice.getCharacteristic(Characteristic.On)
                 .on('get', this.getOutletState.bind(this, accessory.context))
                 .on('set', this.setOutletState.bind(this, accessory.context));
+            primaryservice.getCharacteristic(Characteristic.OutletInUse)
+                    .on('get', this.getOutletInUse.bind(this, accessory.context));
             break;
 
         case "AirQualitySensor":
@@ -680,11 +772,6 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     if (accessory.context.lowbattery) {
         primaryservice.getCharacteristic(Characteristic.StatusLowBattery)
             .on('get', this.getLowBatteryStatus.bind(this, accessory.context));
-    }
-    // Additional required characteristic for outlet
-    if (accessory.context.service == "Outlet") {
-        primaryservice.getCharacteristic(Characteristic.OutletInUse)
-            .on('get', this.getOutletInUse.bind(this, accessory.context));
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirPressure &&
@@ -763,24 +850,39 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 primaryservice.getCharacteristic(Characteristic.On).getValue();
                 break;
 
+            case "Door":
+                primaryservice = accessory.getService(Service.Door);
+                primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+                break;
+
+            case "Window":
+                primaryservice = accessory.getService(Service.Window);
+                primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+                break;
+
+            case "WindowCovering":
+                primaryservice = accessory.getService(Service.WindowCovering);
+                primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+                break;
 
             case "Outlet":
                 primaryservice = accessory.getService(Service.Outlet);
                 primaryservice.getCharacteristic(Characteristic.On).getValue();
+                primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
                 break;
-
 
             case "AirQualitySensor":
                 primaryservice = accessory.getService(Service.AirQualitySensor);
                 primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
                 break;
 
-
             case "FakeEveAirQualitySensor":
                 primaryservice = accessory.getService(EveRoomService);
                 primaryservice.getCharacteristic(EveRoomAirQuality).getValue();
                 break;
-
 
             case "FakeEveWeatherSensor":
                 primaryservice = accessory.getService(EveWeatherService);
@@ -809,10 +911,6 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         }
         if (accessory.context.lowbattery) {
             primaryservice.getCharacteristic(Characteristic.StatusLowBattery).getValue();
-        }
-        // Additional required characteristic for outlet
-        if (accessory.context.service == "Outlet") {
-            primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
@@ -1055,7 +1153,7 @@ DomotigaPlatform.prototype.setOutletState = function (thisDevice, boolvalue, cal
     thisDevice.cacheOutletState = boolvalue;
 
     var OnOff = (boolvalue == 1) ? "On" : "Off";
-    
+
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueOutlet, OnOff, function (err) {
         if (callbackWasCalled)
@@ -1434,6 +1532,221 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
         }
     });
 }
+
+DomotigaPlatform.prototype.getDoorPositionState = function (thisDevice, callback) {
+    // At this time the value property of PositionState is always mapped to stopped
+    callback(null, Characteristic.PositionState.STOPPED);
+}
+
+DomotigaPlatform.prototype.readDoorPosition = function (thisDevice, callback) {
+    var self = this;
+    self.log("%s: getting door position...", thisDevice.name);
+
+    this.domotigaGetValue(thisDevice.device, thisDevice.valueDoor, function (error, result) {
+        if (error) {
+            self.log.error('%s: readDoorPosition GetValue failed: %s', thisDevice.name, error.message);
+            callback(error);
+        } else {
+
+            var value = (result.toLowerCase() == "0") ? 0 : 100;
+            this.log('%s: door position: %s', thisDevice.name, value);
+            callback(null, value);
+        }
+    });
+}
+
+DomotigaPlatform.prototype.getDoorPosition = function (thisDevice, callback) {
+    var self = this;
+
+    if (thisDevice.polling) {
+        // Get value directly from cache if polling is enabled
+        self.log('%s: Cached door position is: %s', thisDevice.name, thisDevice.cacheDoorPosition);
+        callback(null, thisDevice.cacheDoorPosition);
+    } else {
+        // Check value if polling is disabled
+        this.readDoorPosition(thisDevice, function (error, value) {
+            // Update cache
+            thisDevice.cacheDoorPosition = value;
+            callback(error, thisDevice.cacheDoorPosition);
+        });
+    }
+}
+
+DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPosition, callback) {
+    var self = this;
+    self.log("%s: setting door position to %s", thisDevice.name, targetPosition);
+    var targetPosition;
+
+    // At this time we do not use percentage values: 1 = open, 0 = closed
+    if (targetPosition == 0) {
+        doorPosition = "0";
+    }
+    else {
+        doorPosition = "1";
+    }
+
+    // Update cache
+    thisDevice.cacheDoorPosition = doorPosition;
+
+    var callbackWasCalled = false;
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueDoor, doorPosition, function (err) {
+        if (callbackWasCalled) {
+            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+        }
+        callbackWasCalled = true;
+        if (!err) {
+            self.log("%s: Successfully set door position to %s", thisDevice.name, targetPosition);
+            callback(null);
+        } else {
+            self.log.error("%s: Error setting door position to %s", thisDevice.name, targetPosition);
+            callback(err);
+        }
+    });
+}
+
+DomotigaPlatform.prototype.getWindowPositionState = function (thisDevice, callback) {
+    // At this time the value property of PositionState is always mapped to stopped
+    callback(null, Characteristic.PositionState.STOPPED);
+}
+
+DomotigaPlatform.prototype.readWindowPosition = function (thisDevice, callback) {
+    var self = this;
+    self.log("%s: getting window position...", thisDevice.name);
+
+    this.domotigaGetValue(thisDevice.device, thisDevice.valueWindow, function (error, result) {
+        if (error) {
+            self.log.error('%s: readWindowPosition GetValue failed: %s', thisDevice.name, error.message);
+            callback(error);
+        } else {
+
+            var value = (result.toLowerCase() == "0") ? 0 : 100;
+            this.log('%s: window position: %s', thisDevice.name, value);
+            callback(null, value);
+        }
+    });
+}
+
+DomotigaPlatform.prototype.getWindowPosition = function (thisDevice, callback) {
+    var self = this;
+
+    if (thisDevice.polling) {
+        // Get value directly from cache if polling is enabled
+        self.log('%s: Cached window position is: %s', thisDevice.name, thisDevice.cacheWindowPosition);
+        callback(null, thisDevice.cacheWindowPosition);
+    } else {
+        // Check value if polling is disabled
+        this.readWindowPosition(thisDevice, function (error, value) {
+            // Update cache
+            thisDevice.cacheWindowPosition = value;
+            callback(error, thisDevice.cacheWindowPosition);
+        });
+    }
+}
+
+DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosition, callback) {
+    var self = this;
+    self.log("%s: setting window position to %s", thisDevice.name, targetPosition);
+    var targetPosition;
+
+    // At this time we do not use percentage values: 1 = open, 0 = closed
+    if (targetPosition == 0) {
+        windowPosition = "0";
+    }
+    else {
+        windowPosition = "1";
+    }
+
+    // Update cache
+    thisDevice.cacheWindowPosition = windowPosition;
+
+    var callbackWasCalled = false;
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueWindow, windowPosition, function (err) {
+        if (callbackWasCalled) {
+            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+        }
+        callbackWasCalled = true;
+        if (!err) {
+            self.log("%s: Successfully set window position to %s", thisDevice.name, targetPosition);
+            callback(null);
+        } else {
+            self.log.error("%s: Error setting window position to %s", thisDevice.name, targetPosition);
+            callback(err);
+        }
+    });
+}
+
+
+DomotigaPlatform.prototype.getWindowCoveringPositionState = function (thisDevice, callback) {
+    // At this time the value property of PositionState is always mapped to stopped
+    callback(null, Characteristic.PositionState.STOPPED);
+}
+
+DomotigaPlatform.prototype.readWindowCoveringPosition = function (thisDevice, callback) {
+    var self = this;
+    self.log("%s: getting windowcovering position...", thisDevice.name);
+
+    this.domotigaGetValue(thisDevice.device, thisDevice.valueWindowCovering, function (error, result) {
+        if (error) {
+            self.log.error('%s: readWindowCoveringPosition GetValue failed: %s', thisDevice.name, error.message);
+            callback(error);
+        } else {
+
+            var value = (result.toLowerCase() == "0") ? 0 : 100;
+            this.log('%s: windowcovering position: %s', thisDevice.name, value);
+            callback(null, value);
+        }
+    });
+}
+
+DomotigaPlatform.prototype.getWindowCoveringPosition = function (thisDevice, callback) {
+    var self = this;
+
+    if (thisDevice.polling) {
+        // Get value directly from cache if polling is enabled
+        self.log('%s: Cached windowcovering position is: %s', thisDevice.name, thisDevice.cacheWindowCoveringPosition);
+        callback(null, thisDevice.cacheWindowCoveringPosition);
+    } else {
+        // Check value if polling is disabled
+        this.readWindowCoveringPosition(thisDevice, function (error, value) {
+            // Update cache
+            thisDevice.cacheWindowCoveringPosition = value;
+            callback(error, thisDevice.cacheWindowCoveringPosition);
+        });
+    }
+}
+
+DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, targetPosition, callback) {
+    var self = this;
+    self.log("%s: setting windowcovering position to %s", thisDevice.name, targetPosition);
+    var targetPosition;
+
+    // At this time we do not use percentage values: 1 = open, 0 = closed
+    if (targetPosition == 0) {
+        windowcoveringPosition = "0";
+    }
+    else {
+        windowcoveringPosition = "1";
+    }
+
+    // Update cache
+    thisDevice.cacheWindowCoveringPosition = windowcoveringPosition;
+
+    var callbackWasCalled = false;
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueWindowCovering, windowcoveringPosition, function (err) {
+        if (callbackWasCalled) {
+            this.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+        }
+        callbackWasCalled = true;
+        if (!err) {
+            self.log("%s: Successfully set windowcovering position to %s", thisDevice.name, targetPosition);
+            callback(null);
+        } else {
+            self.log.error("%s: Error setting windowcovering position to %s", thisDevice.name, targetPosition);
+            callback(err);
+        }
+    });
+}
+
 
 // Method to handle identify request
 DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {
