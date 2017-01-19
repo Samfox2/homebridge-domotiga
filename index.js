@@ -248,10 +248,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 primaryservice = new EveWeatherService("Eve Weather");
                 break;
 
-            case "FakeEveWeatherSensorWithLog":
-                primaryservice = new EveWeatherService("Eve Weather");
-                break;
-
             case "Powermeter":
                 primaryservice = new PowerMeterService(accessory.context.name);
                 break;
@@ -280,7 +276,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
-            (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
+            (accessory.context.service != "FakeEveWeatherSensor")) {
             primaryservice.addCharacteristic(EveAirPressure);
         }
         // Eve characteristic (custom UUID)
@@ -692,7 +688,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueAirPressure &&
-        (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
+        (accessory.context.service != "FakeEveWeatherSensor")) {
         primaryservice.getCharacteristic(EveAirPressure)
             .on('get', this.getCurrentAirPressure.bind(this, accessory.context));
     }
@@ -791,12 +787,6 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 primaryservice.getCharacteristic(EveAirPressure).getValue();
                 break;
 
-
-            case "FakeEveWeatherSensorWithLog":
-                primaryservice = accessory.getService(EveWeatherService);
-                primaryservice.getCharacteristic(EveAirPressure).getValue();
-                break;
-
             case "Powermeter":
                 primaryservice = accessory.getService(PowerMeterService);
                 primaryservice.getCharacteristic(EvePowerConsumption).getValue();
@@ -826,7 +816,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
-            (accessory.context.service != "FakeEveWeatherSensor") && (accessory.context.service != "FakeEveWeatherSensorWithLog")) {
+            (accessory.context.service != "FakeEveWeatherSensor")) {
             primaryservice.getCharacteristic(EveAirPressure).getValue();
         }
         // Eve characteristic (custom UUID)
