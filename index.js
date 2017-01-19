@@ -659,7 +659,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
         case "Powermeter":
             primaryservice = accessory.getService(PowerMeterService);
             primaryservice.getCharacteristic(EvePowerConsumption)
-                .on('get', this.pollEvePowerConsumption.bind(this, accessory.context));
+                .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
             break;
 
         default:
@@ -705,7 +705,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     // Eve characteristic (custom UUID)
     if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
         primaryservice.getCharacteristic(EvePowerConsumption)
-            .on('get', this.pollEvePowerConsumption.bind(this, accessory.context));
+            .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
     }
     // Eve characteristic (custom UUID)
     if (accessory.context.valueTotalPowerConsumption) {
