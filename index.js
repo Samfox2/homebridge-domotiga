@@ -343,7 +343,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheOutletState = 0;
     accessory.context.cacheOutletInUse = false;
     accessory.context.cacheCurrentAirQuality = Characteristic.AirQuality.POOR;
-    accessory.context.cacheAirQuality = 0;
     accessory.context.cachePowerConsumption = 0;
     accessory.context.cacheTotalPowerConsumption = 0;
     accessory.context.cacheCurrentBatteryLevel = 0;
