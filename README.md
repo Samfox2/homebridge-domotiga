@@ -15,8 +15,11 @@ The latest version (work in progress) supports following (primary) services:
 - ```LeakSensor``` (leaksensor state) 
 - ```MotionSensor``` (motionsensor state) 
 - ```Switch``` (get/set switch state) 
-- ```Outlet``` (get/set outlet state) 
-- ```Powermeter``` (power consumption) 
+- ```Outlet``` (get/set outlet state)
+- ```Door``` (get/set door position) 
+- ```Window``` (get/set window position) 
+- ```WindowCovering``` (get/set window covering positon) 
+- ```Powermeter``` (custom service with power consumption)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
@@ -54,6 +57,8 @@ Configuration sample:
                 "valueAirPressure": "3",
                 "valueBattery": "4",
                 "lowbattery": "3000"
+                "polling": true,
+                "pollInMs": "1000"
             },
             {
                 "name": "Sensor gardenhouse",
@@ -64,6 +69,8 @@ Configuration sample:
                 "valueHumidity": "2",
                 "valueBattery": "4",
                 "lowbattery": "3000"
+				"polling": false,
+                "pollInMs": "1000"
             },
             {
                 "name": "Combined AirQualitySensor livingroom",
@@ -160,11 +167,15 @@ Fields:
 * ```"valueContact":```  Value no. of the contact (required for "Contact")
 * ```"valueSwitch":```   Value no. of the switch (required for "Switch")
 * ```"valueOutlet":```   Value no. of the outlet (required for "Outlet")
+* ```"valueDoor":```     Value no. of the door (required for "Door")
+* ```"valueWindow":```   Value no. of the window (required for "Window")
+* ```"valueWindowCovering":```   Value no. of the window covering (required for "Window Covering")
 * ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
-* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (opt. for "Switch", "Contact", "Outlet", "LeakSensor", "MotionSensor")
+* ```"polling":```   Enable/disable polling with "true" or "false" (optional)
+* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (optional)
 
 
 Not yet supported by all homekit apps:
