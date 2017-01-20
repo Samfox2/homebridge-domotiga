@@ -1580,9 +1580,10 @@ DomotigaPlatform.prototype.getDoorPosition = function (thisDevice, callback) {
 DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting door position to %s", thisDevice.name, targetPosition);
-    var targetPosition;
-
+    
     // At this time we do not use percentage values: 1 = open, 0 = closed
+    var doorPosition;
+    
     if (targetPosition == 0) {
         doorPosition = "0";
     }
@@ -1651,9 +1652,10 @@ DomotigaPlatform.prototype.getWindowPosition = function (thisDevice, callback) {
 DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting window position to %s", thisDevice.name, targetPosition);
-    var targetPosition;
-
+    
     // At this time we do not use percentage values: 1 = open, 0 = closed
+    var windowPosition;
+    
     if (targetPosition == 0) {
         windowPosition = "0";
     }
@@ -1723,9 +1725,10 @@ DomotigaPlatform.prototype.getWindowCoveringPosition = function (thisDevice, cal
 DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting window covering position to %s", thisDevice.name, targetPosition);
-    var targetPosition;
-
+    
     // At this time we do not use percentage values: 1 = open, 0 = closed
+    var windowcoveringPosition;
+
     if (targetPosition == 0) {
         windowcoveringPosition = "0";
     }
