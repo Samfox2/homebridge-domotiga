@@ -237,23 +237,14 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
             case "Door":
                 primaryservice = new Service.Door(accessory.context.name);
-                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
-                primaryservice.addCharacteristic(Characteristic.TargetPosition);
-                primaryservice.addCharacteristic(Characteristic.PositionState);
                 break;
 
             case "Window":
                 primaryservice = new Service.Window(accessory.context.name);
-                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
-                primaryservice.addCharacteristic(Characteristic.TargetPosition);
-                primaryservice.addCharacteristic(Characteristic.PositionState);
                 break;
 
             case "WindowCovering":
                 primaryservice = new Service.WindowCovering(accessory.context.name);
-                primaryservice.addCharacteristic(Characteristic.CurrentPosition);
-                primaryservice.addCharacteristic(Characteristic.TargetPosition);
-                primaryservice.addCharacteristic(Characteristic.PositionState);
                 break;
 
             case "Outlet":
@@ -477,10 +468,10 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
         case "WindowCovering":
             primaryservice = accessory.getService(Service.WindowCovering);
-            this.readWindowPosition(thisDevice, function (error, value) {
+            this.readWindowCoveringPosition(thisDevice, function (error, value) {
                 // Update value if there's no error
-                if (!error && value !== thisDevice.cacheWindowPosition) {
-                    thisDevice.cacheWindowPosition = value;
+                if (!error && value !== thisDevice.cacheWindowCoveringPosition) {
+                    thisDevice.cacheWindowCoveringPosition = value;
                     primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
                 }
             });
