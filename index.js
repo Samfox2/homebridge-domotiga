@@ -2,6 +2,8 @@
 var Accessory, Service, Characteristic, UUIDGen;
 var JSONRequest = require("jsonrequest");
 var inherits = require('util').inherits;
+var path = require('path');
+var fs = require('fs');
 
 module.exports = function (homebridge) {
     console.log("homebridge API version: " + homebridge.version);
@@ -127,6 +129,19 @@ module.exports = function (homebridge) {
 function DomotigaPlatform(log, config, api) {
     this.log = log;
     this.config = config;
+    this.log("DomotiGa Plugin Version " + this.getVersion());
+    this.log("Plugin by Samfox2 https://github.com/samfox2");
+    this.log("DomotiGa is a Open Source Home Automation Software for Linux");
+    this.log("Please report any issues to https://github.com/samfox2/homebridge-domotiga/issues");
+  
+    var self = this;
+    self.fetch_npmVersion("homebridge-domotiga",function(npmVersion){
+      npmVersion = npmVersion.replace('\n','');
+      self.log("NPM %s vs Local %s",npmVersion, self.getVersion());
+      if (npmVersion > self.getVersion()) {
+        self.log.warn("There is a new Version available. Please update with sudo npm -g update homebridge-domotiga");
+      }
+    });
 
     // Global configuration
     this.host = config.host || 'localhost';
@@ -249,7 +264,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 
             case "Outlet":
                 primaryservice = new Service.Outlet(accessory.context.name);
-                primaryservice.addCharacteristic(Characteristic.OutletInUse);
+                //primaryservice.addCharacteristic(Characteristic.OutletInUse);
                 break;
 
             case "AirQualitySensor":
@@ -1799,6 +1814,22 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
             callback(null, data.result.values[item].value);
         }
     });
+}
+
+DomotigaPlatform.prototype.getVersion = function() {
+  var pjPath = path.join(__dirname, './package.json');
+  var pj = JSON.parse(fs.readFileSync(pjPath));
+  return pj.version;
+}  
+
+DomotigaPlatform.prototype.fetch_npmVersion = function(pck, callback) {
+  var exec = require('child_process').exec;
+  var cmd = 'npm view '+pck+' version';
+  exec(cmd, function(error, stdout, stderr) {
+    var npm_version = stdout;
+    npm_version = npm_version.replace('\n','');
+    callback(npm_version);
+ });
 }
 
 // Method to handle plugin configuration in HomeKit app
