@@ -164,7 +164,7 @@ DomotigaPlatform.prototype.configureAccessory = function (accessory) {
     this.accessories[accessory.context.name] = accessory;
 }
 
-// Method to setup accesories from config.json
+// Method to setup accessories from config.json
 DomotigaPlatform.prototype.didFinishLaunching = function () {
 
     if (!this.devices.length) {
