@@ -27,7 +27,7 @@ For multi-sensors (e.g. combined temperature/humidity sensors) additional charac
 Older version using API 1.0: [homebridge-domotiga](https://github.com/Samfox2/homebridge-domotiga1) (deprecated)
 
 ### Switching from homebridge-domotiga (API 1.0)
-Users switching from homebridge-domotiga will need to remove their old config in `config.json` and use the new config. Hence, DomitiGa will show up as brand new device. This is due to the fact that API 2.0 only supports platform plugins and homebridge-domotiga was implemented as an accessory plugin. This means any configurations, alarms, scenes, etc to which the devices were associated will need to be updated with the new DomotiGa devices.
+Users switching from homebridge-domotiga will need to remove their old config in `config.json` and use the new config. Hence, DomotiGa will show up as brand new device. This is due to the fact that API 2.0 only supports platform plugins and homebridge-domotiga was implemented as an accessory plugin. This means any configurations, alarms, scenes, etc to which the devices were associated will need to be updated with the new DomotiGa devices.
 
 # Contributing
 
