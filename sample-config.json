@@ -25,7 +25,9 @@
                     "valueHumidity": "2",
                     "valueAirPressure": "3",
                     "valueBattery": "4",
-                    "lowbattery": "3000"
+                    "lowbattery": "3000",
+                    "polling": true,
+                    "pollInMs": "1000"
                 },
                 {
                     "name": "Sensor gardenhouse",
@@ -35,7 +37,9 @@
                     "device": "88",
                     "valueHumidity": "2",
                     "valueBattery": "4",
-                    "lowbattery": "3000"
+                    "lowbattery": "3000",
+                    "polling": false,
+                    "pollInMs": "1000"
                 },
                 {
                     "name": "Combined AirQualitySensor livingroom",
