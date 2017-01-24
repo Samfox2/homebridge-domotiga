@@ -1,6 +1,6 @@
 {
   "name": "homebridge-domotiga",
-  "version": "0.0.15",
+  "version": "0.0.20",
   "description": "domotiga plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
@@ -20,7 +20,7 @@
   "dependencies": {
     "jsonrequest": "^3.0.1",
     "util": "^0.10.3",
-    "polling-to-event": ">=2.0.2"
+    "path": "^0.12.7"
   }
 }
 
