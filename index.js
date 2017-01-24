@@ -179,6 +179,27 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
         var accessory = this.accessories[name];
         if (!accessory.reachable) this.removeAccessory(accessory);
     }
+
+    // Check number of devices
+    var noD = this.accessories.length;
+    this.log("Number of mapped devices : " + noD);
+    if (noD > 100) {
+        this.log.error("********************************************");
+        this.log.error("* You are using more than 100 HomeKit      *");
+        this.log.error("* devices behind a bridge. At this time    *");
+        this.log.error("* HomeKit only supports up to 100 devices. *");
+        this.log.error("* This may end up that iOS is not able to  *");
+        this.log.error("* connect to the bridge anymore.           *");
+        this.log.error("********************************************");
+    } else {
+        if (noD > 90) {
+            this.log.warn("You are using more than 90 HomeKit");
+            this.log.warn("devices behind a bridge. At this time");
+            this.log.warn("HomeKit only supports up to 100 devices.");
+            this.log.warn("This is just a warning. Everything should");
+            this.log.warn("work fine until you are below that 100.");
+        }
+    }
 }
 
 
@@ -228,63 +249,119 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         switch (accessory.context.service) {
 
             case "TemperatureSensor":
-                primaryservice = new Service.TemperatureSensor(accessory.context.name);;
+                primaryservice = new Service.TemperatureSensor(accessory.context.name);
+                if (!accessory.context.valueTemperature) {
+                    this.log.error('%s: missing definition of valueTemperature in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "HumiditySensor":
                 primaryservice = new Service.HumiditySensor(accessory.context.name);
+                if (!accessory.context.valueHumidity) {
+                    this.log.error('%s: missing definition of valueHumidity in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Contact":
                 primaryservice = new Service.ContactSensor(accessory.context.name);
+                if (!accessory.context.valueContact) {
+                    this.log.error('%s: missing definition of valueContact in config.json!', accessory.context.name);
+                    return;
+                }
 
             case "LeakSensor":
                 primaryservice = new Service.LeakSensor(accessory.context.name);
+                if (!accessory.context.valueLeakSensor) {
+                    this.log.error('%s: missing definition of valueLeakSensor in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "MotionSensor":
                 primaryservice = new Service.MotionSensor(accessory.context.name);
+                if (!accessory.context.valueMotionSensor) {
+                    this.log.error('%s: missing definition of valueMotionSensor in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Switch":
                 primaryservice = new Service.Switch(accessory.context.name);
+                if (!accessory.context.valueSwitch) {
+                    this.log.error('%s: missing definition of valueSwitch in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Door":
                 primaryservice = new Service.Door(accessory.context.name);
+                if (!accessory.context.valueDoor) {
+                    this.log.error('%s: missing definition of valueDoor in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Window":
                 primaryservice = new Service.Window(accessory.context.name);
+                if (!accessory.context.valueWindow) {
+                    this.log.error('%s: missing definition of valueWindow in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "WindowCovering":
                 primaryservice = new Service.WindowCovering(accessory.context.name);
+                if (!accessory.context.valueWindowCovering) {
+                    this.log.error('%s: missing definition of valueWindowCovering in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Outlet":
                 primaryservice = new Service.Outlet(accessory.context.name);
-                //primaryservice.addCharacteristic(Characteristic.OutletInUse);
+                if (!accessory.context.valueOutlet) {
+                    this.log.error('%s: missing definition of valueOutlet in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "AirQualitySensor":
                 primaryservice = new Service.AirQualitySensor(accessory.context.name);
+                if (!accessory.context.valueAirQuality) {
+                    this.log.error('%s: missing definition of valueAirQuality in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "FakeEveAirQualitySensor":
                 primaryservice = new EveRoomService("Eve Room");
+                if (!accessory.context.valueAirQuality) {
+                    this.log.error('%s: missing definition of valueAirQuality in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "FakeEveWeatherSensor":
                 primaryservice = new EveWeatherService("Eve Weather");
+                if (!accessory.context.valueAirPressure) {
+                    this.log.error('%s: missing definition of valueAirPressure in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Powermeter":
                 primaryservice = new PowerMeterService(accessory.context.name);
+                if (!accessory.context.valuePowerConsumption) {
+                    this.log.error('%s: missing definition of valuePowerConsumption in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             default:
                 this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+                return;
                 break;
         }
 
