@@ -24,7 +24,7 @@ The latest version (work in progress) supports following (primary) services:
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
 
-Older version using API 1.0: [homebridge-domotiga](https://github.com/Samfox2/homebridge-domotiga1) (deprecated)
+Older version using API 1.0: [homebridge-domotiga-1.0](https://github.com/Samfox2/homebridge-domotiga-1.0) (deprecated)
 
 ### Switching from homebridge-domotiga (API 1.0)
 Users switching from homebridge-domotiga will need to remove their old config in `config.json` and use the new config. Hence, DomotiGa will show up as brand new device. This is due to the fact that API 2.0 only supports platform plugins and homebridge-domotiga was implemented as an accessory plugin. This means any configurations, alarms, scenes, etc to which the devices were associated will need to be updated with the new DomotiGa devices.
