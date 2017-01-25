@@ -20,10 +20,15 @@ The latest version (work in progress) supports following (primary) services:
 - ```Door``` (get/set door position) 
 - ```Window``` (get/set window position) 
 - ```WindowCovering``` (get/set window covering positon) 
-- ```Powermeter``` (power consumption) 
+- ```Powermeter``` (custom service with power consumption)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
+
+Older version using API 1.0: [homebridge-domotiga-1.0](https://github.com/Samfox2/homebridge-domotiga-1.0) (deprecated)
+
+### Switching from homebridge-domotiga (API 1.0)
+Users switching from homebridge-domotiga will need to remove their old config in `config.json` and use the new config. Hence, DomotiGa will show up as brand new device. This is due to the fact that API 2.0 only supports platform plugins and homebridge-domotiga was implemented as an accessory plugin. This means any configurations, alarms, scenes, etc to which the devices were associated will need to be updated with the new DomotiGa devices.
 
 # Contributing
 
@@ -39,130 +44,121 @@ Intrigued? Missing any domotiga devices? Love HomeKit and Homebridge? - Feel fre
 
 Configuration sample:
 
- ```sh
-"accessories": [
-          {
-            "accessory": "Domotiga",
-            "name": "Sensor garden",
-            "host": "localhost",
-            "port": "9090",
-            "service": "TemperatureSensor",
-            "manufacturer": "DIY",
-            "model": "TinyTX",
-            "device": "81",
-            "valueTemperature": "1",
-            "valueHumidity":    "2",
-            "valueAirPressure": "3",
-            "valueBattery":     "4",
-            "lowbattery": "3000"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Combined AirQualitySensor livingroom",
-            "host": "DomotiGa",
-            "port": "9090",
-            "service": "AirQualitySensor",
-            "device": "83",
-            "valueAirQuality":  "1",
-            "valueTemperature": "2",
-            "valueHumidity":    "3",
-            "valueAirPressure": "4",            
-            "valueBattery":     "5",
-            "lowbattery": "3000"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Combined AirQualitySensor with ppm display",
-            "host": "DomotiGa",
-            "port": "9090",
-            "service": "FakeEveAirQualitySensor",
-            "device": "89",
-            "valueAirQuality":  "1",
-            "valueTemperature": "2",
-            "valueHumidity":    "3",
-            "valueAirPressure": "4",            
-            "valueBattery":     "5",
-            "lowbattery": "3000"
-          }, 
-          {
-            "accessory": "Domotiga",
-            "name": "AirQualitySensor bedroom without battery",
-            "host": "DomotiGa",
-            "port": "9090",
-            "service": "AirQualitySensor",
-            "device": "82",
-            "valueAirQuality": "1"
-          },         
-          {
-            "accessory": "Domotiga",
-            "name": "PC",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "Contact",
-            "device": "77",
-            "valueContact": "1",
-            "valueBattery":    "2",
-            "lowbattery": "3000"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Printer",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "Switch",
-            "device": "79",
-            "valueSwitch": "1",
-            "pollInMs": "10000" 
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Utility room",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "LeakSensor",
-            "device": "25",
-            "valueLeakSensor": "1",
-            "valueBattery":    "2",
-            "lowbattery": "3000"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Entrance",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "MotionSensor",
-            "device": "26",
-            "valueMotionSensor": "1",
-            "valueBattery":    "2",
-            "lowbattery": "3000"
-          }, 
-          {
-            "accessory": "Domotiga",
-            "name": "Outlet",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "Outlet",
-            "device": "72",
-            "valueOutlet": "1",
-            "valuePowerConsumption": "3",
-            "valueTotalPowerConsumption": "7"
-          },
-          {
-            "accessory": "Domotiga",
-            "name": "Powermeter basement",
-            "host": "192.168.0.xxx",
-            "port": "9090",
-            "service": "Powermeter",
-            "device": "44",
-            "valuePowerConsumption": "1",
-            "valueTotalPowerConsumption": "2"
-        }
-    ]
+ ```
+"platforms": [
+    {
+        "platform": "Domotiga",
+        "name": "Domotiga",
+        "host": "localhost",
+        "port": "9090",
+        "devices": [
+            {
+                "name": "Sensor garden",
+                "service": "TemperatureSensor",
+                "manufacturer": "DIY",
+                "model": "TinyTX",
+                "device": "81",
+                "valueTemperature": "1",
+                "valueHumidity": "2",
+                "valueAirPressure": "3",
+                "valueBattery": "4",
+                "lowbattery": "3000"
+                "polling": true,
+                "pollInMs": "1000"
+            },
+            {
+                "name": "Sensor gardenhouse",
+                "service": "HumiditySensor",
+                "manufacturer": "DIY",
+                "model": "TinyTX",
+                "device": "88",
+                "valueHumidity": "2",
+                "valueBattery": "4",
+                "lowbattery": "3000"
+				"polling": false,
+                "pollInMs": "1000"
+            },
+            {
+                "name": "Combined AirQualitySensor livingroom",
+                "service": "AirQualitySensor",
+                "device": "83",
+                "valueAirQuality": "1",
+                "valueTemperature": "2",
+                "valueHumidity": "3",
+                "valueAirPressure": "4",
+                "valueBattery": "5",
+                "lowbattery": "3000"
+            },
+            {
+                "name": "Combined AirQualitySensor with ppm display",
+                "service": "FakeEveAirQualitySensor",
+                "device": "89",
+                "valueAirQuality": "1",
+                "valueTemperature": "2",
+                "valueHumidity": "3",
+                "valueAirPressure": "4",
+                "valueBattery": "5",
+                "lowbattery": "3000"
+            },
+            {
+                "name": "AirQualitySensor bedroom without battery",
+                "service": "AirQualitySensor",
+                "device": "82",
+                "valueAirQuality": "1"
+            },
+            {
+                "name": "PC",
+                "service": "Contact",
+                "device": "77",
+                "valueContact": "1",
+                "valueBattery": "2",
+                "lowbattery": "3000"
+            },
+            {
+                "name": "Printer",
+                "service": "Switch",
+                "device": "79",
+                "valueSwitch": "1"
+            },
+            {
+                "name": "Utility room",
+                "service": "LeakSensor",
+                "device": "25",
+                "valueLeakSensor": "1",
+                "valueBattery": "2",
+                "lowbattery": "3000"
+            },
+            {
+                "name": "Entrance",
+                "service": "MotionSensor",
+                "device": "26",
+                "valueMotionSensor": "1",
+                "valueBattery": "2",
+                "lowbattery": "3000"
+            },
+            {
+                "name": "Outlet",
+                "service": "Outlet",
+                "device": "72",
+                "valueOutlet": "1",
+                "valuePowerConsumption": "3",
+                "valueTotalPowerConsumption": "7"
+            },
+            {
+                "name": "Powermeter basement",
+                "service": "Powermeter",
+                "device": "44",
+                "valuePowerConsumption": "1",
+                "valueTotalPowerConsumption": "2"
+            }
+        ]
+    }
+]
 ```
 
 Fields:
 
-* ```"accessory":``` Must always be "Domotiga" (required)
+* ```"platform":``` Must always be Domotiga  (required)
 * ```"name":``` Can be anything
 * ```"host":``` The hostname or ip of the machine running Domotiga (required)
 * ```"port":``` The port that Domotiga is using (usually 9090) (required)
@@ -184,7 +180,9 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
-* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (opt. for "Contact", "Door", "LeakSensor", "MotionSensor", "Outlet", "Switch", "Window", "WindowCovering" )
+* ```"polling":```   Enable/disable polling with "true" or "false" (optional)
+* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (optional)
+
 
 
 Not yet supported by all homekit apps:
