@@ -2144,5 +2144,3 @@ DomotigaPlatform.prototype.configurationRequestHandler = function (context, requ
         }
     }
 }
-
-

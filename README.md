@@ -1,6 +1,7 @@
 # homebridge-domotiga
 
 [![npm version](https://badge.fury.io/js/homebridge-domotiga.svg)](https://badge.fury.io/js/homebridge-domotiga)
+[![Dependency Status](https://gemnasium.com/badges/github.com/Samfox2/homebridge-domotiga.svg)](https://gemnasium.com/github.com/Samfox2/homebridge-domotiga)
 
 Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 
@@ -181,6 +182,7 @@ Fields:
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 * ```"polling":```   Enable/disable polling with "true" or "false" (optional)
 * ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (optional)
+
 
 
 Not yet supported by all homekit apps:
