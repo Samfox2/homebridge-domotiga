@@ -143,6 +143,7 @@ function DomotigaPlatform(log, config, api) {
       }
     });
 
+    if (config){
     // Global configuration
     this.host = this.config.host || 'localhost';
     this.port = this.config.port || 9090;
@@ -155,6 +156,7 @@ function DomotigaPlatform(log, config, api) {
     if (api) {
         this.api = api;
         this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
+    }
     }
 }
 
