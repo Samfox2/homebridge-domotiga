@@ -144,8 +144,8 @@ function DomotigaPlatform(log, config, api) {
     });
 
     // Global configuration
-    this.host = config.host || 'localhost';
-    this.port = config.port || 9090;
+    this.host = this.config.host || 'localhost';
+    this.port = this.config.port || 9090;
 
     // Device specific configuration
     this.devices = this.config.devices || [];
