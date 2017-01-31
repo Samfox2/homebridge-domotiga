@@ -133,30 +133,30 @@ function DomotigaPlatform(log, config, api) {
     this.log("Plugin by Samfox2 https://github.com/samfox2");
     this.log("DomotiGa is a Open Source Home Automation Software for Linux");
     this.log("Please report any issues to https://github.com/samfox2/homebridge-domotiga/issues");
-  
+
     var self = this;
-    self.fetch_npmVersion("homebridge-domotiga",function(npmVersion){
-      npmVersion = npmVersion.replace('\n','');
-      self.log("NPM %s vs Local %s",npmVersion, self.getVersion());
-      if (npmVersion > self.getVersion()) {
-        self.log.warn("There is a new Version available. Please update with sudo npm -g update homebridge-domotiga");
-      }
+    self.fetch_npmVersion("homebridge-domotiga", function (npmVersion) {
+        npmVersion = npmVersion.replace('\n', '');
+        self.log("NPM %s vs Local %s", npmVersion, self.getVersion());
+        if (npmVersion > self.getVersion()) {
+            self.log.warn("There is a new Version available. Please update with sudo npm -g update homebridge-domotiga");
+        }
     });
 
-    if (config){
-    // Global configuration
-    this.host = this.config.host || 'localhost';
-    this.port = this.config.port || 9090;
+    if (config) {
+        // Global configuration
+        this.host = this.config.host || 'localhost';
+        this.port = this.config.port || 9090;
 
-    // Device specific configuration
-    this.devices = this.config.devices || [];
-    this.accessories = {};
-    this.polling = {};
+        // Device specific configuration
+        this.devices = this.config.devices || [];
+        this.accessories = {};
+        this.polling = {};
 
-    if (api) {
-        this.api = api;
-        this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
-    }
+        if (api) {
+            this.api = api;
+            this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
+        }
     }
 }
 
@@ -841,8 +841,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     }
 
     // Everything outside the primary service gets added as additional characteristics...
-    if (primaryservice)
-    {
+    if (primaryservice) {
         if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
             primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
                 .setProps({ minValue: -55, maxValue: 100 })
@@ -987,8 +986,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         }
 
         // Additional/optional characteristics...
-        if (primaryservice)
-        {
+        if (primaryservice) {
             if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
                 primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
             }
@@ -1665,10 +1663,10 @@ DomotigaPlatform.prototype.getDoorPosition = function (thisDevice, callback) {
 DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting door position to %s", thisDevice.name, targetPosition);
-    
+
     // At this time we do not use percentage values: 1 = open, 0 = closed
     var doorPosition;
-    
+
     if (targetPosition == 0) {
         doorPosition = "0";
     }
@@ -1678,6 +1676,11 @@ DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPositio
 
     // Update cache
     thisDevice.cacheDoorPosition = doorPosition;
+
+    // Update position state
+    var accessory = this.accessories[thisDevice.name];
+    if (accessory)
+        accessory.getService(Service.Door).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueDoor, doorPosition, function (err) {
@@ -1737,10 +1740,10 @@ DomotigaPlatform.prototype.getWindowPosition = function (thisDevice, callback) {
 DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting window position to %s", thisDevice.name, targetPosition);
-    
+
     // At this time we do not use percentage values: 1 = open, 0 = closed
     var windowPosition;
-    
+
     if (targetPosition == 0) {
         windowPosition = "0";
     }
@@ -1750,6 +1753,11 @@ DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosit
 
     // Update cache
     thisDevice.cacheWindowPosition = windowPosition;
+
+    // Update position state
+    var accessory = this.accessories[thisDevice.name];
+    if (accessory)
+        accessory.getService(Service.Window).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindow, windowPosition, function (err) {
@@ -1810,7 +1818,7 @@ DomotigaPlatform.prototype.getWindowCoveringPosition = function (thisDevice, cal
 DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, targetPosition, callback) {
     var self = this;
     self.log("%s: setting window covering position to %s", thisDevice.name, targetPosition);
-    
+
     // At this time we do not use percentage values: 1 = open, 0 = closed
     var windowcoveringPosition;
 
@@ -1823,6 +1831,11 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
 
     // Update cache
     thisDevice.cacheWindowCoveringPosition = windowcoveringPosition;
+
+    // Update position state
+    var accessory = this.accessories[thisDevice.name];
+    if (accessory)
+        accessory.getService(Service.WindowCovering).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindowCovering, windowcoveringPosition, function (err) {
@@ -1895,20 +1908,20 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
     });
 }
 
-DomotigaPlatform.prototype.getVersion = function() {
-  var pjPath = path.join(__dirname, './package.json');
-  var pj = JSON.parse(fs.readFileSync(pjPath));
-  return pj.version;
-}  
+DomotigaPlatform.prototype.getVersion = function () {
+    var pjPath = path.join(__dirname, './package.json');
+    var pj = JSON.parse(fs.readFileSync(pjPath));
+    return pj.version;
+}
 
-DomotigaPlatform.prototype.fetch_npmVersion = function(pck, callback) {
-  var exec = require('child_process').exec;
-  var cmd = 'npm view '+pck+' version';
-  exec(cmd, function(error, stdout, stderr) {
-    var npm_version = stdout;
-    npm_version = npm_version.replace('\n','');
-    callback(npm_version);
- });
+DomotigaPlatform.prototype.fetch_npmVersion = function (pck, callback) {
+    var exec = require('child_process').exec;
+    var cmd = 'npm view ' + pck + ' version';
+    exec(cmd, function (error, stdout, stderr) {
+        var npm_version = stdout;
+        npm_version = npm_version.replace('\n', '');
+        callback(npm_version);
+    });
 }
 
 // Method to handle plugin configuration in HomeKit app
