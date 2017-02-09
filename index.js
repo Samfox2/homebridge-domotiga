@@ -775,7 +775,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getDoorPosition.bind(this, accessory.context))
             primaryservice.getCharacteristic(Characteristic.TargetPosition)
                 .on('get', this.getDoorPosition.bind(this, accessory.context))
-                .on('set', this.setDoorPosition.bind(this, accessory.context))
+                .on('set', this.setDoorPosition.bind(this, accessory))
             primaryservice.getCharacteristic(Characteristic.PositionState)
                 .on('get', this.getDoorPositionState.bind(this, accessory.context))
             break;
@@ -786,7 +786,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getWindowPosition.bind(this, accessory.context))
             primaryservice.getCharacteristic(Characteristic.TargetPosition)
                 .on('get', this.getWindowPosition.bind(this, accessory.context))
-                .on('set', this.setWindowPosition.bind(this, accessory.context))
+                .on('set', this.setWindowPosition.bind(this, accessory))
             primaryservice.getCharacteristic(Characteristic.PositionState)
                 .on('get', this.getWindowPositionState.bind(this, accessory.context))
             break;
@@ -797,7 +797,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getWindowCoveringPosition.bind(this, accessory.context))
             primaryservice.getCharacteristic(Characteristic.TargetPosition)
                 .on('get', this.getWindowCoveringPosition.bind(this, accessory.context))
-                .on('set', this.setWindowCoveringPosition.bind(this, accessory.context))
+                .on('set', this.setWindowCoveringPosition.bind(this, accessory))
             primaryservice.getCharacteristic(Characteristic.PositionState)
                 .on('get', this.getWindowCoveringPositionState.bind(this, accessory.context))
             break;
@@ -1660,8 +1660,9 @@ DomotigaPlatform.prototype.getDoorPosition = function (thisDevice, callback) {
     }
 }
 
-DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPosition, callback) {
+DomotigaPlatform.prototype.setDoorPosition = function (accessory, targetPosition, callback) {
     var self = this;
+    thisDevice = accessory.context;
     self.log("%s: setting door position to %s", thisDevice.name, targetPosition);
 
     // At this time we do not use percentage values: 1 = open, 0 = closed
@@ -1678,7 +1679,6 @@ DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPositio
     thisDevice.cacheDoorPosition = doorPosition;
 
     // Update position state
-    var accessory = this.accessories[thisDevice.name];
     if (accessory)
         accessory.getService(Service.Door).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
@@ -1737,8 +1737,10 @@ DomotigaPlatform.prototype.getWindowPosition = function (thisDevice, callback) {
     }
 }
 
-DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosition, callback) {
+DomotigaPlatform.prototype.setWindowPosition = function (accessory, targetPosition, callback) {
     var self = this;
+    thisDevice = accessory.context;
+
     self.log("%s: setting window position to %s", thisDevice.name, targetPosition);
 
     // At this time we do not use percentage values: 1 = open, 0 = closed
@@ -1755,7 +1757,6 @@ DomotigaPlatform.prototype.setWindowPosition = function (thisDevice, targetPosit
     thisDevice.cacheWindowPosition = windowPosition;
 
     // Update position state
-    var accessory = this.accessories[thisDevice.name];
     if (accessory)
         accessory.getService(Service.Window).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
@@ -1815,8 +1816,9 @@ DomotigaPlatform.prototype.getWindowCoveringPosition = function (thisDevice, cal
     }
 }
 
-DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, targetPosition, callback) {
+DomotigaPlatform.prototype.setWindowCoveringPosition = function (accessory, targetPosition, callback) {
     var self = this;
+    thisDevice = accessory.context;
     self.log("%s: setting window covering position to %s", thisDevice.name, targetPosition);
 
     // At this time we do not use percentage values: 1 = open, 0 = closed
@@ -1833,7 +1835,6 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
     thisDevice.cacheWindowCoveringPosition = windowcoveringPosition;
 
     // Update position state
-    var accessory = this.accessories[thisDevice.name];
     if (accessory)
         accessory.getService(Service.WindowCovering).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
