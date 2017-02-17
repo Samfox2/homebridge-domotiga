@@ -757,7 +757,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             break;
 
         case "MotionSensor":
-            primaryservice = accessory.getService(Service.MotionkSensor);
+            primaryservice = accessory.getService(Service.MotionSensor);
             primaryservice.getCharacteristic(Characteristic.MotionDetected)
                 .on('get', this.getMotionSensorState.bind(this, accessory.context));
             break;
@@ -1530,7 +1530,7 @@ DomotigaPlatform.prototype.readMotionSensorState = function (thisDevice, callbac
             self.log.error('%s: readMotionSensorState failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
-            var value = (Number(result) == 0) ? 1 : 0;
+            var value = (Number(result) == 0) ? 0 : 1;
 
             self.log('%s: motion sensor state: %s', thisDevice.name, value);
             callback(null, value);
