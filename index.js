@@ -1695,9 +1695,9 @@ DomotigaPlatform.prototype.setDoorPosition = function (thisDevice, targetPositio
 
     // Update position state
     var accessory = this.accessories[thisDevice.name];
-    if (accessory)
+    if (accessory){
         accessory.getService(Service.Door).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-
+    }
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueDoor, doorPosition, function (err) {
         if (callbackWasCalled) {
@@ -1781,7 +1781,10 @@ DomotigaPlatform.prototype.setWindowPosition = function (accessory, targetPositi
     // Update position state
     accessory.getService(Service.Window).setCharacteristic(Characteristic.CurrentPosition, windowPosition);
     accessory.getService(Service.Window).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-        
+      
+    //Update the value to iOS
+    accessory.getService(Service.Window).getCharacteristic(Characteristic.CURRENTPosition).updateValue(windowPosition);
+    
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindow, windowPosition, function (err) {
         if (callbackWasCalled) {
@@ -1858,10 +1861,12 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
     
     // Update position state
     var accessory = this.accessories[thisDevice.name];
-    if (accessory)
+    if (accessory){
         accessory.getService(Service.WindowCovering).setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-
-    var callbackWasCalled = false;
+        //Update the value to iOS
+        accessory.getService(Service.WindowCovering).getCharacteristic(Characteristic.TargetPosition).updateValue(windowcoveringPosition);
+    }
+        var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindowCovering, windowcoveringPosition, function (err) {
         if (callbackWasCalled) {
             self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
