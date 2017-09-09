@@ -237,11 +237,11 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory = new Accessory(data.name, uuid, 8);
 
         // Store and initialize logfile into context
-        accessory.context.name = data.name || NA;
+        accessory.context.name = data.name || "NA";
         accessory.context.service = data.service;
         accessory.context.device = data.device;
-        accessory.context.manufacturer = data.manufacturer || NA;
-        accessory.context.model = data.model || NA;
+        accessory.context.manufacturer = data.manufacturer || "NA";
+        accessory.context.model = data.model || "NA";
         accessory.context.valueTemperature = data.valueTemperature;
         accessory.context.valueHumidity = data.valueHumidity;
         accessory.context.valueAirPressure = data.valueAirPressure;
