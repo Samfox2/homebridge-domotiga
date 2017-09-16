@@ -1,6 +1,6 @@
 {
   "name": "homebridge-domotiga",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "domotiga plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
