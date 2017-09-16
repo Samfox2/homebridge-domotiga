@@ -1892,6 +1892,7 @@ DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {
 // Set value at domotiga database
 DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, value, callback) {
 
+    var self = this;
     JSONRequest('http://' + this.host + ':' + this.port, {
         jsonrpc: "2.0",
         method: "device.set",
@@ -1904,7 +1905,7 @@ DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, v
     }, function (err, data) {
         //this.log("data:", data);
         if (err) {
-            this.log.error("Sorry err: ", err);
+            self.log.error("Sorry err: ", err);
             callback(err);
         } else {
             callback();
