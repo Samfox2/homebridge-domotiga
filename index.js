@@ -1933,7 +1933,23 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
             let item = Number(deviceValueNo) - 1;
             //self.log("data.result:", data.result);
             //self.log( "data.result.values[item].value", data.result.values[item].value);
-            callback(null, data.result.values[item].value);
+			if ( Number.isNaN(data.result.values[item].value) === true ) {
+				// try to convert
+				if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
+					callback(null,1);
+				} else if( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
+					callback(null,0);
+				} else {
+					self.log.warn("Result discarded (%s => %s)",data, typeof data);
+					callback();
+				}
+			} else {
+				if (data.result.values[item].value.substr(0,3)toLowerCase() == "dim") {
+					callback(null, data.result.values[item].value.substr(4)toLowerCase())
+				} else {
+					callback(null, data.result.values[item].value);
+				}
+			}
         }
     });
 }
