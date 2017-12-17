@@ -2110,9 +2110,11 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
 		//self.log( "domotigaGetValue, device : %s - deviceValueNo : ",device, deviceValueNo);
 		JSONRequest('http://' + self.host + ':' + self.port, {
 			jsonrpc: "2.0",
-			method: "device.get",
+			method: "value.get",
 			params: {
-				"device_id": device
+				"device_id": device,
+				"valuenum": deviceValueNo,
+				"command" : "value"
 			},
 			id: 1
 		}, function (err, data) {
@@ -2122,17 +2124,17 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
 			} else {
 				let item = Number(deviceValueNo) - 1;
 				//self.log("data.result:", data.result);
-				//self.log( "data.result.values[item].value", data.result.values[item].value);
-				if (data.result != undefined && data.result.values[item] != undefined){
+				//self.log("data.result.value:", data.result.value);
+				if (data.result != undefined){
 					// try to convert
-					if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
+					if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "on" || data.result.value.toLowerCase() == "true")) {
 						callback(null,1);
-					} else if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
+					} else if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "off" || data.result.value.toLowerCase() == "false")) {
 						callback(null,0);
-					} else if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.substr(0,3).toLowerCase() == "dim")) {
-						callback(null, data.result.values[item].value.substr(4).toLowerCase())
+					} else if ( typeof data.result.value == "string" && (data.result.value.substr(0,3).toLowerCase() == "dim")) {
+						callback(null, data.result.value.substr(4).toLowerCase())
 					} else {
-						callback(null, data.result.values[item].value);
+						callback(null, data.result.value);
 					}
 				} else {
 					self.log.warn("Undefined data for device %s, value %s", device, deviceValueNo);
