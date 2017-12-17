@@ -1972,33 +1972,47 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
 // Lightbulb
 DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback) {
     var self = this;
-	var LightState = (value == false) ? "Off" : "On";
+	
 	if (thisDevice.cacheLightState && thisDevice.brightness && value) {
-		LightState = "Dim " + thisDevice.cacheLightBrightness;
-	}
-	self.log("%s: setting light.state to %s", thisDevice.name, LightState);
-
-	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (error,value) {
-		if (error) {
-			self.log.warn("%s: Error while setting light.state to %s", thisDevice.name, LightState);
-			callback();
-		} else {
-			callback(null,value);
+		callback(null);
+	} else {
+		var LightState = (value == false) ? "Off" : "On";
+		if (!thisDevice.cacheLightState && thisDevice.brightness && value) {
+			LightState = "Dim " + thisDevice.cacheLightBrightness;
 		}
-	});
+		self.log("%s: setting light state to %s", thisDevice.name, LightState);
+
+		// Update cache
+		thisDevice.cacheLightState = value;
+
+		var callbackWasCalled = false;
+		this.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (err) {
+			if (callbackWasCalled) {
+				self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+			}
+			callbackWasCalled = true;
+			if (!err) {
+				self.log("%s: successfully set light state to %s", thisDevice.name, LightState);
+				callback(null);
+			} else {
+				self.log.error("%s: error setting light state to %s", thisDevice.name, LightState);
+				callback(err);
+			}
+		});
+	}
 }
 
 DomotigaPlatform.prototype.readLightState = function (thisDevice, callback) {
     var self = this;
-	self.log("%s: getting light.state %s", thisDevice.name,thisDevice.valueLight);
+	self.log("%s: getting light state...", thisDevice.name);
 
-	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,value){
+	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
 		if (error) {
-			self.log.warn("%s: Error while getting light.state", thisDevice.name);
-			callback(error,value);
+            self.log.error('%s: readLightState failed: %s', thisDevice.name, error.message);
+			callback(error);
 		} else {
-            var LightState = (value == "0") ? 0 : 1;
-			self.log("%s: light.state %s => %s", thisDevice.name, value, LightState);
+            var LightState = (result == "0") ? 0 : 1;
+            self.log('%s: light state: %s', thisDevice.name, LightState);
             callback(null, LightState);
 		}
 	});
@@ -2042,27 +2056,38 @@ DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value
 			break;
 	}
 
-	self.log("%s: send light brightness to %s to DomotiGa", thisDevice.name, BrightnessState);
-	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, BrightnessState, function (error,value){
-		if ( error) {
-			self.log.warn("%s: Error while setting light.brightness to %s", thisDevice.name, value);
-			callback();
-		} else {
-			callback(null,value);
-		}
-	});
+	self.log("%s: setting light brightness to %s", thisDevice.name, value);
+
+    // Update cache
+    thisDevice.cacheLightBrightness = value;
+
+    var callbackWasCalled = false;
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueLight, BrightnessState, function (err) {
+        if (callbackWasCalled) {
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+        }
+        callbackWasCalled = true;
+        if (!err) {
+            self.log("%s: successfully set light brightness to %s", thisDevice.name, BrightnessState);
+            callback(null);
+        } else {
+            self.log.error("%s: error setting light brightness to %s", thisDevice.name, BrightnessState);
+            callback(err);
+        }
+    });
 }
 
 DomotigaPlatform.prototype.readLightBrightnessState = function (thisDevice, callback) {
     var self = this;
-	self.log("%s: getting light.brightness", thisDevice.name);
-	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,value){
+	self.log("%s: getting light brightness...", thisDevice.name);
+	
+	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
 		if ( error) {
-			self.log.warn("%s: Error while getting light.brightness", thisDevice.name);
-			callback();
+            self.log.error('%s: readLightBrightnessState failed: %s', thisDevice.name, error.message);
+			callback(error);
 		} else {
-			self.log("%s: light.brightness => %s", thisDevice.name, value);
-			callback(null,value);
+            self.log('%s: light brightness: %s', thisDevice.name, result);
+			callback(null,result);
 		}
 	});
 }
