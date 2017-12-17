@@ -258,9 +258,19 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.valueMotionSensor = data.valueMotionSensor;
         accessory.context.valuePowerConsumption = data.valuePowerConsumption;
         accessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
+		accessory.context.valueLight = data.valueLight;
+		accessory.context.brightness = data.brightness;
+		accessory.context.color = data.color;
+		// if color is enabled, we need all three properties
+		if ( accessory.context.color ) {
+			accessory.context.hue = true;
+			accessory.context.staturation = true;
+			accessory.context.brightness = true;
+		}
+
         accessory.context.polling = data.polling;
         accessory.context.pollInMs = data.pollInMs || 1;
-
+		
         var primaryservice;
 
         // Setup HomeKit service(-s)
@@ -377,8 +387,16 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 }
                 break;
 
+			case "Lightbulb":
+				primaryservice = new Service.Lightbulb(accessory.context.name);
+				if (!accessory.context.valueLight) {
+					this.log.warn('%s: missing definition of valueLight in config.json!', accessory.context.name);
+					return;
+				}
+				break;
+
             default:
-                this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+                this.log.error('Service %s %s unknown for add, skipping...', accessory.context.service, accessory.context.name);
                 return;
                 break;
         }
@@ -453,6 +471,11 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheDoorPosition = 0;
     accessory.context.cacheWindowPosition = 0;
     accessory.context.cacheWindowCoveringPosition = 0;
+
+  	accessory.context.cacheLightState = 0;
+  	accessory.context.cacheLightSaturation = 0;
+  	accessory.context.cacheLightHue = 0;
+  	accessory.context.cacheLightBrightness = 0;
 
     // Retrieve initial state
     this.getInitState(accessory);
@@ -650,8 +673,44 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             });
             break;
 
+		case "Lightbulb":
+			primaryservice = accessory.getService(Service.Lightbulb);
+			this.readLightState(thisDevice, function (error, value) {
+				// Update value if there's no error
+				if (!error && value !== thisDevice.cacheLightState) {
+					thisDevice.cacheLightState = value;
+					primaryservice.getCharacteristic(Characteristic.On).getValue();
+				}
+			});
+			if ( accessory.context.brightness || accessory.context.color  ) {
+				this.readBrightnessState(thisDevice, function (error, value) {
+					// Update value if there's no error
+					if (!error && value !== thisDevice.cacheLightBrightness) {
+						thisDevice.cacheLightBrightness = value;
+						primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+					}
+				});
+			}
+			if ( accessory.context.color  ) {
+				this.readHueState(thisDevice, function (error, value) {
+					// Update value if there's no error
+					if (!error && value !== thisDevice.cacheLightHue) {
+						thisDevice.cacheLightHue = value;
+						primaryservice.getCharacteristic(Characteristic.Hue).getValue();
+					}
+				});
+				this.readSaturationState(thisDevice, function (error, value) {
+					// Update value if there's no error
+					if (!error && value !== thisDevice.cacheLightSaturation) {
+						thisDevice.cacheLightSaturation = value;
+						primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+					}
+				});
+			}
+			break;
+
         default:
-            this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+            this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
             break;
     }
 
@@ -851,8 +910,28 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
             break;
 
-        default:
-            this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+		case "Lightbulb":
+			primaryservice = accessory.getService(Service.Lightbulb);
+			primaryservice.getCharacteristic(Characteristic.On)
+				.on('get', this.getLightState.bind(this, accessory.context))
+				.on('set', this.setLightState.bind(this, accessory.context));
+			if ( accessory.context.color) {
+				primaryservice.getCharacteristic(Characteristic.Hue)
+					.on('get', this.getLightHue.bind(this, accessory.context))
+					.on('set', this.setLightHue.bind(this, accessory.context));
+				primaryservice.getCharacteristic(Characteristic.Saturation)
+					.on('get', this.getLightSaturation.bind(this, accessory.context))
+					.on('set', this.setLightSaturation.bind(this, accessory.context));
+			}
+			if ( accessory.context.brightness || accessory.context.color ) {
+				primaryservice.getCharacteristic(Characteristic.Brightness)
+					.on('get', this.getLightBrightness.bind(this, accessory.context))
+					.on('set', this.setLightBrightness.bind(this, accessory.context));
+			}
+			break;
+
+		default:
+            this.log.error('Service %s %s unknown for set, skipping...', accessory.context.service, accessory.context.name);
             break;
     }
 
@@ -995,9 +1074,20 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 primaryservice = accessory.getService(Service.PowerMeterService);
                 primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
                 break;
+				
+			case "Lightbulb":
+				primaryservice = accessory.getService(Service.Lightbulb);
+				if ( accessory.context.color ) {
+					primaryservice.getCharacteristic(Characteristic.Hue).getValue();
+					primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+				}
+				if ( accessory.context.color || accessory.context.brightness ) {
+					primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+				}
+				break;
 
             default:
-                this.log.error('Service %s %s unknown, skipping...', accessory.context.service, accessory.context.name);
+                this.log.error('Service %s %s unknown for initstate, skipping...', accessory.context.service, accessory.context.name);
                 break;
         }
 
@@ -1882,6 +1972,93 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
     });
 }
 
+// Lightbulb
+DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback) {
+    var self = this;
+	var LightState = (value == "0") ? "Off" : "On";
+	self.log("%s: setting light.state to %s", thisDevice.name, LightState);
+
+	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (error,value) {
+		if (error) {
+			self.log.warn("%s: Error while setting light.state to %s", thisDevice.name, LightState);
+			callback();
+		} else {
+			callback(null,value);
+		}
+	});
+
+}
+
+DomotigaPlatform.prototype.readLightState = function (thisDevice, callback) {
+    var self = this;
+	self.log("%s: getting light.state %s", thisDevice.name,thisDevice.valueLight);
+
+	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,value){
+		if (error) {
+			self.log.warn("%s: Error while getting light.state", thisDevice.name);
+			callback(error,value);
+		} else {
+            var LightState = (value == "0") ? 0 : 1;
+			self.log("%s: light.state %s => %s", thisDevice.name, value, LightState);
+            callback(null, LightState);
+		}
+	});
+}
+
+DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
+	var self = this;
+ 	if(thisDevice.polling) {
+		self.log('%s: cached light.state is: %s', thisDevice.name, thisDevice.cacheLightState);
+		callback(null, thisDevice.cacheLightState);
+	} else {
+		this.readLightState(thisDevice, function (error, value) {
+			thisDevice.cacheLightState = value;
+			callback(error, thisDevice.cacheLightState);
+		});
+	}
+}
+
+
+DomotigaPlatform.prototype.setLightBrightness = function (thisDevice, value, callback) {
+    var self = this;
+	self.log("%s: setting light brightness to %s", thisDevice.name, value);
+	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, "Dim " + value, function (error,value){
+		if ( error) {
+			self.log.warn("%s: Error while setting light.brightness to %s", thisDevice.name, value);
+			callback();
+		} else {
+			callback(null,value);
+		}
+	});
+
+}
+
+DomotigaPlatform.prototype.readLightBrightness = function (thisDevice, callback) {
+    var self = this;
+	self.log("%s: getting light.brightness", thisDevice.name);
+	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,value){
+		if ( error) {
+			self.log.warn("%s: Error while getting light.brightness", thisDevice.name);
+			callback();
+		} else {
+			self.log("%s: light.brightness => %s", thisDevice.name, value);
+			callback(null,value);
+		}
+	});
+}
+
+DomotigaPlatform.prototype.getLightBrightness = function (thisDevice, callback) {
+	var self = this;
+	if(thisDevice.polling) {
+		self.log('%s: cached light.brightness is: %s', thisDevice.name, thisDevice.cacheLightBrightness);
+		callback(null, thisDevice.cacheLightBrightness);
+	} else {
+		this.readLightBrightness(thisDevice, function (error, value) {
+			thisDevice.cacheLightBrightness = value;
+			callback(error, thisDevice.cacheLightBrightness);
+		});
+	}
+}
 
 // Method to handle identify request
 DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {
@@ -1916,42 +2093,52 @@ DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, v
 // Get value from domotiga database
 DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, callback) {
 
-    var self = this;
-    //self.log( "deviceValueNo: ",deviceValueNo);
-    JSONRequest('http://' + self.host + ':' + self.port, {
-        jsonrpc: "2.0",
-        method: "device.get",
-        params: {
-            "device_id": device
-        },
-        id: 1
-    }, function (err, data) {
-        if (err) {
-            self.log.error("Sorry err: ", err);
-            callback(err);
-        } else {
-            let item = Number(deviceValueNo) - 1;
-            //self.log("data.result:", data.result);
-            //self.log( "data.result.values[item].value", data.result.values[item].value);
-			if ( Number.isNaN(data.result.values[item].value) === true ) {
-				// try to convert
-				if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
-					callback(null,1);
-				} else if( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
-					callback(null,0);
+	//skip request if value doesn't exist in domotiga 
+	if (deviceValueNo != 99) {
+		var self = this;
+		//self.log( "domotigaGetValue, device : %s - deviceValueNo : ",device, deviceValueNo);
+		JSONRequest('http://' + self.host + ':' + self.port, {
+			jsonrpc: "2.0",
+			method: "device.get",
+			params: {
+				"device_id": device
+			},
+			id: 1
+		}, function (err, data) {
+			if (err) {
+				self.log.error("Sorry err: ", err);
+				callback(err);
+			} else {
+				let item = Number(deviceValueNo) - 1;
+				//self.log("data.result:", data.result);
+				//self.log( "data.result.values[item].value", data.result.values[item].value);
+				if (data.result != undefined && data.result.values[item] != undefined){
+					if ( Number.isNaN(data.result.values[item].value) === true ) {
+						// try to convert
+						if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
+							callback(null,1);
+						} else if( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
+							callback(null,0);
+						} else {
+							self.log.warn("Result discarded (%s => %s)",data, typeof data);
+							callback();
+						}
+					} else {
+						if (data.result.values[item].value.substr(0,3).toLowerCase() == "dim") {
+							callback(null, data.result.values[item].value.substr(4).toLowerCase())
+						} else {
+							callback(null, data.result.values[item].value);
+						}
+					}
 				} else {
-					self.log.warn("Result discarded (%s => %s)",data, typeof data);
+					self.log.warn("Undefined data for device %s, value %s", device, deviceValueNo);
 					callback();
 				}
-			} else {
-				if (data.result.values[item].value.substr(0,3)toLowerCase() == "dim") {
-					callback(null, data.result.values[item].value.substr(4)toLowerCase())
-				} else {
-					callback(null, data.result.values[item].value);
-				}
 			}
-        }
-    });
+		});
+	} else {
+		callback(null, 0)
+	}
 }
 
 DomotigaPlatform.prototype.getVersion = function () {
