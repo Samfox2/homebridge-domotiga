@@ -1742,7 +1742,7 @@ DomotigaPlatform.prototype.readDoorPosition = function (thisDevice, callback) {
             callback(error);
         } else {
 
-            var value = (result.toLowerCase() == "0") ? 0 : 100;
+            var value = (result.toLowerCase() == "0") ? 100 : 0;
             self.log('%s: door position: %s', thisDevice.name, value);
             callback(null, value);
         }
