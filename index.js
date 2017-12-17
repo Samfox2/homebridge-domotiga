@@ -683,7 +683,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 				}
 			});
 			if ( accessory.context.brightness || accessory.context.color  ) {
-				this.readBrightnessState(thisDevice, function (error, value) {
+				this.readLightBrightnessState(thisDevice, function (error, value) {
 					// Update value if there's no error
 					if (!error && value !== thisDevice.cacheLightBrightness) {
 						thisDevice.cacheLightBrightness = value;
@@ -832,7 +832,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             break;
 
         case "MotionSensor":
-            primaryservice = accessory.getService(Service.MotionkSensor);
+            primaryservice = accessory.getService(Service.MotionSensor);
             primaryservice.getCharacteristic(Characteristic.MotionDetected)
                 .on('get', this.getMotionSensorState.bind(this, accessory.context));
             break;
@@ -925,8 +925,8 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 			}
 			if ( accessory.context.brightness || accessory.context.color ) {
 				primaryservice.getCharacteristic(Characteristic.Brightness)
-					.on('get', this.getLightBrightness.bind(this, accessory.context))
-					.on('set', this.setLightBrightness.bind(this, accessory.context));
+					.on('get', this.getLightBrightnessState.bind(this, accessory.context))
+					.on('set', this.setLightBrightnessState.bind(this, accessory.context));
 			}
 			break;
 
@@ -1670,11 +1670,8 @@ DomotigaPlatform.prototype.readSwitchState = function (thisDevice, callback) {
             self.log.error('%s: readSwitchState failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
-
-            var value = (result.toLowerCase() == "on") ? 1 : 0;
-
-            self.log('%s: switch state: %s', thisDevice.name, value);
-            callback(null, value);
+            self.log('%s: switch state: %s', thisDevice.name, result);
+            callback(null, result);
         }
     });
 }
@@ -1742,7 +1739,7 @@ DomotigaPlatform.prototype.readDoorPosition = function (thisDevice, callback) {
             callback(error);
         } else {
 
-            var value = (result.toLowerCase() == "0") ? 100 : 0;
+            var value = (result == "0") ? 0 : 100;
             self.log('%s: door position: %s', thisDevice.name, value);
             callback(null, value);
         }
@@ -1975,7 +1972,7 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
 // Lightbulb
 DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback) {
     var self = this;
-	var LightState = (value == "0") ? "Off" : "On";
+	var LightState = (value == false) ? "Off" : "On";
 	self.log("%s: setting light.state to %s", thisDevice.name, LightState);
 
 	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (error,value) {
@@ -1986,7 +1983,6 @@ DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback
 			callback(null,value);
 		}
 	});
-
 }
 
 DomotigaPlatform.prototype.readLightState = function (thisDevice, callback) {
@@ -2019,10 +2015,26 @@ DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
 }
 
 
-DomotigaPlatform.prototype.setLightBrightness = function (thisDevice, value, callback) {
+DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value, callback) {
+
     var self = this;
-	self.log("%s: setting light brightness to %s", thisDevice.name, value);
-	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, "Dim " + value, function (error,value){
+	self.log.warn("%s: setLightBrightnessState to %s", thisDevice.name, value);
+
+	var BrightnessState = value;
+	switch (value) {
+		case 0:
+			BrightnessState = "Off";
+			break;
+		case 100:
+			BrightnessState = "On";
+			break;
+		default:
+			BrightnessState = "Dim " + value;
+			break;
+	}
+
+	self.log("%s: send light brightness to %s to DomotiGa", thisDevice.name, BrightnessState);
+	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, BrightnessState, function (error,value){
 		if ( error) {
 			self.log.warn("%s: Error while setting light.brightness to %s", thisDevice.name, value);
 			callback();
@@ -2030,10 +2042,9 @@ DomotigaPlatform.prototype.setLightBrightness = function (thisDevice, value, cal
 			callback(null,value);
 		}
 	});
-
 }
 
-DomotigaPlatform.prototype.readLightBrightness = function (thisDevice, callback) {
+DomotigaPlatform.prototype.readLightBrightnessState = function (thisDevice, callback) {
     var self = this;
 	self.log("%s: getting light.brightness", thisDevice.name);
 	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,value){
@@ -2047,13 +2058,13 @@ DomotigaPlatform.prototype.readLightBrightness = function (thisDevice, callback)
 	});
 }
 
-DomotigaPlatform.prototype.getLightBrightness = function (thisDevice, callback) {
+DomotigaPlatform.prototype.getLightBrightnessState = function (thisDevice, callback) {
 	var self = this;
 	if(thisDevice.polling) {
 		self.log('%s: cached light.brightness is: %s', thisDevice.name, thisDevice.cacheLightBrightness);
 		callback(null, thisDevice.cacheLightBrightness);
 	} else {
-		this.readLightBrightness(thisDevice, function (error, value) {
+		this.readLightBrightnessState(thisDevice, function (error, value) {
 			thisDevice.cacheLightBrightness = value;
 			callback(error, thisDevice.cacheLightBrightness);
 		});
@@ -2113,22 +2124,15 @@ DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, c
 				//self.log("data.result:", data.result);
 				//self.log( "data.result.values[item].value", data.result.values[item].value);
 				if (data.result != undefined && data.result.values[item] != undefined){
-					if ( Number.isNaN(data.result.values[item].value) === true ) {
-						// try to convert
-						if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
-							callback(null,1);
-						} else if( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
-							callback(null,0);
-						} else {
-							self.log.warn("Result discarded (%s => %s)",data, typeof data);
-							callback();
-						}
+					// try to convert
+					if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "on" || data.result.values[item].value.toLowerCase() == "true")) {
+						callback(null,1);
+					} else if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.toLowerCase() == "off" || data.result.values[item].value.toLowerCase() == "false")) {
+						callback(null,0);
+					} else if ( typeof data.result.values[item].value == "string" && (data.result.values[item].value.substr(0,3).toLowerCase() == "dim")) {
+						callback(null, data.result.values[item].value.substr(4).toLowerCase())
 					} else {
-						if (data.result.values[item].value.substr(0,3).toLowerCase() == "dim") {
-							callback(null, data.result.values[item].value.substr(4).toLowerCase())
-						} else {
-							callback(null, data.result.values[item].value);
-						}
+						callback(null, data.result.values[item].value);
 					}
 				} else {
 					self.log.warn("Undefined data for device %s, value %s", device, deviceValueNo);
