@@ -113,7 +113,21 @@
                     "device": "44",
                     "valuePowerConsumption": "1",
                     "valueTotalPowerConsumption": "2"
-                }
+                },
+				{
+					"name": "Switchable Light bulb",
+					"service": "Lightbulb",
+					"device": "36",
+					"valueLight": "1",
+					"brightness": false
+				},
+				{
+					"name": "Dimmable Light bulb",
+					"service": "Lightbulb",
+					"device": "37",
+					"valueLight": "1",
+					"brightness": true
+				}
             ]
         }
     ],

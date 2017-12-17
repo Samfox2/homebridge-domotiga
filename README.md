@@ -30,6 +30,7 @@ The latest version (work in progress) supports following (primary) services:
 - ```Window``` (get/set window position) 
 - ```WindowCovering``` (get/set window covering positon) 
 - ```Powermeter``` (custom service with power consumption)
+- ```Light bulb``` (get/set light bulb state, if supported dimming as well)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
@@ -154,6 +155,20 @@ Configuration sample:
                 "device": "44",
                 "valuePowerConsumption": "1",
                 "valueTotalPowerConsumption": "2"
+            },
+            {
+                "name": "Switchable Light bulb",
+                "service": "Lightbulb",
+                "device": "36",
+                "valueLight": "1",
+                "brightness": false
+            },
+            {
+                "name": "Dimmable Light bulb",
+                "service": "Lightbulb",
+                "device": "37",
+                "valueLight": "1",
+                "brightness": true
             }
         ]
     }
@@ -182,6 +197,8 @@ Fields:
 * ```"valueWindowCovering":```   Value no. of the window covering (required for "Window Covering")
 * ```"valueLeakSensor":``` Value no. of the leaksensor (required for "LeakSensor")
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
+* ```"valueLight":``` Value no. of the light
+* ```"brightness":```  Enable/disable dimming with "true" or "false" (required for "Lightbulb")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 * ```"polling":```   Enable/disable polling with "true" or "false" (optional)
