@@ -1973,6 +1973,9 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
 DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback) {
     var self = this;
 	var LightState = (value == false) ? "Off" : "On";
+	if (thisDevice.cacheLightState && thisDevice.brightness && value) {
+		LightState = "Dim " + thisDevice.cacheLightBrightness;
+	}
 	self.log("%s: setting light.state to %s", thisDevice.name, LightState);
 
 	self.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (error,value) {
@@ -2008,7 +2011,15 @@ DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
 		callback(null, thisDevice.cacheLightState);
 	} else {
 		this.readLightState(thisDevice, function (error, value) {
-			thisDevice.cacheLightState = value;
+			if (thisDevice.Brightness == true) {
+				if (value == 0) {
+					thisDevice.cacheLightState = 0;
+				} else {
+					thisDevice.cacheLightState = value
+				}
+			} else {
+				thisDevice.cacheLightState = value;
+			}
 			callback(error, thisDevice.cacheLightState);
 		});
 	}
@@ -2018,8 +2029,6 @@ DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
 DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value, callback) {
 
     var self = this;
-	self.log.warn("%s: setLightBrightnessState to %s", thisDevice.name, value);
-
 	var BrightnessState = value;
 	switch (value) {
 		case 0:
