@@ -494,7 +494,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
   	accessory.context.cacheLightHue = 0;
   	accessory.context.cacheLightBrightness = 0;
   	accessory.context.cacheTargetTemperature = 0;
-	
+  	accessory.context.cacheTargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
+  	accessory.context.cacheCurrentHeatingCoolingStatee = Characteristic.CurrentHeatingCoolingState.AUTO;
+
     // Retrieve initial state
     this.getInitState(accessory);
 
@@ -964,6 +966,14 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.TargetTemperature)
                 .on('get', this.getTargetTemperature.bind(this, accessory.context))
                 .on('set', this.setTargetTemperature.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+                .on('get', this.getCurrentHeatingCoolingState.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TargetHeatingCoolingState)
+                .on('get', this.getTargetHeatingCoolingState.bind(this, accessory.context))
+                .on('set', this.setTargetHeatingCoolingState.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TemperatureDisplayUnits)
+				.on('get', this.getTemperatureDisplayUnits.bind(this, accessory.context))
+				.on('set', this.setTemperatureDisplayUnits.bind(this, accessory.context));			
             break;
 
 		default:
@@ -1247,6 +1257,12 @@ DomotigaPlatform.prototype.getTemperatureUnits = function (thisDevice, callback)
     callback(null, 0);
 }
 
+
+DomotigaPlatform.prototype.setTemperatureUnits = function (thisDevice, value, callback) {
+    this.log("%s: ignore setting temperature unit to %s", thisDevice.name, value);
+    // 1 = F and 0 = C
+    callback(null, 0);
+}
 
 DomotigaPlatform.prototype.readCurrentAirPressure = function (thisDevice, callback) {
     var self = this;
@@ -2205,6 +2221,51 @@ DomotigaPlatform.prototype.getTargetTemperature = function (thisDevice, callback
         });
     }
 }
+
+
+DomotigaPlatform.prototype.getTargetHeatingCoolingState = function (thisDevice, callback) {
+    this.log("%s: getting TargetHeatingCoolingState...", thisDevice.name);
+    callback(null, thisDevice.cacheTargetHeatingCoolingState);
+}
+
+
+DomotigaPlatform.prototype.setTargetHeatingCoolingState = function (thisDevice, value, callback) {
+    var self = this;
+	var command = "0";
+
+    this.log("%s: setting TargetHeatingCoolingState to %s", thisDevice.name, value);
+	//value must be one of the following:
+	//Characteristic.TargetHeatingCoolingState.OFF = 0;
+	//Characteristic.TargetHeatingCoolingState.HEAT = 1;
+	//Characteristic.TargetHeatingCoolingState.COOL = 2;
+	//Characteristic.TargetHeatingCoolingState.AUTO = 3;
+
+    // Update cache
+    thisDevice.cacheTargetHeatingCoolingState = value;
+
+	//Only turn off Thermostat override if TargetHeatingCoolingState.OFF
+	if (value == Characteristic.TargetHeatingCoolingState.OFF){
+		var callbackWasCalled = false;
+		this.domotigaSetValue(thisDevice.device, thisDevice.valueTargetTemperature, command, function (err) {
+			if (callbackWasCalled) {
+				self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+			}
+			callbackWasCalled = true;
+			if (!err) {
+				self.log("%s: successfully send turning off thermostat override command.", thisDevice.name);
+				callback(null);
+			} else {
+				self.log.error("%s: error sending turning off thermostat override command.", thisDevice.name);
+				callback(err);
+			}
+		});
+	} else {
+		self.log("%s: ignore setting TargetHeatingCoolingState because of no support at DomotiGa.", thisDevice.name);
+		callback(null);
+	}
+}
+
+
 
 
 // Method to handle identify request
