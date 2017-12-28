@@ -267,7 +267,13 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 			accessory.context.staturation = true;
 			accessory.context.brightness = true;
 		}
-
+		accessory.context.valueTargetTemperature = data.valueTargetTemperature;
+		accessory.context.CurrentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+		accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+		accessory.context.CurrentTemperature = data.CurrentTemperature;
+		accessory.context.TargetTemperature = data.TargetTemperature;
+		accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
+		
         accessory.context.polling = data.polling;
         accessory.context.pollInMs = data.pollInMs || 1;
 		
@@ -395,6 +401,18 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
 				}
 				break;
 
+			case "Thermostat":
+				primaryservice = new Service.Thermostat(accessory.context.name);
+                if (!accessory.context.valueTemperature) {
+                    this.log.error('%s: missing definition of valueTemperature in config.json!', accessory.context.name);
+                    return;
+                }
+				if (!accessory.context.valueTargetTemperature) {
+					this.log.warn('%s: missing definition of valueThermostat in config.json!', accessory.context.name);
+					return;
+				}
+				break;
+
             default:
                 this.log.error('Service %s %s unknown for add, skipping...', accessory.context.service, accessory.context.name);
                 return;
@@ -402,7 +420,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
 
         // Everything outside the primary service gets added as additional characteristics...
-        if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
+        if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor") && (accessory.context.service != "Thermostat")) {
             primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
         }
         if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
@@ -471,17 +489,20 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheDoorPosition = 0;
     accessory.context.cacheWindowPosition = 0;
     accessory.context.cacheWindowCoveringPosition = 0;
-
   	accessory.context.cacheLightState = 0;
   	accessory.context.cacheLightSaturation = 0;
   	accessory.context.cacheLightHue = 0;
   	accessory.context.cacheLightBrightness = 0;
+  	accessory.context.cacheTargetTemperature = 0;
+  	accessory.context.cacheTargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
+  	accessory.context.cacheCurrentHeatingCoolingStatee = Characteristic.CurrentHeatingCoolingState.AUTO;
 
     // Retrieve initial state
     this.getInitState(accessory);
 
     // Configure state polling
     if (data.polling) this.doPolling(data.name);
+
 }
 
 // Function to remove accessory dynamically from outside event
@@ -709,6 +730,16 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 			}
 			break;
 
+		case "Thermostat":
+			primaryservice = accessory.getService(Service.Thermostat);
+			this.readTargetTemperature(thisDevice, function (error, value) {
+				// Update value if there's no error
+				if (!error && value !== thisDevice.cacheTargetTemperature) {
+					thisDevice.cacheTargetTemperature = value;
+					primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+				}
+			});
+
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
             break;
@@ -930,6 +961,21 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 			}
 			break;
 
+        case "Thermostat":
+            primaryservice = accessory.getService(Service.Thermostat);
+            primaryservice.getCharacteristic(Characteristic.TargetTemperature)
+                .on('get', this.getTargetTemperature.bind(this, accessory.context))
+                .on('set', this.setTargetTemperature.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+                .on('get', this.getCurrentHeatingCoolingState.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TargetHeatingCoolingState)
+                .on('get', this.getTargetHeatingCoolingState.bind(this, accessory.context))
+                .on('set', this.setTargetHeatingCoolingState.bind(this, accessory.context))
+            primaryservice.getCharacteristic(Characteristic.TemperatureDisplayUnits)
+				.on('get', this.getTemperatureDisplayUnits.bind(this, accessory.context))
+				.on('set', this.setTemperatureDisplayUnits.bind(this, accessory.context));			
+            break;
+
 		default:
             this.log.error('Service %s %s unknown for set, skipping...', accessory.context.service, accessory.context.name);
             break;
@@ -1085,6 +1131,13 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
 					primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
 				}
 				break;
+				
+			case "Thermostat":
+				primaryservice = accessory.getService(Service.Thermostat);
+				primaryservice.getCharacteristic(Characteristic.TargetTemperature).getValue();
+				primaryservice.getCharacteristic(Characteristic.CurrentHeatingCoolingState).getValue();
+				primaryservice.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue();
+				break;
 
             default:
                 this.log.error('Service %s %s unknown for initstate, skipping...', accessory.context.service, accessory.context.name);
@@ -1204,6 +1257,12 @@ DomotigaPlatform.prototype.getTemperatureUnits = function (thisDevice, callback)
     callback(null, 0);
 }
 
+
+DomotigaPlatform.prototype.setTemperatureUnits = function (thisDevice, value, callback) {
+    this.log("%s: ignore setting temperature unit to %s", thisDevice.name, value);
+    // 1 = F and 0 = C
+    callback(null, 0);
+}
 
 DomotigaPlatform.prototype.readCurrentAirPressure = function (thisDevice, callback) {
     var self = this;
@@ -2039,7 +2098,6 @@ DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
 	}
 }
 
-
 DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value, callback) {
 
     var self = this;
@@ -2104,6 +2162,111 @@ DomotigaPlatform.prototype.getLightBrightnessState = function (thisDevice, callb
 		});
 	}
 }
+
+DomotigaPlatform.prototype.setTargetTemperature = function (thisDevice, value, callback) {
+
+    var self = this;
+
+	self.log("%s: setting target temperature to %s", thisDevice.name, value);
+
+    // Update cache
+    thisDevice.cacheTargetTemperature = value;
+
+    var callbackWasCalled = false;
+    this.domotigaSetValue(thisDevice.device, thisDevice.valueTargetTemperature, value, function (err) {
+        if (callbackWasCalled) {
+            self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+        }
+        callbackWasCalled = true;
+        if (!err) {
+            self.log("%s: successfully set target temperature to %s", thisDevice.name, value);
+            callback(null);
+        } else {
+            self.log.error("%s: error setting target temperature to %s", thisDevice.name, value);
+            callback(err);
+        }
+    });
+}
+
+DomotigaPlatform.prototype.readTargetTemperature = function (thisDevice, callback) {
+    var self = this;
+    self.log("%s: getting target temperature...", thisDevice.name);
+
+    this.domotigaGetValue(thisDevice.device, thisDevice.valueTargetTemperature, function (error, result) {
+        if (error) {
+            self.log.error('%s: readTargetTemperature failed: %s', thisDevice.name, error.message);
+            callback(error);
+        } else {
+            var value = Number(result);
+            self.log('%s: target temperature: %s', thisDevice.name, value);
+            callback(null, value);
+        }
+    });
+}
+
+// Method to determine target temperature
+DomotigaPlatform.prototype.getTargetTemperature = function (thisDevice, callback) {
+    var self = this;
+
+    if (thisDevice.polling) {
+        // Get value directly from cache if polling is enabled
+        self.log('%s: cached temperature is: %s', thisDevice.name, thisDevice.cacheTargetTemperature);
+        callback(null, thisDevice.cacheTargetTemperature);
+    } else {
+        // Check value if polling is disabled
+        this.readTargetTemperature(thisDevice, function (error, value) {
+            // Update cache
+            thisDevice.cacheTargetTemperature = value;
+            callback(error, thisDevice.cacheTargetTemperature);
+        });
+    }
+}
+
+
+DomotigaPlatform.prototype.getTargetHeatingCoolingState = function (thisDevice, callback) {
+    this.log("%s: getting TargetHeatingCoolingState...", thisDevice.name);
+    callback(null, thisDevice.cacheTargetHeatingCoolingState);
+}
+
+
+DomotigaPlatform.prototype.setTargetHeatingCoolingState = function (thisDevice, value, callback) {
+    var self = this;
+	var command = "0";
+
+    this.log("%s: setting TargetHeatingCoolingState to %s", thisDevice.name, value);
+	//value must be one of the following:
+	//Characteristic.TargetHeatingCoolingState.OFF = 0;
+	//Characteristic.TargetHeatingCoolingState.HEAT = 1;
+	//Characteristic.TargetHeatingCoolingState.COOL = 2;
+	//Characteristic.TargetHeatingCoolingState.AUTO = 3;
+
+    // Update cache
+    thisDevice.cacheTargetHeatingCoolingState = value;
+
+	//Only turn off Thermostat override if TargetHeatingCoolingState.OFF
+	if (value == Characteristic.TargetHeatingCoolingState.OFF){
+		var callbackWasCalled = false;
+		this.domotigaSetValue(thisDevice.device, thisDevice.valueTargetTemperature, command, function (err) {
+			if (callbackWasCalled) {
+				self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+			}
+			callbackWasCalled = true;
+			if (!err) {
+				self.log("%s: successfully send turning off thermostat override command.", thisDevice.name);
+				callback(null);
+			} else {
+				self.log.error("%s: error sending turning off thermostat override command.", thisDevice.name);
+				callback(err);
+			}
+		});
+	} else {
+		self.log("%s: ignore setting TargetHeatingCoolingState because of no support at DomotiGa.", thisDevice.name);
+		callback(null);
+	}
+}
+
+
+
 
 // Method to handle identify request
 DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {

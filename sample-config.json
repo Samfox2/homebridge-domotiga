@@ -127,6 +127,13 @@
 					"device": "37",
 					"valueLight": "1",
 					"brightness": true
+				},
+				{
+					"name": "Thermostat (OpenTherm)",
+					"service": "Thermostat",
+					"device": "38",
+					"valueTargetTemperature": "1",
+					"valueTemperature": "2"
 				}
             ]
         }

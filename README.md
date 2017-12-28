@@ -31,6 +31,7 @@ The latest version (work in progress) supports following (primary) services:
 - ```WindowCovering``` (get/set window covering positon) 
 - ```Powermeter``` (custom service with power consumption)
 - ```Light bulb``` (get/set light bulb state, if supported dimming as well)
+- ```Thermostat``` (get/set OpenTherm thermostat)
 
 Domotiga device value numbers (e.g. which device value represents temperature) can be assigned directly within the config.json file. 
 For multi-sensors (e.g. combined temperature/humidity sensors) additional characteristics can be added by defining their domotiga values in config.json (see example below).
@@ -169,6 +170,13 @@ Configuration sample:
                 "device": "37",
                 "valueLight": "1",
                 "brightness": true
+            },
+            {
+                "name": "OpenTherm Thermostat",
+                "service": "Thermostat",
+                "device": "38",
+                "valueTargetTemperature": "1",
+                "valueTemperature": "2"
             }
         ]
     }
@@ -185,7 +193,7 @@ Fields:
 * ```"manufacturer":``` Manufacturer of accessory (optional)
 * ```"model":``` Model of accessory (optional)
 * ```"device":```  Domotiga device no. (required)
-* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TemperatureSensor")
+* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TemperatureSensor" and "Thermostat")
 * ```"valueHumidity":``` Value no. of humidity in % (required for "HumiditySensor")
 * ```"valueAirPressure":``` Value no. of air pressure in hPa (required for "FakeEveWeatherSensor")
 * ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor" and "FakeEveAirQualitySensor")
@@ -199,6 +207,7 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueLight":``` Value no. of the light
 * ```"brightness":```  Enable/disable dimming with "true" or "false" (required for "Lightbulb")
+* ```"valueTargetTemperature":```   Value no. of the Thermostat temperature setpoint (for the OpenTherm plugin it shoud be "1")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 * ```"polling":```   Enable/disable polling with "true" or "false" (optional)
