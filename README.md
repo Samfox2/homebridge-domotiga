@@ -207,7 +207,7 @@ Fields:
 * ```"valueMotionSensor":``` Value no. of the motionsensor (required for "MotionSensor")
 * ```"valueLight":``` Value no. of the light
 * ```"brightness":```  Enable/disable dimming with "true" or "false" (required for "Lightbulb")
-* ```"valueTargetTemperature":```   Value no. of the Thermostat temperature setpoint (for the OpenTherm plugin it shoud be "1")
+* ```"valueTargetTemperature":```   Value no. of the thermostat temperature setpoint (for the OpenTherm plugin it should be "1")
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 * ```"polling":```   Enable/disable polling with "true" or "false" (optional)
