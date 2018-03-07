@@ -5,10 +5,12 @@ var inherits = require('util').inherits;
 var path = require('path');
 var fs = require('fs');
 var moment = require('moment');
-var FakeGatoHistoryService = require('./fakegato-history.js')(this.platform.homebridge);
+//var FakeGatoHistoryService = require('./fakegato-history.js')(this.platform.homebridge);
+//var FakeGatoHistoryService = require('./fakegato-history.js');
 let localCache;
 let localPath;
 let _homebridge;
+var FakeGatoHistoryService;
 
 module.exports = function (homebridge) {
     console.log("homebridge API version: " + homebridge.version);
@@ -28,6 +30,8 @@ module.exports = function (homebridge) {
     
 
     ////////////////////////////// Custom characteristics //////////////////////////////
+	FakeGatoHistoryService = require('./fakegato-history.js')(homebridge);
+	
     Characteristic.EvePowerConsumption = function () {
         Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
@@ -466,12 +470,12 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Setup HomeKit switch service
         accessory.addService(primaryservice, data.name);
 	    
-        // Add history logging service    
+         // Add history logging service    
         if (accessory.context.polling && accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor") ) {
             this.log.debug("Adding Log Service for %s",accessory.context.name);
-            this.loggingService = new FakeGatoHistoryService("thermo", this, {storage: 'fs', path: this.platform.localCache,disableTimer:true});
+            this.loggingService = new FakeGatoHistoryService("thermo", this, {storage: 'fs', path: this.localCache,disableTimer:true});
             accessory.addService(this.loggingService, data.name);
-        }    
+        }
 	    
         // New accessory is always reachable
         accessory.reachable = true;
