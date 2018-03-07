@@ -6,10 +6,16 @@ var path = require('path');
 var fs = require('fs');
 var moment = require('moment');
 var FakeGatoHistoryService = require('./fakegato-history.js')(this.platform.homebridge);
+let localCache;
+let localPath;
 
 module.exports = function (homebridge) {
     console.log("homebridge API version: " + homebridge.version);
 
+    // Paths
+    localCache = path.join(homebridge.user.storagePath(), 'domotiga.json');
+    localPath = homebridge.user.storagePath()
+	
     // Accessory must be created from PlatformAccessory Constructor    
     Accessory = homebridge.platformAccessory;
 
