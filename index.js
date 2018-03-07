@@ -552,7 +552,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
                     primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
-                    accessory.getService(Service.FakeGatoHistoryService).addEntry({time: moment().unix(), thisDevice.cacheCurrentTemperature});
+                    accessory.getService(FakeGatoHistoryService).addEntry({time: moment().unix(), currentTemp:parseFloat(value)});
                 }
             });
             break;
