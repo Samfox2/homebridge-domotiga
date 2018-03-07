@@ -32,7 +32,7 @@ module.exports = function (homebridge) {
         this.value = this.getDefaultValue();
     };
     inherits(Characteristic.EvePowerConsumption, Characteristic);
-    	Characteristic.EvePowerConsumption.UUID = 'E863F10D-079E-48FF-8F27-9C2605A29F52';
+    Characteristic.EvePowerConsumption.UUID = 'E863F10D-079E-48FF-8F27-9C2605A29F52';
 
 
     Characteristic.EveTotalPowerConsumption = function () {
@@ -48,7 +48,7 @@ module.exports = function (homebridge) {
         this.value = this.getDefaultValue();
     };
     inherits(Characteristic.EveTotalPowerConsumption, Characteristic);
-    	Characteristic.EveTotalPowerConsumption.UUID = 'E863F10C-079E-48FF-8F27-9C2605A29F52';
+    Characteristic.EveTotalPowerConsumption.UUID = 'E863F10C-079E-48FF-8F27-9C2605A29F52';
 
 
     Characteristic.EveRoomAirQuality = function () {
@@ -64,7 +64,7 @@ module.exports = function (homebridge) {
         this.value = this.getDefaultValue();
     };
     inherits(Characteristic.EveRoomAirQuality, Characteristic);
-    	Characteristic.EveRoomAirQuality.UUID = 'E863F10B-079E-48FF-8F27-9C2605A29F52';
+    Characteristic.EveRoomAirQuality.UUID = 'E863F10B-079E-48FF-8F27-9C2605A29F52';
 
 
     Characteristic.EveBatteryLevel = function () {
@@ -80,7 +80,7 @@ module.exports = function (homebridge) {
         this.value = this.getDefaultValue();
     };
     inherits(Characteristic.EveBatteryLevel, Characteristic);
-    	Characteristic.EveBatteryLevel.UUID = 'E863F11B-079E-48FF-8F27-9C2605A29F52';
+    Characteristic.EveBatteryLevel.UUID = 'E863F11B-079E-48FF-8F27-9C2605A29F52';
 
 
     Characteristic.EveAirPressure = function () {
@@ -97,7 +97,7 @@ module.exports = function (homebridge) {
         this.value = this.getDefaultValue();
     };
     inherits(Characteristic.EveAirPressure, Characteristic);
-    	Characteristic.EveAirPressure.UUID = 'E863F10F-079E-48FF-8F27-9C2605A29F52';
+    Characteristic.EveAirPressure.UUID = 'E863F10F-079E-48FF-8F27-9C2605A29F52';
 
 
 
@@ -110,7 +110,7 @@ module.exports = function (homebridge) {
         this.addOptionalCharacteristic(Characteristic.EveTotalPowerConsumption);
     };
     inherits(Service.PowerMeterService, Service);
-    	Service.PowerMeterService.UUID = '00000001-0000-1777-8000-775D67EC4377';
+    Service.PowerMeterService.UUID = '00000001-0000-1777-8000-775D67EC4377';
 
 
     //Eve service (custom UUID)
@@ -122,7 +122,7 @@ module.exports = function (homebridge) {
         this.addOptionalCharacteristic(Characteristic.CurrentRelativeHumidity);
     };
     inherits(Service.EveRoomService, Service);
-    	Service.EveRoomService.UUID = 'E863F002-079E-48FF-8F27-9C2605A29F52';
+    Service.EveRoomService.UUID = 'E863F002-079E-48FF-8F27-9C2605A29F52';
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ module.exports = function (homebridge) {
         this.addOptionalCharacteristic(Characteristic.EveBatteryLevel);
     };
     inherits(Service.EveWeatherService, Service);
-    	Service.EveWeatherService.UUID = 'E863F001-079E-48FF-8F27-9C2605A29F52';
+    Service.EveWeatherService.UUID = 'E863F001-079E-48FF-8F27-9C2605A29F52';
 
 
     // Consider platform plugin as dynamic platform plugin
@@ -260,21 +260,21 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.valueMotionSensor = data.valueMotionSensor;
         accessory.context.valuePowerConsumption = data.valuePowerConsumption;
         accessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
-		accessory.context.valueLight = data.valueLight;
-		accessory.context.brightness = data.brightness;
-		accessory.context.color = data.color;
-		// if color is enabled, we need all three properties
-		if ( accessory.context.color ) {
-			accessory.context.hue = true;
-			accessory.context.staturation = true;
-			accessory.context.brightness = true;
-		}
-		accessory.context.valueTargetTemperature = data.valueTargetTemperature;
-		accessory.context.CurrentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
-		accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
-		accessory.context.CurrentTemperature = data.CurrentTemperature;
-		accessory.context.TargetTemperature = data.TargetTemperature;
-		accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
+        accessory.context.valueLight = data.valueLight;
+        accessory.context.brightness = data.brightness;
+        accessory.context.color = data.color;
+        // if color is enabled, we need all three properties
+        if ( accessory.context.color ) {
+            accessory.context.hue = true;
+            accessory.context.staturation = true;
+            accessory.context.brightness = true;
+        }
+        accessory.context.valueTargetTemperature = data.valueTargetTemperature;
+        accessory.context.CurrentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+        accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+        accessory.context.CurrentTemperature = data.CurrentTemperature;
+        accessory.context.TargetTemperature = data.TargetTemperature;
+        accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
 		
         accessory.context.polling = data.polling;
         accessory.context.pollInMs = data.pollInMs || 1;
@@ -395,25 +395,25 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 }
                 break;
 
-			case "Lightbulb":
-				primaryservice = new Service.Lightbulb(accessory.context.name);
-				if (!accessory.context.valueLight) {
-					this.log.warn('%s: missing definition of valueLight in config.json!', accessory.context.name);
-					return;
-				}
-				break;
+            case "Lightbulb":
+                primaryservice = new Service.Lightbulb(accessory.context.name);
+                if (!accessory.context.valueLight) {
+                    this.log.warn('%s: missing definition of valueLight in config.json!', accessory.context.name);
+                    return;
+                }
+                break;
 
-			case "Thermostat":
-				primaryservice = new Service.Thermostat(accessory.context.name);
+            case "Thermostat":
+                primaryservice = new Service.Thermostat(accessory.context.name);
                 if (!accessory.context.valueTemperature) {
                     this.log.error('%s: missing definition of valueTemperature in config.json!', accessory.context.name);
                     return;
                 }
-				if (!accessory.context.valueTargetTemperature) {
-					this.log.warn('%s: missing definition of valueThermostat in config.json!', accessory.context.name);
-					return;
-				}
-				break;
+                if (!accessory.context.valueTargetTemperature) {
+                    this.log.warn('%s: missing definition of valueThermostat in config.json!', accessory.context.name);
+                    return;
+                }
+                break;
 
             default:
                 this.log.error('Service %s %s unknown for add, skipping...', accessory.context.service, accessory.context.name);
@@ -457,7 +457,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.addService(primaryservice, data.name);
 	    
         // Add history logging service    
-        if (accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor") ) {
+        if (accessory.context.polling && accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor") ) {
             this.log.debug("Adding Log Service for %s",accessory.context.name);
             this.loggingService = new FakeGatoHistoryService("thermo", this, {storage: 'fs', path: this.platform.localCache,disableTimer:true});
             accessory.addService(this.loggingService, data.name);
@@ -498,13 +498,13 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheDoorPosition = 0;
     accessory.context.cacheWindowPosition = 0;
     accessory.context.cacheWindowCoveringPosition = 0;
-  	accessory.context.cacheLightState = 0;
-  	accessory.context.cacheLightSaturation = 0;
-  	accessory.context.cacheLightHue = 0;
-  	accessory.context.cacheLightBrightness = 0;
-  	accessory.context.cacheTargetTemperature = 0;
-  	accessory.context.cacheTargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
-  	accessory.context.cacheCurrentHeatingCoolingStatee = Characteristic.CurrentHeatingCoolingState.AUTO;
+    accessory.context.cacheLightState = 0;
+    accessory.context.cacheLightSaturation = 0;
+    accessory.context.cacheLightHue = 0;
+    accessory.context.cacheLightBrightness = 0;
+    accessory.context.cacheTargetTemperature = 0;
+    accessory.context.cacheTargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
+    accessory.context.cacheCurrentHeatingCoolingStatee = Characteristic.CurrentHeatingCoolingState.AUTO;
 
     // Retrieve initial state
     this.getInitState(accessory);
@@ -704,51 +704,51 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             });
             break;
 
-		case "Lightbulb":
-			primaryservice = accessory.getService(Service.Lightbulb);
-			this.readLightState(thisDevice, function (error, value) {
-				// Update value if there's no error
-				if (!error && value !== thisDevice.cacheLightState) {
-					thisDevice.cacheLightState = value;
-					primaryservice.getCharacteristic(Characteristic.On).getValue();
-				}
-			});
-			if ( accessory.context.brightness || accessory.context.color  ) {
-				this.readLightBrightnessState(thisDevice, function (error, value) {
-					// Update value if there's no error
-					if (!error && value !== thisDevice.cacheLightBrightness) {
-						thisDevice.cacheLightBrightness = value;
-						primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
-					}
-				});
-			}
-			if ( accessory.context.color  ) {
-				this.readHueState(thisDevice, function (error, value) {
-					// Update value if there's no error
-					if (!error && value !== thisDevice.cacheLightHue) {
-						thisDevice.cacheLightHue = value;
-						primaryservice.getCharacteristic(Characteristic.Hue).getValue();
-					}
-				});
-				this.readSaturationState(thisDevice, function (error, value) {
-					// Update value if there's no error
-					if (!error && value !== thisDevice.cacheLightSaturation) {
-						thisDevice.cacheLightSaturation = value;
-						primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
-					}
-				});
-			}
-			break;
+        case "Lightbulb":
+            primaryservice = accessory.getService(Service.Lightbulb);
+            this.readLightState(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheLightState) {
+                    thisDevice.cacheLightState = value;
+                    primaryservice.getCharacteristic(Characteristic.On).getValue();
+                }
+            });
+            if ( accessory.context.brightness || accessory.context.color  ) {
+                this.readLightBrightnessState(thisDevice, function (error, value) {
+                    // Update value if there's no error
+                    if (!error && value !== thisDevice.cacheLightBrightness) {
+                        thisDevice.cacheLightBrightness = value;
+                        primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+                    }
+                });
+            }
+            if ( accessory.context.color  ) {
+                this.readHueState(thisDevice, function (error, value) {
+                    // Update value if there's no error
+                    if (!error && value !== thisDevice.cacheLightHue) {
+                        thisDevice.cacheLightHue = value;
+                        primaryservice.getCharacteristic(Characteristic.Hue).getValue();
+                    }
+                });
+                this.readSaturationState(thisDevice, function (error, value) {
+                    // Update value if there's no error
+                    if (!error && value !== thisDevice.cacheLightSaturation) {
+                        thisDevice.cacheLightSaturation = value;
+                        primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+                    }
+                });
+            }
+            break;
 
-		case "Thermostat":
-			primaryservice = accessory.getService(Service.Thermostat);
-			this.readTargetTemperature(thisDevice, function (error, value) {
-				// Update value if there's no error
-				if (!error && value !== thisDevice.cacheTargetTemperature) {
-					thisDevice.cacheTargetTemperature = value;
-					primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
-				}
-			});
+        case "Thermostat":
+            primaryservice = accessory.getService(Service.Thermostat);
+            this.readTargetTemperature(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheTargetTemperature) {
+                    thisDevice.cacheTargetTemperature = value;
+                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                }
+            });
 
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
@@ -951,25 +951,25 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getEvePowerConsumption.bind(this, accessory.context));
             break;
 
-		case "Lightbulb":
-			primaryservice = accessory.getService(Service.Lightbulb);
-			primaryservice.getCharacteristic(Characteristic.On)
+        case "Lightbulb":
+            primaryservice = accessory.getService(Service.Lightbulb);
+            primaryservice.getCharacteristic(Characteristic.On)
 				.on('get', this.getLightState.bind(this, accessory.context))
 				.on('set', this.setLightState.bind(this, accessory.context));
-			if ( accessory.context.color) {
-				primaryservice.getCharacteristic(Characteristic.Hue)
+            if ( accessory.context.color) {
+                primaryservice.getCharacteristic(Characteristic.Hue)
 					.on('get', this.getLightHue.bind(this, accessory.context))
 					.on('set', this.setLightHue.bind(this, accessory.context));
-				primaryservice.getCharacteristic(Characteristic.Saturation)
+                primaryservice.getCharacteristic(Characteristic.Saturation)
 					.on('get', this.getLightSaturation.bind(this, accessory.context))
 					.on('set', this.setLightSaturation.bind(this, accessory.context));
-			}
-			if ( accessory.context.brightness || accessory.context.color ) {
-				primaryservice.getCharacteristic(Characteristic.Brightness)
+            }
+            if ( accessory.context.brightness || accessory.context.color ) {
+                primaryservice.getCharacteristic(Characteristic.Brightness)
 					.on('get', this.getLightBrightnessState.bind(this, accessory.context))
 					.on('set', this.setLightBrightnessState.bind(this, accessory.context));
-			}
-			break;
+            }
+            break;
 
         case "Thermostat":
             primaryservice = accessory.getService(Service.Thermostat);
@@ -986,7 +986,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
 				.on('set', this.setTemperatureDisplayUnits.bind(this, accessory.context));			
             break;
 
-		default:
+        default:
             this.log.error('Service %s %s unknown for set, skipping...', accessory.context.service, accessory.context.name);
             break;
     }
@@ -1131,23 +1131,23 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
                 primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
                 break;
 				
-			case "Lightbulb":
-				primaryservice = accessory.getService(Service.Lightbulb);
-				if ( accessory.context.color ) {
-					primaryservice.getCharacteristic(Characteristic.Hue).getValue();
-					primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
-				}
-				if ( accessory.context.color || accessory.context.brightness ) {
-					primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
-				}
-				break;
+            case "Lightbulb":
+                primaryservice = accessory.getService(Service.Lightbulb);
+                if ( accessory.context.color ) {
+                    primaryservice.getCharacteristic(Characteristic.Hue).getValue();
+                    primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+                }
+                if ( accessory.context.color || accessory.context.brightness ) {
+                    primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+                }
+                break;
 				
-			case "Thermostat":
-				primaryservice = accessory.getService(Service.Thermostat);
-				primaryservice.getCharacteristic(Characteristic.TargetTemperature).getValue();
-				primaryservice.getCharacteristic(Characteristic.CurrentHeatingCoolingState).getValue();
-				primaryservice.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue();
-				break;
+            case "Thermostat":
+                primaryservice = accessory.getService(Service.Thermostat);
+                primaryservice.getCharacteristic(Characteristic.TargetTemperature).getValue();
+                primaryservice.getCharacteristic(Characteristic.CurrentHeatingCoolingState).getValue();
+                primaryservice.getCharacteristic(Characteristic.TargetHeatingCoolingState).getValue();
+                break;
 
             default:
                 this.log.error('Service %s %s unknown for initstate, skipping...', accessory.context.service, accessory.context.name);
@@ -2022,7 +2022,7 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
         //Update the value to iOS
         accessory.getService(Service.WindowCovering).getCharacteristic(Characteristic.TargetPosition).updateValue(windowcoveringPosition);
     }
-        var callbackWasCalled = false;
+    var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueWindowCovering, windowcoveringPosition, function (err) {
         if (callbackWasCalled) {
             self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
@@ -2042,89 +2042,89 @@ DomotigaPlatform.prototype.setWindowCoveringPosition = function (thisDevice, tar
 DomotigaPlatform.prototype.setLightState = function (thisDevice, value, callback) {
     var self = this;
 	
-	if (thisDevice.cacheLightState && thisDevice.brightness && value) {
-		callback(null);
-	} else {
-		var LightState = (value == false) ? "Off" : "On";
-		if (!thisDevice.cacheLightState && thisDevice.brightness && value) {
-			LightState = "Dim " + thisDevice.cacheLightBrightness;
-		}
-		self.log("%s: setting light state to %s", thisDevice.name, LightState);
+    if (thisDevice.cacheLightState && thisDevice.brightness && value) {
+        callback(null);
+    } else {
+        var LightState = (value == false) ? "Off" : "On";
+        if (!thisDevice.cacheLightState && thisDevice.brightness && value) {
+            LightState = "Dim " + thisDevice.cacheLightBrightness;
+        }
+        self.log("%s: setting light state to %s", thisDevice.name, LightState);
 
-		// Update cache
-		thisDevice.cacheLightState = value;
+        // Update cache
+        thisDevice.cacheLightState = value;
 
-		var callbackWasCalled = false;
-		this.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (err) {
-			if (callbackWasCalled) {
-				self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
-			}
-			callbackWasCalled = true;
-			if (!err) {
-				self.log("%s: successfully set light state to %s", thisDevice.name, LightState);
-				callback(null);
-			} else {
-				self.log.error("%s: error setting light state to %s", thisDevice.name, LightState);
-				callback(err);
-			}
-		});
-	}
+        var callbackWasCalled = false;
+        this.domotigaSetValue(thisDevice.device, thisDevice.valueLight, LightState, function (err) {
+            if (callbackWasCalled) {
+                self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                self.log("%s: successfully set light state to %s", thisDevice.name, LightState);
+                callback(null);
+            } else {
+                self.log.error("%s: error setting light state to %s", thisDevice.name, LightState);
+                callback(err);
+            }
+        });
+    }
 }
 
 DomotigaPlatform.prototype.readLightState = function (thisDevice, callback) {
     var self = this;
-	self.log("%s: getting light state...", thisDevice.name);
+    self.log("%s: getting light state...", thisDevice.name);
 
-	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
-		if (error) {
+    self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
+        if (error) {
             self.log.error('%s: readLightState failed: %s', thisDevice.name, error.message);
-			callback(error);
-		} else {
+            callback(error);
+        } else {
             var LightState = (result == "0") ? 0 : 1;
             self.log('%s: light state: %s', thisDevice.name, LightState);
             callback(null, LightState);
-		}
-	});
+        }
+    });
 }
 
 DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
-	var self = this;
- 	if(thisDevice.polling) {
-		self.log('%s: cached light.state is: %s', thisDevice.name, thisDevice.cacheLightState);
-		callback(null, thisDevice.cacheLightState);
-	} else {
-		this.readLightState(thisDevice, function (error, value) {
-			if (thisDevice.Brightness == true) {
-				if (value == 0) {
-					thisDevice.cacheLightState = 0;
-				} else {
-					thisDevice.cacheLightState = value
-				}
-			} else {
-				thisDevice.cacheLightState = value;
-			}
-			callback(error, thisDevice.cacheLightState);
-		});
-	}
+    var self = this;
+    if(thisDevice.polling) {
+        self.log('%s: cached light.state is: %s', thisDevice.name, thisDevice.cacheLightState);
+        callback(null, thisDevice.cacheLightState);
+    } else {
+        this.readLightState(thisDevice, function (error, value) {
+            if (thisDevice.Brightness == true) {
+                if (value == 0) {
+                    thisDevice.cacheLightState = 0;
+                } else {
+                    thisDevice.cacheLightState = value
+                }
+            } else {
+                thisDevice.cacheLightState = value;
+            }
+            callback(error, thisDevice.cacheLightState);
+        });
+    }
 }
 
 DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value, callback) {
 
     var self = this;
-	var BrightnessState = value;
-	switch (value) {
-		case 0:
-			BrightnessState = "Off";
-			break;
-		case 100:
-			BrightnessState = "On";
-			break;
-		default:
-			BrightnessState = "Dim " + value;
-			break;
-	}
+    var BrightnessState = value;
+    switch (value) {
+        case 0:
+            BrightnessState = "Off";
+            break;
+        case 100:
+            BrightnessState = "On";
+            break;
+        default:
+            BrightnessState = "Dim " + value;
+            break;
+    }
 
-	self.log("%s: setting light brightness to %s", thisDevice.name, value);
+    self.log("%s: setting light brightness to %s", thisDevice.name, value);
 
     // Update cache
     thisDevice.cacheLightBrightness = value;
@@ -2147,37 +2147,37 @@ DomotigaPlatform.prototype.setLightBrightnessState = function (thisDevice, value
 
 DomotigaPlatform.prototype.readLightBrightnessState = function (thisDevice, callback) {
     var self = this;
-	self.log("%s: getting light brightness...", thisDevice.name);
+    self.log("%s: getting light brightness...", thisDevice.name);
 	
-	self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
-		if ( error) {
+    self.domotigaGetValue(thisDevice.device, thisDevice.valueLight, function (error,result){
+        if ( error) {
             self.log.error('%s: readLightBrightnessState failed: %s', thisDevice.name, error.message);
-			callback(error);
-		} else {
+            callback(error);
+        } else {
             self.log('%s: light brightness: %s', thisDevice.name, result);
-			callback(null,result);
-		}
-	});
+            callback(null,result);
+        }
+    });
 }
 
 DomotigaPlatform.prototype.getLightBrightnessState = function (thisDevice, callback) {
-	var self = this;
-	if(thisDevice.polling) {
-		self.log('%s: cached light.brightness is: %s', thisDevice.name, thisDevice.cacheLightBrightness);
-		callback(null, thisDevice.cacheLightBrightness);
-	} else {
-		this.readLightBrightnessState(thisDevice, function (error, value) {
-			thisDevice.cacheLightBrightness = value;
-			callback(error, thisDevice.cacheLightBrightness);
-		});
-	}
+    var self = this;
+    if(thisDevice.polling) {
+        self.log('%s: cached light.brightness is: %s', thisDevice.name, thisDevice.cacheLightBrightness);
+        callback(null, thisDevice.cacheLightBrightness);
+    } else {
+        this.readLightBrightnessState(thisDevice, function (error, value) {
+            thisDevice.cacheLightBrightness = value;
+            callback(error, thisDevice.cacheLightBrightness);
+        });
+    }
 }
 
 DomotigaPlatform.prototype.setTargetTemperature = function (thisDevice, value, callback) {
 
     var self = this;
 
-	self.log("%s: setting target temperature to %s", thisDevice.name, value);
+    self.log("%s: setting target temperature to %s", thisDevice.name, value);
 
     // Update cache
     thisDevice.cacheTargetTemperature = value;
@@ -2241,38 +2241,38 @@ DomotigaPlatform.prototype.getTargetHeatingCoolingState = function (thisDevice, 
 
 DomotigaPlatform.prototype.setTargetHeatingCoolingState = function (thisDevice, value, callback) {
     var self = this;
-	var command = "0";
+    var command = "0";
 
     this.log("%s: setting TargetHeatingCoolingState to %s", thisDevice.name, value);
-	//value must be one of the following:
-	//Characteristic.TargetHeatingCoolingState.OFF = 0;
-	//Characteristic.TargetHeatingCoolingState.HEAT = 1;
-	//Characteristic.TargetHeatingCoolingState.COOL = 2;
-	//Characteristic.TargetHeatingCoolingState.AUTO = 3;
+    //value must be one of the following:
+    //Characteristic.TargetHeatingCoolingState.OFF = 0;
+    //Characteristic.TargetHeatingCoolingState.HEAT = 1;
+    //Characteristic.TargetHeatingCoolingState.COOL = 2;
+    //Characteristic.TargetHeatingCoolingState.AUTO = 3;
 
     // Update cache
     thisDevice.cacheTargetHeatingCoolingState = value;
 
-	//Only turn off Thermostat override if TargetHeatingCoolingState.OFF
-	if (value == Characteristic.TargetHeatingCoolingState.OFF){
-		var callbackWasCalled = false;
-		this.domotigaSetValue(thisDevice.device, thisDevice.valueTargetTemperature, command, function (err) {
-			if (callbackWasCalled) {
-				self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
-			}
-			callbackWasCalled = true;
-			if (!err) {
-				self.log("%s: successfully send turning off thermostat override command.", thisDevice.name);
-				callback(null);
-			} else {
-				self.log.error("%s: error sending turning off thermostat override command.", thisDevice.name);
-				callback(err);
-			}
-		});
-	} else {
-		self.log("%s: ignore setting TargetHeatingCoolingState because of no support at DomotiGa.", thisDevice.name);
-		callback(null);
-	}
+    //Only turn off Thermostat override if TargetHeatingCoolingState.OFF
+    if (value == Characteristic.TargetHeatingCoolingState.OFF){
+        var callbackWasCalled = false;
+        this.domotigaSetValue(thisDevice.device, thisDevice.valueTargetTemperature, command, function (err) {
+            if (callbackWasCalled) {
+                self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
+            }
+            callbackWasCalled = true;
+            if (!err) {
+                self.log("%s: successfully send turning off thermostat override command.", thisDevice.name);
+                callback(null);
+            } else {
+                self.log.error("%s: error sending turning off thermostat override command.", thisDevice.name);
+                callback(err);
+            }
+        });
+    } else {
+        self.log("%s: ignore setting TargetHeatingCoolingState because of no support at DomotiGa.", thisDevice.name);
+        callback(null);
+    }
 }
 
 
@@ -2311,47 +2311,47 @@ DomotigaPlatform.prototype.domotigaSetValue = function (device, deviceValueNo, v
 // Get value from domotiga database
 DomotigaPlatform.prototype.domotigaGetValue = function (device, deviceValueNo, callback) {
 
-	//skip request if value doesn't exist in domotiga 
-	if (deviceValueNo != 99) {
-		var self = this;
-		//self.log( "domotigaGetValue, device : %s - deviceValueNo : ",device, deviceValueNo);
-		JSONRequest('http://' + self.host + ':' + self.port, {
-			jsonrpc: "2.0",
-			method: "value.get",
-			params: {
-				"device_id": device,
-				"valuenum": deviceValueNo,
-				"command" : "value"
-			},
-			id: 1
-		}, function (err, data) {
-			if (err) {
-				self.log.error("Sorry err: ", err);
-				callback(err);
-			} else {
-				let item = Number(deviceValueNo) - 1;
-				//self.log("data.result:", data.result);
-				//self.log("data.result.value:", data.result.value);
-				if (data.result != undefined){
-					// try to convert
-					if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "on" || data.result.value.toLowerCase() == "true")) {
-						callback(null,1);
-					} else if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "off" || data.result.value.toLowerCase() == "false")) {
-						callback(null,0);
-					} else if ( typeof data.result.value == "string" && (data.result.value.substr(0,3).toLowerCase() == "dim")) {
-						callback(null, data.result.value.substr(4).toLowerCase())
-					} else {
-						callback(null, data.result.value);
-					}
-				} else {
-					self.log.warn("Undefined data for device %s, value %s", device, deviceValueNo);
-					callback();
-				}
-			}
-		});
-	} else {
-		callback(null, 0)
-	}
+    //skip request if value doesn't exist in domotiga 
+    if (deviceValueNo != 99) {
+        var self = this;
+        //self.log( "domotigaGetValue, device : %s - deviceValueNo : ",device, deviceValueNo);
+        JSONRequest('http://' + self.host + ':' + self.port, {
+            jsonrpc: "2.0",
+            method: "value.get",
+            params: {
+                "device_id": device,
+                "valuenum": deviceValueNo,
+                "command" : "value"
+            },
+            id: 1
+        }, function (err, data) {
+            if (err) {
+                self.log.error("Sorry err: ", err);
+                callback(err);
+            } else {
+                let item = Number(deviceValueNo) - 1;
+                //self.log("data.result:", data.result);
+                //self.log("data.result.value:", data.result.value);
+                if (data.result != undefined){
+                    // try to convert
+                    if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "on" || data.result.value.toLowerCase() == "true")) {
+                        callback(null,1);
+                    } else if ( typeof data.result.value == "string" && (data.result.value.toLowerCase() == "off" || data.result.value.toLowerCase() == "false")) {
+                        callback(null,0);
+                    } else if ( typeof data.result.value == "string" && (data.result.value.substr(0,3).toLowerCase() == "dim")) {
+                        callback(null, data.result.value.substr(4).toLowerCase())
+                    } else {
+                        callback(null, data.result.value);
+                    }
+                } else {
+                    self.log.warn("Undefined data for device %s, value %s", device, deviceValueNo);
+                    callback();
+                }
+            }
+        });
+    } else {
+        callback(null, 0)
+    }
 }
 
 DomotigaPlatform.prototype.getVersion = function () {
