@@ -8,6 +8,7 @@ var moment = require('moment');
 var FakeGatoHistoryService = require('./fakegato-history.js')(this.platform.homebridge);
 let localCache;
 let localPath;
+let _homebridge;
 
 module.exports = function (homebridge) {
     console.log("homebridge API version: " + homebridge.version);
@@ -15,6 +16,7 @@ module.exports = function (homebridge) {
     // Paths
     localCache = path.join(homebridge.user.storagePath(), 'domotiga.json');
     localPath = homebridge.user.storagePath()
+    _homebridge = homebridge;
 	
     // Accessory must be created from PlatformAccessory Constructor    
     Accessory = homebridge.platformAccessory;
@@ -23,6 +25,7 @@ module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
     UUIDGen = homebridge.hap.uuid;
+    
 
     ////////////////////////////// Custom characteristics //////////////////////////////
     Characteristic.EvePowerConsumption = function () {
@@ -153,6 +156,7 @@ module.exports = function (homebridge) {
 function DomotigaPlatform(log, config, api) {
     this.log = log;
     this.config = config;
+    this.homebridge = _homebridge;
     this.log("DomotiGa Plugin Version " + this.getVersion());
     this.log("Plugin by Samfox2 https://github.com/samfox2");
     this.log("DomotiGa is a Open Source Home Automation Software for Linux");
