@@ -281,7 +281,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
         accessory.context.valueTargetTemperature = data.valueTargetTemperature;
         accessory.context.CurrentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
-        //accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+        accessory.context.TargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
         accessory.context.CurrentTemperature = data.CurrentTemperature;
         accessory.context.TargetTemperature = data.TargetTemperature;
         accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
