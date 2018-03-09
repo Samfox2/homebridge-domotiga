@@ -287,7 +287,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
 
         accessory.context.polling = data.polling;
-        accessory.context.pollingInterval = data.pollingInterval || 1;
+        accessory.context.pollingInterval = data.pollingInterval * 1000 || 1000;
         accessory.context.logType = "unknown";
 
         var primaryservice;
@@ -482,14 +482,6 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Setup HomeKit switch service
         accessory.addService(primaryservice, data.name);
 
-        // Add history logging service    
-        if (accessory.context.logType != "unknown" && !accessory.context.loggingService) {
-            this.log.debug("Adding Eve %s log Service for %s", accessory.context.logType, accessory.context.name);
-            accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
-            accessory.addService(accessory.context.loggingService, data.name);
-        }
-
-
         // New accessory is always reachable
         accessory.reachable = true;
 
@@ -532,7 +524,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheTargetTemperature = 0;
     accessory.context.cacheTargetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
     accessory.context.cacheCurrentHeatingCoolingStatee = Characteristic.CurrentHeatingCoolingState.AUTO;
-
+    accessory.context.initHistory = false;
     // Retrieve initial state
     this.getInitState(accessory);
 
@@ -866,13 +858,8 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // History
     this.addValuesToHistory(accessory);
 
-    //if (accessory.context.polling && accessory.context.valueTemperature && accessory.context.valueHumidity && (accessory.context.service === "TemperatureSensor")) {
-    //    accessory.context.loggingService.addEntry({ time: moment().unix(), currentTemp: parseFloat(thisDevice.cacheCurrentTemperature), pressure: 0, humidity: parseFloat(thisDevice.cacheCurrentRelativeHumidity) });
-    //}
-
     // Setup for next polling
     this.polling[name] = setTimeout(this.doPolling.bind(this, name), thisDevice.pollingInterval);
-
 }
 
 // Method to setup listeners for different events
@@ -1083,22 +1070,6 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getEveTotalPowerConsumption.bind(this, accessory.context));
         }
     }
-
-
-    //// Add history logging service    
-    //if (accessory.context.polling && accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor")) {
-    //    this.log.debug("Adding Log Service for %s", accessory.context.name);
-    //    //accessory.context.loggingService = accessory.getService(Service.FakeGatoHistoryService);
-    //    accessory.context.loggingService = new Service.FakeGatoHistoryService("weather", accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
-    //}
-
-    // Add history logging service    
-    if (accessory.context.logType != "unknown" && !accessory.context.loggingService) {
-        this.log.debug("Adding Eve %s log Service for %s", accessory.context.logType, accessory.context.name);
-        accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
-        accessory.addService(accessory.context.loggingService, data.name);
-    }
-
     accessory.on('identify', this.identify.bind(this, accessory.context));
 }
 
@@ -1269,7 +1240,11 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
     this.log.debug("Logging history %s for %s", accessory.context.logType, accessory.context.name);
 
     if (accessory.context.polling) {
-
+        if (!accessory.context.initHistory) {
+            // Add history logging service    
+            accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
+            accessory.context.initHistory = true;
+        }
         switch (accessory.context.logType) {
 
             case "weather":
@@ -1285,7 +1260,7 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 });
                 break;
 
-            case "room":
+            case "room1":
                 this.log.debug("Temp: %s Humi: %s Qual: %s",
                     accessory.context.cacheCurrentTemperature,
                     accessory.context.cacheCurrentRelativeHumidity,
@@ -1298,6 +1273,19 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 });
                 break;
 
+            case "room":
+                this.log.debug("Temp: %s Humi: %s Qual: %s",
+                    accessory.context.cacheCurrentTemperature,
+                    accessory.context.cacheCurrentRelativeHumidity,
+                    accessory.context.cacheCurrentAirQuality);
+                accessory.context.loggingService.addEntry({
+                    time: moment().unix(),
+                    currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
+                    humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
+                    ppm: parseFloat(accessory.context.cacheCurrentAirQuality)
+                });
+                break;
+            
             case "thermo":
                 this.log.debug("Temp: %s Targettemp: %s Valve pos: %s",
                     accessory.context.cacheCurrentTemperature,
