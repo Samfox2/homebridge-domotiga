@@ -1279,37 +1279,36 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
                     currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
-                    pressure: 0,
+                    pressure: parseFloat(accessory.context.cacheCurrentAirPressure),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity)
                 });
                 break;
 
             case "room":
-                this.log.debug("Temp: %s Humi: %s ppm: %s",
+                this.log.debug("Temp: %s Humi: %s Qual: %s",
                     accessory.context.cacheCurrentTemperature,
-                    accessory.context.cacheCurrentAirPressure,
-                    accessory.context.cacheCurrentRelativeHumidity);
+                    accessory.context.cacheCurrentRelativeHumidity,
+                    accessory.context.cacheCurrentAirQuality);
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
                     currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
-                    ppm: 0
+                    ppm: parseFloat(accessory.context.cacheCurrentAirQuality)
                 });
-                // todo: ppm
                 break;
 
             case "thermo":
-                this.log.debug("Temp: %s Press: %s Humi: %s",
+                this.log.debug("Temp: %s Targettemp: %s Valve pos: %s",
                     accessory.context.cacheCurrentTemperature,
-                    accessory.context.cacheCurrentAirPressure,
-                    accessory.context.cacheCurrentRelativeHumidity);
+                    accessory.context.cacheTargetTemperature,
+                    0);
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
                     currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
-                    setTemp: 0,
+                    setTemp: parseFloat(accessory.context.cacheTargetTemperature),
                     valvePosition: 0
                 });
-                // todo: valve positions, ...
+                // todo: valve position
                 break;
 
             case "energy":
