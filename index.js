@@ -483,7 +483,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.addService(primaryservice, data.name);
 
         // Add history logging service    
-        if (accessory.context.logType != "unknown") {
+        if (accessory.context.logType != "unknown" && !accessory.context.loggingService) {
             this.log.debug("Adding Eve %s log Service for %s", accessory.context.logType, accessory.context.name);
             accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
             accessory.addService(accessory.context.loggingService, data.name);
@@ -574,6 +574,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
                     primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                    //primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value)); // why do we not just use updateValue?
                 }
             });
             break;
@@ -1092,7 +1093,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
     //}
 
     // Add history logging service    
-    if (accessory.context.logType != "unknown") {
+    if (accessory.context.logType != "unknown" && !accessory.context.loggingService) {
         this.log.debug("Adding Eve %s log Service for %s", accessory.context.logType, accessory.context.name);
         accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
         accessory.addService(accessory.context.loggingService, data.name);
