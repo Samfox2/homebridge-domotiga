@@ -10,7 +10,7 @@ var moment = require('moment');
 let localCache;
 let localPath;
 let _homebridge;
-var FakeGatoHistoryService;
+//var FakeGatoHistoryService;
 
 module.exports = function (homebridge) {
     console.log("homebridge API version: " + homebridge.version);
@@ -18,8 +18,8 @@ module.exports = function (homebridge) {
     // Paths
     localCache = path.join(homebridge.user.storagePath(), 'domotiga.json');
     localPath = homebridge.user.storagePath()
-    _homebridge = homebridge;
-	
+	 _homebridge = homebridge;
+	 
     // Accessory must be created from PlatformAccessory Constructor    
     Accessory = homebridge.platformAccessory;
 
@@ -27,11 +27,10 @@ module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
     UUIDGen = homebridge.hap.uuid;
-    
 
     ////////////////////////////// Custom characteristics //////////////////////////////
-	FakeGatoHistoryService = require('./fakegato-history.js')(homebridge);
-	
+    
+    
     Characteristic.EvePowerConsumption = function () {
         Characteristic.call(this, 'Consumption', 'E863F10D-079E-48FF-8F27-9C2605A29F52');
         this.setProps({
@@ -137,8 +136,6 @@ module.exports = function (homebridge) {
     inherits(Service.EveRoomService, Service);
     Service.EveRoomService.UUID = 'E863F002-079E-48FF-8F27-9C2605A29F52';
 
-
-    /////////////////////////////////////////////////////////////////////////////////////////////
     //Eve service (custom UUID)
     Service.EveWeatherService = function (displayName, subtype) {
         Service.call(this, displayName, 'E863F001-079E-48FF-8F27-9C2605A29F52', subtype);
@@ -153,14 +150,22 @@ module.exports = function (homebridge) {
     Service.EveWeatherService.UUID = 'E863F001-079E-48FF-8F27-9C2605A29F52';
 
 
+    Service.FakeGatoHistoryService = require('./fakegato-history.js')(homebridge);
+    inherits(Service.FakeGatoHistoryService, Service);
+    Service.FakeGatoHistoryService.UUID = 'E863F007-079E-48FF-8F27-9C2605A29F52';
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+
     // Consider platform plugin as dynamic platform plugin
     homebridge.registerPlatform("homebridge-domotiga", "DomotiGa", DomotigaPlatform, true);
 }
 
+
 function DomotigaPlatform(log, config, api) {
     this.log = log;
     this.config = config;
-    this.homebridge = _homebridge;
     this.log("DomotiGa Plugin Version " + this.getVersion());
     this.log("Plugin by Samfox2 https://github.com/samfox2");
     this.log("DomotiGa is a Open Source Home Automation Software for Linux");
@@ -285,7 +290,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         }
         accessory.context.valueTargetTemperature = data.valueTargetTemperature;
         accessory.context.CurrentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
-        accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
+        //accessory.context.TargetHeatingCoolingState = data.Characteristic.TargetHeatingCoolingState.AUTO; //fixed as DomotiGa doesn't expose this property
         accessory.context.CurrentTemperature = data.CurrentTemperature;
         accessory.context.TargetTemperature = data.TargetTemperature;
         accessory.context.TemperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS; //fixed
@@ -470,12 +475,12 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         // Setup HomeKit switch service
         accessory.addService(primaryservice, data.name);
 	    
-         // Add history logging service    
+        // Add history logging service    
         if (accessory.context.polling && accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor") ) {
             this.log.debug("Adding Log Service for %s",accessory.context.name);
-            this.loggingService = new FakeGatoHistoryService("thermo", this, {storage: 'fs', path: this.localCache,disableTimer:true});
-            accessory.addService(this.loggingService, data.name);
-        }
+            accessory.context.loggingService = new Service.FakeGatoHistoryService("weather", accessory, {storage: 'fs', path:this.localCache,disableTimer:true});
+            accessory.addService(accessory.context.loggingService, data.name);
+        }    
 	    
         // New accessory is always reachable
         accessory.reachable = true;
@@ -548,6 +553,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
     // Clear polling
     clearTimeout(this.polling[name]);
 
+
     // Get primary service
     var primaryservice;
 
@@ -560,7 +566,8 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
                     primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
-                    accessory.getService(FakeGatoHistoryService).addEntry({time: moment().unix(), currentTemp:parseFloat(value)});
+                    //accessory.context.loggingService.addEntry({time: moment().unix(), currentTemp:parseFloat(value)});
+                    //accessory.getService(Service.FakeGatoHistoryService).addEntry({time: moment().unix(), currentTemp:parseFloat(value)});
                 }
             });
             break;
@@ -849,6 +856,13 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         });
     }
 
+
+
+// History
+if (accessory.context.polling && accessory.context.valueTemperature && accessory.context.valueHumidity && (accessory.context.service === "TemperatureSensor") ){
+accessory.context.loggingService.addEntry({time: moment().unix(), currentTemp:parseFloat(thisDevice.cacheCurrentTemperature),pressure:0, humidity:parseFloat(thisDevice.cacheCurrentRelativeHumidity)});
+}
+
     // Setup for next polling
     this.polling[name] = setTimeout(this.doPolling.bind(this, name), thisDevice.pollInMs * 1000);
 
@@ -1047,6 +1061,20 @@ DomotigaPlatform.prototype.setService = function (accessory) {
                 .on('get', this.getEveTotalPowerConsumption.bind(this, accessory.context));
         }
     }
+    
+    
+            // Add history logging service    
+        if (accessory.context.polling && accessory.context.valueTemperature && (accessory.context.service === "TemperatureSensor") ) {
+            this.log.debug("Adding Log Service for %s",accessory.context.name);
+            //accessory.context.loggingService = accessory.getService(Service.FakeGatoHistoryService);
+            accessory.context.loggingService = new Service.FakeGatoHistoryService("weather", accessory, {storage: 'fs', path:this.localCache,disableTimer:true});
+            
+            
+            
+        }    
+    
+    
+    
     accessory.on('identify', this.identify.bind(this, accessory.context));
 }
 
