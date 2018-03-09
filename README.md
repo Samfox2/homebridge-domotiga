@@ -70,7 +70,7 @@ Configuration sample:
                 "valueBattery": "4",
                 "lowbattery": "3000"
                 "polling": true,
-                "pollInMs": "1000"
+                "pollingInterval": "1000"
             },
             {
                 "name": "Sensor gardenhouse",
@@ -82,7 +82,7 @@ Configuration sample:
                 "valueBattery": "4",
                 "lowbattery": "3000"
 				"polling": false,
-                "pollInMs": "1000"
+                "pollingInterval": "1000"
             },
             {
                 "name": "Combined AirQualitySensor livingroom",
@@ -193,7 +193,7 @@ Fields:
 * ```"manufacturer":``` Manufacturer of accessory (optional)
 * ```"model":``` Model of accessory (optional)
 * ```"device":```  Domotiga device no. (required)
-* ```"valueTemperature":``` Domotiga device value no. of temperature in °C (required for "TemperatureSensor" and "Thermostat")
+* ```"valueTemperature":``` Domotiga device value no. of temperature in Â°C (required for "TemperatureSensor" and "Thermostat")
 * ```"valueHumidity":``` Value no. of humidity in % (required for "HumiditySensor")
 * ```"valueAirPressure":``` Value no. of air pressure in hPa (required for "FakeEveWeatherSensor")
 * ```"valueAirQuality":```  Value no. of the air quality VOC (required for "AirQualitySensor" and "FakeEveAirQualitySensor")
@@ -211,7 +211,7 @@ Fields:
 * ```"valueBattery":```  Value no. of battery in mV
 * ```"lowbattery":```    Min. battery level which activates "low battery warning" in mV
 * ```"polling":```   Enable/disable polling with "true" or "false" (optional)
-* ```"pollInMs":```  Number of milliseconds to wait before polling the database to report open/closed state (optional)
+* ```"pollingInterval":```  Number of seconds to wait before polling the database to report open/closed state (optional)
 
 
 
