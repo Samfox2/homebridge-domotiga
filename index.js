@@ -565,8 +565,8 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentTemperature) {
                     thisDevice.cacheCurrentTemperature = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
-                    //primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value)); // why do we not just use updateValue?
+                    //primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value)); // why do we not just use updateValue?
                 }
             });
             break;
@@ -1083,7 +1083,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device %s %s", accessory.context.device, accessory.context.name));
 
     // Retrieve initial state if polling is disabled
-    //if (!accessory.context.polling) { <---- we do also need an init state if polling is activated
+    if (!accessory.context.polling) { //<---- we do also need an init state if polling is activated
 
     // Get primary service
     var primaryservice;
@@ -1223,7 +1223,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).getValue();
         }
     }
-    // }
+    }
 
     // History 
     //this.addValuesToHistory(accessory); <-- at this time we do logging only with activated polling
@@ -1242,7 +1242,7 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
     if (accessory.context.polling) {
         if (!accessory.context.initHistory) {
             // Add history logging service    
-            accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: true });
+            accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: false });
             accessory.context.initHistory = true;
         }
         switch (accessory.context.logType) {
@@ -1254,22 +1254,9 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                     accessory.context.cacheCurrentRelativeHumidity);
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
-                    currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
+                    temp: parseFloat(accessory.context.cacheCurrentTemperature),
                     pressure: parseFloat(accessory.context.cacheCurrentAirPressure),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity)
-                });
-                break;
-
-            case "room1":
-                this.log.debug("Temp: %s Humi: %s Qual: %s",
-                    accessory.context.cacheCurrentTemperature,
-                    accessory.context.cacheCurrentRelativeHumidity,
-                    accessory.context.cacheCurrentAirQuality);
-                accessory.context.loggingService.addEntry({
-                    time: moment().unix(),
-                    currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
-                    humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
-                    ppm: parseFloat(accessory.context.cacheCurrentAirQuality)
                 });
                 break;
 
@@ -1280,11 +1267,12 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                     accessory.context.cacheCurrentAirQuality);
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
-                    currentTemp: parseFloat(accessory.context.cacheCurrentTemperature),
+                    temp: parseFloat(accessory.context.cacheCurrentTemperature),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
                     ppm: parseFloat(accessory.context.cacheCurrentAirQuality)
                 });
                 break;
+                
             
             case "thermo":
                 this.log.debug("Temp: %s Targettemp: %s Valve pos: %s",
