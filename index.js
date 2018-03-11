@@ -143,7 +143,7 @@ module.exports = function (homebridge) {
     Service.EveWeatherService.UUID = 'E863F001-079E-48FF-8F27-9C2605A29F52';
 
     // Eve logging service (custom UUID)
-    Service.FakeGatoHistoryService = require('./fakegato-history.js')(homebridge);
+    Service.FakeGatoHistoryService = require('fakegato-history')(homebridge);
     inherits(Service.FakeGatoHistoryService, Service);
     Service.FakeGatoHistoryService.UUID = 'E863F007-079E-48FF-8F27-9C2605A29F52';
     /////////////////////////////////////////////////////////////////////////////////////////////
