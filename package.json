@@ -21,7 +21,8 @@
     "jsonrequest": "^4.2.3",
     "util": "^0.10.3",
     "path": "^0.12.7",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "fakegato-history": "^0.4.0"
   }
 }
 
