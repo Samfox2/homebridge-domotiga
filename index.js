@@ -508,6 +508,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     accessory.context.cacheOutletState = 0;
     accessory.context.cacheOutletInUse = false;
     accessory.context.cacheCurrentAirQuality = Characteristic.AirQuality.POOR;
+    accessory.context.cacheCurrentEveAirQuality = 0;
     accessory.context.cachePowerConsumption = 0;
     accessory.context.cacheTotalPowerConsumption = 0;
     accessory.context.cacheCurrentBatteryLevel = 0;
@@ -696,7 +697,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             this.readCurrentEveAirQuality(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
-                    thisDevice.cacheCurrentAirQuality = value;
+                    thisDevice.cacheCurrentEveAirQuality = value;
                     primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).getValue();
                 }
             });
@@ -1264,12 +1265,12 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 this.log.debug("Temp: %s Humi: %s Qual: %s",
                     accessory.context.cacheCurrentTemperature,
                     accessory.context.cacheCurrentRelativeHumidity,
-                    accessory.context.cacheCurrentAirQuality);
+                    accessory.context.cacheCurrentEveAirQuality);
                 accessory.context.loggingService.addEntry({
                     time: moment().unix(),
                     temp: parseFloat(accessory.context.cacheCurrentTemperature),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
-                    ppm: parseFloat(accessory.context.cacheCurrentAirQuality)
+                    ppm: parseFloat(accessory.context.cacheCurrentEveAirQuality)
                 });
                 break;
                 
@@ -1630,6 +1631,10 @@ DomotigaPlatform.prototype.readCurrentAirQuality = function (thisDevice, callbac
             else
                 value = Characteristic.AirQuality.UNKNOWN;
 
+            // Addition for fakegato-history: save original voc value
+            if (value != Characteristic.AirQuality.UNKNOWN)
+                thisDevice.cacheCurrentEveAirQuality = voc;
+
             self.log('%s: current air quality: %s', thisDevice.name, value);
             callback(null, value);
         }
@@ -1684,14 +1689,14 @@ DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callb
 
     if (thisDevice.polling) {
         // Get value directly from cache if polling is enabled
-        self.log('%s: cached Eve air quality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
-        callback(null, thisDevice.cacheCurrentAirQuality);
+        self.log('%s: cached Eve air quality is: %s', thisDevice.name, thisDevice.cacheCurrentEveAirQuality);
+        callback(null, thisDevice.cacheCurrentEveAirQuality);
     } else {
         // Check value if polling is disabled
         this.readCurrentEveAirQuality(thisDevice, function (error, value) {
             // Update cache
-            thisDevice.cacheCurrentAirQuality = value;
-            callback(error, thisDevice.cacheCurrentAirQuality);
+            thisDevice.cacheCurrentEveAirQuality= value;
+            callback(error, thisDevice.cacheCurrentEveAirQuality);
         });
     }
 }
