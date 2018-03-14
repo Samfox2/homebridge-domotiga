@@ -1277,7 +1277,7 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                     time: moment().unix(),
                     temp: parseFloat(accessory.context.cacheCurrentTemperature),
                     humidity: parseFloat(accessory.context.cacheCurrentRelativeHumidity),
-                    ppm: parseFloat(accessory.context.cacheCurrentEveAirQuality)
+                    ppm: Number(accessory.context.cacheCurrentEveAirQuality)
                 });
                 break;
                 
