@@ -458,6 +458,9 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         if (accessory.context.lowbattery) {
             primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
         }
+        if (accessory.context.valueAirQuality) {
+            primaryservice.addCharacteristic(Characteristic.VOCDensity);
+        }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
             (accessory.context.service != "FakeEveWeatherSensor")) {
@@ -1045,6 +1048,10 @@ DomotigaPlatform.prototype.setService = function (accessory) {
         if (accessory.context.lowbattery) {
             primaryservice.getCharacteristic(Characteristic.StatusLowBattery)
                 .on('get', this.getLowBatteryStatus.bind(this, accessory.context));
+        }
+        if (accessory.context.valueAirQuality) {
+            primaryservice.getCharacteristic(Characteristic.VOCDensity)
+                .on('get', this.getCurrentVOCDensity.bind(this, accessory.context));
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
@@ -1658,6 +1665,20 @@ DomotigaPlatform.prototype.getCurrentAirQuality = function (thisDevice, callback
     }
 }
 
+// Additional VOCDensity mapping
+DomotigaPlatform.prototype.getCurrentVOCDensity = function (thisDevice, callback) {
+
+    var voc = parseFloat(thisDevice.cacheCurrentEveAirQuality);
+
+    if (voc < 0.0)
+        voc = 0.0;
+
+    if (voc > 1000.0)
+        voc = 1000.0;
+
+    callback(null, voc);
+}
+
 // Eve characteristic (custom UUID)    
 DomotigaPlatform.prototype.readCurrentEveAirQuality = function (thisDevice, callback) {
     // Custom Eve intervals:
@@ -1674,12 +1695,12 @@ DomotigaPlatform.prototype.readCurrentEveAirQuality = function (thisDevice, call
             self.log.error('%s: readCurrentEveAirQuality failed: %s', thisDevice.name, error.message);
             callback(error);
         } else {
-            var value = Number(result);
-            if (value < 0)
-                value = 0;
+            var voc = Number(result);
+            if (voc < 0)
+                voc = 0;
 
-            self.log('%s: Eve air quality: %s', thisDevice.name, value);
-            callback(null, value);
+            self.log('%s: Eve air quality: %s', thisDevice.name, voc);
+            callback(null, voc);
         }
     });
 }
