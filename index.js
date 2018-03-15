@@ -1560,6 +1560,12 @@ DomotigaPlatform.prototype.setOutletState = function (thisDevice, boolvalue, cal
     thisDevice.cacheOutletState = boolvalue;
 
     var OnOff = (boolvalue == 1) ? "On" : "Off";
+	
+     // Update position state to iOS
+    var accessory = this.accessories[thisDevice.name];
+    if (accessory) {
+        accessory.getService(Service.Outlet).getCharacteristic(Characteristic.On).updateValue(boolvalue);
+    }
 
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueOutlet, OnOff, function (err) {
@@ -1938,7 +1944,13 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
 
     // Update cache
     thisDevice.cacheSwitchState = switchOn;
-
+	
+    // Update position state to iOS
+    var accessory = this.accessories[thisDevice.name];
+    if (accessory) {
+        accessory.getService(Service.Switch).getCharacteristic(Characteristic.On).updateValue(switchOn);
+    }
+	
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueSwitch, switchCommand, function (err) {
         if (callbackWasCalled) {
