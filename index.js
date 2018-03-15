@@ -212,7 +212,7 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
 
     // Check number of devices
     const noD = this.accessories.length;
-    this.log("Number of mapped devices : " + noD);
+    this.log("Number of mapped devices: %s", noD);
     if (noD > 100) {
         this.log.error("********************************************");
         this.log.error("* You are using more than 100 HomeKit      *");
