@@ -4,6 +4,7 @@
 [![Dependency Status](https://gemnasium.com/badges/github.com/Samfox2/homebridge-domotiga.svg)](https://gemnasium.com/github.com/Samfox2/homebridge-domotiga)
 [![npm](https://img.shields.io/npm/dt/homebridge-domotiga.svg)](https://www.npmjs.com/package/homebridge-domotiga)
 [![GitHub last commit](https://img.shields.io/github/last-commit/samfox2/homebridge-domotiga.svg)](https://github.com/samfox2/homebridge-domotiga)
+[![Donate](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=328DRJATPXYEJ)
 
 Supports [Domotiga](https://domotiga.nl) devices on [HomeBridge](https://github.com/nfarina/homebridge) platform.
 
