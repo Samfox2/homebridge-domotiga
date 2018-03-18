@@ -212,7 +212,7 @@ DomotigaPlatform.prototype.didFinishLaunching = function () {
 
     // Check number of devices
     const noD = this.accessories.length;
-    this.log("Number of mapped devices: %s", noD);
+    this.log("Number of mapped devices : " + noD);
     if (noD > 100) {
         this.log.error("********************************************");
         this.log.error("* You are using more than 100 HomeKit      *");
@@ -1091,7 +1091,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         .setCharacteristic(Characteristic.SerialNumber, ("Domotiga device %s %s", accessory.context.device, accessory.context.name));
 
     // Retrieve initial state if polling is disabled
-    if (!accessory.context.polling) { //<---- we do also need an init state if polling is activated
+    //if (!accessory.context.polling) { //<---- we do also need an init state if polling is activated
 
     // Get primary service
     var primaryservice;
@@ -1231,7 +1231,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).getValue();
         }
     }
-    }
+    //}
 
     // History 
     //this.addValuesToHistory(accessory); <-- at this time we do logging only with activated polling
@@ -1253,6 +1253,7 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
             accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: false });
             accessory.context.initHistory = true;
         }
+        else {
         switch (accessory.context.logType) {
 
             case "weather":
@@ -1316,6 +1317,7 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 this.log.error('Unknown log type %s %s, skipping...', accessory.context.logType, accessory.context.name);
                 break;
         }
+        }
     }
 
 
@@ -1357,7 +1359,7 @@ DomotigaPlatform.prototype.readCurrentTemperature = function (thisDevice, callba
 DomotigaPlatform.prototype.getCurrentTemperature = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached temperature is: %s', thisDevice.name, thisDevice.cacheCurrentTemperature);
         callback(null, thisDevice.cacheCurrentTemperature);
@@ -1391,7 +1393,7 @@ DomotigaPlatform.prototype.readCurrentRelativeHumidity = function (thisDevice, c
 DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached relative humidity is: %s', thisDevice.name, thisDevice.cacheCurrentRelativeHumidity);
         callback(null, thisDevice.cacheCurrentRelativeHumidity);
@@ -1437,7 +1439,7 @@ DomotigaPlatform.prototype.readCurrentAirPressure = function (thisDevice, callba
 DomotigaPlatform.prototype.getCurrentAirPressure = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: Cached air pressure is: %s', thisDevice.name, thisDevice.cacheCurrentAirPressure);
         callback(null, thisDevice.cacheCurrentAirPressure);
@@ -1471,7 +1473,7 @@ DomotigaPlatform.prototype.readContactState = function (thisDevice, callback) {
 DomotigaPlatform.prototype.getContactState = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached contact state is: %s', thisDevice.name, thisDevice.cacheContactSensorState);
         callback(null, thisDevice.cacheContactSensorState);
@@ -1505,7 +1507,7 @@ DomotigaPlatform.prototype.readLeakSensorState = function (thisDevice, callback)
 DomotigaPlatform.prototype.getLeakSensorState = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached leaksensor state is: %s', thisDevice.name, thisDevice.cacheLeakSensorState);
         callback(null, thisDevice.cacheLeakSensorState);
@@ -1539,7 +1541,7 @@ DomotigaPlatform.prototype.readOutletState = function (thisDevice, callback) {
 DomotigaPlatform.prototype.getOutletState = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached outlet state is: %s', thisDevice.name, thisDevice.cacheOutletState);
         callback(null, thisDevice.cacheOutletState);
@@ -1560,14 +1562,15 @@ DomotigaPlatform.prototype.setOutletState = function (thisDevice, boolvalue, cal
     thisDevice.cacheOutletState = boolvalue;
 
     var OnOff = (boolvalue == 1) ? "On" : "Off";
-	
-     // Update position state to iOS
+
+    var callbackWasCalled = false;
+    
+    // Update position state to iOS
     var accessory = this.accessories[thisDevice.name];
     if (accessory) {
         accessory.getService(Service.Outlet).getCharacteristic(Characteristic.On).updateValue(boolvalue);
     }
-
-    var callbackWasCalled = false;
+    
     this.domotigaSetValue(thisDevice.device, thisDevice.valueOutlet, OnOff, function (err) {
         if (callbackWasCalled)
             self.log.warn("WARNING: domotigaSetValue called its callback more than once! Discarding the second one.");
@@ -1603,7 +1606,7 @@ DomotigaPlatform.prototype.readOutletInUse = function (thisDevice, callback) {
 DomotigaPlatform.prototype.getOutletInUse = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached OutletInUse is: %s', thisDevice.name, thisDevice.cacheOutletInUse);
         callback(null, thisDevice.cacheOutletInUse);
@@ -1657,7 +1660,7 @@ DomotigaPlatform.prototype.readCurrentAirQuality = function (thisDevice, callbac
 DomotigaPlatform.prototype.getCurrentAirQuality = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached air quality is: %s', thisDevice.name, thisDevice.cacheCurrentAirQuality);
         callback(null, thisDevice.cacheCurrentAirQuality);
@@ -1714,7 +1717,7 @@ DomotigaPlatform.prototype.readCurrentEveAirQuality = function (thisDevice, call
 DomotigaPlatform.prototype.getCurrentEveAirQuality = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached Eve air quality is: %s', thisDevice.name, thisDevice.cacheCurrentEveAirQuality);
         callback(null, thisDevice.cacheCurrentEveAirQuality);
@@ -1749,7 +1752,7 @@ DomotigaPlatform.prototype.readEvePowerConsumption = function (thisDevice, callb
 DomotigaPlatform.prototype.getEvePowerConsumption = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached Eve power consumption is: %s', thisDevice.name, thisDevice.cachePowerConsumption);
         callback(null, thisDevice.cachePowerConsumption);
@@ -1784,7 +1787,7 @@ DomotigaPlatform.prototype.readEveTotalPowerConsumption = function (thisDevice, 
 DomotigaPlatform.prototype.getEveTotalPowerConsumption = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached Eve total power consumption is: %s', thisDevice.name, thisDevice.cacheTotalPowerConsumption);
         callback(null, thisDevice.cacheTotalPowerConsumption);
@@ -1824,7 +1827,7 @@ DomotigaPlatform.prototype.readCurrentBatteryLevel = function (thisDevice, callb
 DomotigaPlatform.prototype.getCurrentBatteryLevel = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached battery level is: %s', thisDevice.name, thisDevice.cacheCurrentBatteryLevel);
         callback(null, thisDevice.cacheCurrentBatteryLevel);
@@ -1850,7 +1853,7 @@ DomotigaPlatform.prototype.readLowBatteryStatus = function (thisDevice, callback
 DomotigaPlatform.prototype.getLowBatteryStatus = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached battery status is: %s', thisDevice.name, thisDevice.cacheStatusLowBattery);
         callback(null, thisDevice.cacheStatusLowBattery);
@@ -1884,7 +1887,7 @@ DomotigaPlatform.prototype.readMotionSensorState = function (thisDevice, callbac
 DomotigaPlatform.prototype.getMotionSensorState = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached motion sensor state is: %s', thisDevice.name, thisDevice.cacheMotionSensorState);
         callback(null, thisDevice.cacheMotionSensorState);
@@ -1916,7 +1919,7 @@ DomotigaPlatform.prototype.readSwitchState = function (thisDevice, callback) {
 DomotigaPlatform.prototype.getSwitchState = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached switch state is: %s', thisDevice.name, thisDevice.cacheSwitchState);
         callback(null, thisDevice.cacheSwitchState);
@@ -1944,13 +1947,14 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
 
     // Update cache
     thisDevice.cacheSwitchState = switchOn;
-	
+    
+    
     // Update position state to iOS
     var accessory = this.accessories[thisDevice.name];
     if (accessory) {
         accessory.getService(Service.Switch).getCharacteristic(Characteristic.On).updateValue(switchOn);
     }
-	
+
     var callbackWasCalled = false;
     this.domotigaSetValue(thisDevice.device, thisDevice.valueSwitch, switchCommand, function (err) {
         if (callbackWasCalled) {
@@ -1992,7 +1996,7 @@ DomotigaPlatform.prototype.readDoorPosition = function (thisDevice, callback) {
 DomotigaPlatform.prototype.getDoorPosition = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached door position is: %s', thisDevice.name, thisDevice.cacheDoorPosition);
         callback(null, thisDevice.cacheDoorPosition);
@@ -2073,7 +2077,7 @@ DomotigaPlatform.prototype.readWindowPosition = function (thisDevice, callback) 
 DomotigaPlatform.prototype.getWindowPosition = function (accessory, callback) {
     var self = this;
     var thisDevice = accessory.context;
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: Cached window position is: %s', thisDevice.name, thisDevice.cacheWindowPosition);
         callback(null, thisDevice.cacheWindowPosition);
@@ -2157,7 +2161,7 @@ DomotigaPlatform.prototype.readWindowCoveringPosition = function (thisDevice, ca
 DomotigaPlatform.prototype.getWindowCoveringPosition = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached window covering position is: %s', thisDevice.name, thisDevice.cacheWindowCoveringPosition);
         callback(null, thisDevice.cacheWindowCoveringPosition);
@@ -2263,7 +2267,7 @@ DomotigaPlatform.prototype.readLightState = function (thisDevice, callback) {
 
 DomotigaPlatform.prototype.getLightState = function (thisDevice, callback) {
     var self = this;
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         self.log('%s: cached light.state is: %s', thisDevice.name, thisDevice.cacheLightState);
         callback(null, thisDevice.cacheLightState);
     } else {
@@ -2336,7 +2340,7 @@ DomotigaPlatform.prototype.readLightBrightnessState = function (thisDevice, call
 
 DomotigaPlatform.prototype.getLightBrightnessState = function (thisDevice, callback) {
     var self = this;
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         self.log('%s: cached light.brightness is: %s', thisDevice.name, thisDevice.cacheLightBrightness);
         callback(null, thisDevice.cacheLightBrightness);
     } else {
@@ -2392,7 +2396,7 @@ DomotigaPlatform.prototype.readTargetTemperature = function (thisDevice, callbac
 DomotigaPlatform.prototype.getTargetTemperature = function (thisDevice, callback) {
     var self = this;
 
-    if (thisDevice.polling) {
+    if (thisDevice.polling && thisDevice.initHistory) {
         // Get value directly from cache if polling is enabled
         self.log('%s: cached temperature is: %s', thisDevice.name, thisDevice.cacheTargetTemperature);
         callback(null, thisDevice.cacheTargetTemperature);
