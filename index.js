@@ -1164,6 +1164,7 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
         case "AirQualitySensor":
             primaryservice = accessory.getService(Service.AirQualitySensor);
             primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).getValue();
             break;
 
         case "FakeEveAirQualitySensor":
