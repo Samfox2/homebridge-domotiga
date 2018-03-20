@@ -965,6 +965,11 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice = accessory.getService(Service.AirQualitySensor);
             primaryservice.getCharacteristic(Characteristic.AirQuality)
                 .on('get', this.getCurrentAirQuality.bind(this, accessory.context));
+		    
+            // Add custom service for fakegato logging    
+            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality)
+                .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
+		    
             accessory.context.logType = "room";
             break;
 
