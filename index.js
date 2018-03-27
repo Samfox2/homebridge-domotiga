@@ -271,6 +271,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         accessory.context.valueMotionSensor = data.valueMotionSensor;
         accessory.context.valuePowerConsumption = data.valuePowerConsumption;
         accessory.context.valueTotalPowerConsumption = data.valueTotalPowerConsumption;
+        accessory.context.valueWaterLevel = data.valueWaterLevel;
         accessory.context.valueLight = data.valueLight;
         accessory.context.brightness = data.brightness;
         accessory.context.color = data.color;
@@ -312,6 +313,14 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                     return;
                 }
                 accessory.context.logType = "room";
+                break;
+                
+            case "HumidifierDehumidifier":
+                primaryservice = new Service.HumidifierDehumidifier(accessory.context.name);
+                if (!accessory.context.valueWaterLevel) {
+                    this.log.error('%s: missing definition of valueWaterLevel in config.json!', accessory.context.name);
+                    return;
+                }
                 break;
 
             case "Contact":
@@ -459,12 +468,17 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         if (accessory.context.valueAirQuality&& (accessory.context.service != "AirQualitySensor") ) {
            accessory.addService(new Service.AirQualitySensor(accessory.context.name), data.name + accessory.context.valueAirQuality).addCharacteristic(Characteristic.VOCDensity);
         }  
+        if (accessory.context.valueWaterLevel) {
+            primaryservice.addCharacteristic(Characteristic.WaterLevel);
+        }
         if (accessory.context.valueBattery) {
             primaryservice.addCharacteristic(Characteristic.BatteryLevel);
         }
         if (accessory.context.lowbattery) {
             primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
         }
+
+        
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
             (accessory.context.service != "FakeEveWeatherSensor")) {
@@ -507,6 +521,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
     // Store and initialize variables into context
     accessory.context.cacheCurrentTemperature = 0;
     accessory.context.cacheCurrentRelativeHumidity = 99;
+    accessory.context.cacheWaterLevel = 0.0;
     accessory.context.cacheCurrentAirPressure = 1000;
     accessory.context.cacheContactSensorState = Characteristic.ContactSensorState.CONTACT_DETECTED;
     accessory.context.cacheLeakSensorState = Characteristic.LeakDetected.LEAK_NOT_DETECTED;
@@ -791,6 +806,10 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                     primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
                 }
             });
+            
+        case "HumidifierDehumidifier":
+            primaryservice = accessory.getService(Service.HumidifierDehumidifier);
+            
 
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
@@ -813,6 +832,15 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                 thisDevice.cacheCurrentRelativeHumidity = value;
                 accessory.getService(Service.HumiditySensor).getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+            }
+        });
+    }
+    if (accessory.context.valueWaterLevel) {
+            this.readWaterLevel(thisDevice, function (error, value) {
+            // Update value if there's no error
+            if (!error && value !== thisDevice.cacheWaterLevel) {
+                thisDevice.cacheWaterLevel = value;
+                primaryservice.getCharacteristic(Characteristic.WaterLevel).getValue();
             }
         });
     }
@@ -1059,6 +1087,12 @@ DomotigaPlatform.prototype.setService = function (accessory) {
         if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
             accessory.getService(Service.HumiditySensor).getCharacteristic(Characteristic.CurrentRelativeHumidity)
                 .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
+        }
+        
+        
+        if (accessory.context.valueWaterLevel) {
+            primaryservice.getCharacteristic(Characteristic.WaterLevel)
+                .on('get', this.getWaterLevel.bind(this, accessory.context));
         }
         if (accessory.context.valueBattery) {
             primaryservice.getCharacteristic(Characteristic.BatteryLevel)
@@ -1456,6 +1490,45 @@ DomotigaPlatform.prototype.getCurrentRelativeHumidity = function (thisDevice, ca
         });
     }
 }
+
+
+
+DomotigaPlatform.prototype.readWaterLevel = function (thisDevice, callback) {
+    var self = this;
+    self.log("%s: getting waterlevel...", thisDevice.name);
+
+    this.domotigaGetValue(thisDevice.device, thisDevice.valueWaterLevel, function (error, result) {
+        if (error) {
+            self.log.error('%s: readWaterLevel failed: %s', thisDevice.name, error.message);
+            callback(error);
+        } else {
+            var value = parseFloat(result);
+            self.log('%s: waterlevel: %s', thisDevice.name, value);
+            callback(null, value);
+        }
+    });
+}
+
+// Method to determine current waterlevel
+DomotigaPlatform.prototype.getWaterLevel = function (thisDevice, callback) {
+    var self = this;
+
+    if (thisDevice.polling && thisDevice.initHistory) {
+        // Get value directly from cache if polling is enabled
+        self.log('%s: cached waterlevel is: %s', thisDevice.name, thisDevice.cacheWaterLevel);
+        callback(null, thisDevice.cacheWaterLevel);
+    } else {
+        // Check value if polling is disabled
+        this.readWaterLevel(thisDevice, function (error, value) {
+            // Update cache
+            thisDevice.cacheWaterLevel = value;
+            callback(error, thisDevice.cacheWaterLevel);
+        });
+    }
+}
+
+
+
 
 DomotigaPlatform.prototype.getTemperatureUnits = function (thisDevice, callback) {
     this.log("%s: getting temperature unit...", thisDevice.name);
