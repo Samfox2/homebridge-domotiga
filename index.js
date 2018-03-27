@@ -323,6 +323,14 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 }
                 break;
 
+            case "IrrigationSystem":
+                primaryservice = new Service.IrrigationSystem(accessory.context.name);
+                if (!accessory.context.valueWaterLevel) {
+                    this.log.error('%s: missing definition of valueWaterLevel in config.json!', accessory.context.name);
+                    return;
+                }
+                break;
+
             case "Contact":
                 primaryservice = new Service.ContactSensor(accessory.context.name);
                 if (!accessory.context.valueContact) {
@@ -618,6 +626,14 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 }
             });
             break;
+            
+        case "HumidifierDehumidifier":
+            primaryservice = accessory.getService(Service.HumidifierDehumidifier);
+            break;
+
+        case "IrrigationSystem":
+            primaryservice = accessory.getService(Service.IrrigationSystem);
+            break;
 
         case "Contact":
             primaryservice = accessory.getService(Service.ContactSensor);
@@ -810,7 +826,9 @@ DomotigaPlatform.prototype.doPolling = function (name) {
         case "HumidifierDehumidifier":
             primaryservice = accessory.getService(Service.HumidifierDehumidifier);
             
-
+        case "IrrigationSystem":
+            primaryservice = accessory.getService(Service.IrrigationSystem);
+            
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
             break;
@@ -934,6 +952,14 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity)
                 .on('get', this.getCurrentRelativeHumidity.bind(this, accessory.context));
             accessory.context.logType = "room";
+            break;
+
+        case "HumidifierDehumidifier":
+            primaryservice = accessory.getService(Service.HumidifierDehumidifier);
+            break;
+
+        case "IrrigationSystem":
+            primaryservice = accessory.getService(Service.IrrigationSystem);
             break;
 
         case "Contact":
