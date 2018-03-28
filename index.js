@@ -320,7 +320,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 break;
 
             case "IrrigationSystem":
-                primaryservice = new Service.Valve(accessory.context.name);
+                primaryservice = new Service.IrrigationSystem(accessory.context.name);
                 break;
 
             case "Contact":
@@ -858,7 +858,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             primaryservice = accessory.getService(Service.HumidifierDehumidifier);
             
         case "IrrigationSystem":
-            primaryservice = accessory.getService(Service.Valve);
+            primaryservice = accessory.getService(Service.IrrigationSystem);
             
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
@@ -2963,4 +2963,3 @@ DomotigaPlatform.prototype.configurationRequestHandler = function (context, requ
         }
     }
 }
-
