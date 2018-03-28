@@ -317,18 +317,10 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                 
             case "HumidifierDehumidifier":
                 primaryservice = new Service.HumidifierDehumidifier(accessory.context.name);
-                if (!accessory.context.valueWaterLevel) {
-                    this.log.error('%s: missing definition of valueWaterLevel in config.json!', accessory.context.name);
-                    return;
-                }
                 break;
 
             case "IrrigationSystem":
-                primaryservice = new Service.IrrigationSystem(accessory.context.name);
-                if (!accessory.context.valueWaterLevel) {
-                    this.log.error('%s: missing definition of valueWaterLevel in config.json!', accessory.context.name);
-                    return;
-                }
+                primaryservice = new Service.Valve(accessory.context.name);
                 break;
 
             case "Contact":
@@ -632,7 +624,41 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             break;
 
         case "IrrigationSystem":
-            primaryservice = accessory.getService(Service.IrrigationSystem);
+            primaryservice = accessory.getService(Service.Valve);
+            var configured = primaryservice.getCharacteristic(Characteristic.IsConfigured)
+            .on('get', function(callback) {
+            callback(null,Characteristic.IsConfigured.CONFIGURED);
+            }.bind(this));
+
+            configured.updateValue(Characteristic.IsConfigured.CONFIGURED,null);
+
+            var valveType = primaryservice.getCharacteristic(Characteristic.ValveType)
+            .on('get', function(callback) {
+                callback(null,Characteristic.ValveType.IRRIGATION);
+            }.bind(this));
+
+            valveType.updateValue(Characteristic.ValveType.IRRIGATION,null)
+
+            primaryservice.getCharacteristic(Characteristic.SetDuration)
+            .on('get', function(callback) {
+                this.log.debug('get Characteristic.SetDuration')
+                callback(null,this.setDuration)
+            }.bind(this))
+
+            .on('set', function(value,callback) {
+                //this.setDuration = value
+                //this.log.debug('set Characteristic.SetDuration %s',value)
+                //let str_path = path.join(that.platform.localPath,that.adress) + '.json'
+                //fs.writeFileSync(str_path, JSON.stringify({duration:that.setDuration}))
+                callback()
+            }.bind(this));
+
+            this.c_isActive = this.service_item.getCharacteristic(Characteristic.Active)
+            .on('get', function(callback) {
+                this.log.debug('get Active')
+                if (callback) callback(null,true);
+                });
+            }.bind(this))
             break;
 
         case "Contact":
