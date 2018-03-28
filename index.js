@@ -632,6 +632,12 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
             configured.updateValue(Characteristic.IsConfigured.CONFIGURED,null);
 
+// The value property of ValveType must be one of the following:
+//Characteristic.ValveType.GENERIC_VALVE = 0;
+//Characteristic.ValveType.IRRIGATION = 1;
+//Characteristic.ValveType.SHOWER_HEAD = 2;
+//Characteristic.ValveType.WATER_FAUCET = 3;
+
             var valveType = primaryservice.getCharacteristic(Characteristic.ValveType)
             .on('get', function(callback) {
                 callback(null,Characteristic.ValveType.IRRIGATION);
@@ -639,13 +645,13 @@ DomotigaPlatform.prototype.doPolling = function (name) {
 
             valveType.updateValue(Characteristic.ValveType.IRRIGATION,null)
 
-            primaryservice.getCharacteristic(Characteristic.SetDuration)
-            .on('get', function(callback) {
-                this.log.debug('get Characteristic.SetDuration')
-                callback(null,this.setDuration)
-            }.bind(this))
+            // primaryservice.getCharacteristic(Characteristic.SetDuration)
+            // .on('get', function(callback) {
+            //     this.log.debug('get Characteristic.SetDuration')
+            //     callback(null,this.setDuration)
+            // }.bind(this))
 
-            .on('set', function(value,callback) {
+            primaryservice.getCharacteristic(Characteristic.Active).on('set', function(value,callback) {
                 //this.setDuration = value
                 //this.log.debug('set Characteristic.SetDuration %s',value)
                 //let str_path = path.join(that.platform.localPath,that.adress) + '.json'
@@ -653,12 +659,11 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 callback()
             }.bind(this));
 
-            this.c_isActive = this.service_item.getCharacteristic(Characteristic.Active)
+            primaryservice.getCharacteristic(Characteristic.Active)
             .on('get', function(callback) {
                 this.log.debug('get Active')
                 if (callback) callback(null,true);
-                });
-            }.bind(this))
+                }.bind(this));
             break;
 
         case "Contact":
@@ -853,7 +858,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             primaryservice = accessory.getService(Service.HumidifierDehumidifier);
             
         case "IrrigationSystem":
-            primaryservice = accessory.getService(Service.IrrigationSystem);
+            primaryservice = accessory.getService(Service.Valve);
             
         default:
             this.log.error('Service %s %s unknown for polling, skipping...', accessory.context.service, accessory.context.name);
@@ -2958,3 +2963,4 @@ DomotigaPlatform.prototype.configurationRequestHandler = function (context, requ
         }
     }
 }
+
