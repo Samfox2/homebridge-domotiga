@@ -2633,8 +2633,25 @@ DomotigaPlatform.prototype.setTargetHeatingCoolingState = function (thisDevice, 
     }
 }
 
+DomotigaPlatform.prototype.getCurrentHeatingCoolingState = function (thisDevice, callback) {
+    this.log("%s: getting CurrentHeatingCoolingState...", thisDevice.name);
+    callback(null, thisDevice.cacheCurrentHeatingCoolingState);
+}
 
+DomotigaPlatform.prototype.getTemperatureDisplayUnits = function (thisDevice, callback) {
+    this.log("%s: getting TemperatureDisplayUnits...", thisDevice.name);
+    callback(null, thisDevice.cacheTemperatureDisplayUnits);
+}
 
+DomotigaPlatform.prototype.setTemperatureDisplayUnits = function (thisDevice, value, callback) {
+
+    var self = this;
+
+	self.log("%s: setting Temperature Display Units to %s", thisDevice.name, value);
+
+    // Update cache
+    thisDevice.cacheTemperatureDisplayUnits = value;
+}
 
 // Method to handle identify request
 DomotigaPlatform.prototype.identify = function (thisDevice, paired, callback) {
