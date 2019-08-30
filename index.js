@@ -581,7 +581,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                     thisDevice.cacheCurrentRelativeHumidity = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).updateValue(parseInt(value)); 
                 }
             });
             break;
@@ -592,7 +592,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheContactSensorState) {
                     thisDevice.cacheContactSensorState = value;
-                    primaryservice.getCharacteristic(Characteristic.cacheContactSensorState).getValue();
+                    primaryservice.getCharacteristic(Characteristic.cacheContactSensorState).updateValue(parseInt(value));
                 }
             });
             break;
@@ -603,7 +603,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheLeakSensorState) {
                     thisDevice.cacheLeakSensorState = value;
-                    primaryservice.getCharacteristic(Characteristic.LeakDetected).getValue();
+                    primaryservice.getCharacteristic(Characteristic.LeakDetected).updateValue(parseInt(value));
                 }
             });
             break;
@@ -614,7 +614,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheMotionSensorState) {
                     thisDevice.cacheMotionSensorState = value;
-                    primaryservice.getCharacteristic(Characteristic.MotionDetected).getValue();
+                    primaryservice.getCharacteristic(Characteristic.MotionDetected).updateValue(parseInt(value));
                 }
             });
             break;
@@ -625,7 +625,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheSwitchState) {
                     thisDevice.cacheSwitchState = value;
-                    primaryservice.getCharacteristic(Characteristic.On).getValue();
+                    primaryservice.getCharacteristic(Characteristic.On).updateValue(parseInt(value));
                 }
             });
             break;
@@ -636,10 +636,10 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheDoorPosition) {
                     thisDevice.cacheDoorPosition = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).updateValue(parseInt(value));
                 }
             });
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            primaryservice.getCharacteristic(Characteristic.PositionState).updateValue(parseInt(value));
             break;
 
         case "Window":
@@ -648,10 +648,9 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheWindowPosition) {
                     thisDevice.cacheWindowPosition = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).updateValue(parseInt(value));
                 }
             });
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
             break;
 
         case "WindowCovering":
@@ -660,10 +659,9 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheWindowCoveringPosition) {
                     thisDevice.cacheWindowCoveringPosition = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentPosition).updateValue(parseInt(value));
                 }
             });
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
             break;
 
         case "Outlet":
@@ -672,14 +670,14 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheOutletState) {
                     thisDevice.cacheOutletState = value;
-                    primaryservice.getCharacteristic(Characteristic.On).getValue();
+                    primaryservice.getCharacteristic(Characteristic.On).updateValue(parseInt(value));
                 }
             });
             this.readOutletInUse(thisDevice, function (error, value) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheOutletInUse) {
                     thisDevice.cacheOutletInUse = value;
-                    primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
+                    primaryservice.getCharacteristic(Characteristic.OutletInUse).updateValue(parseInt(value));
                 }
             });
             break;
@@ -690,7 +688,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentAirQuality = value;
-                    primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
+                    primaryservice.getCharacteristic(Characteristic.AirQuality).updateValue(parseInt(value));
                 }
             });
             break;
@@ -701,7 +699,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                     thisDevice.cacheCurrentEveAirQuality = value;
-                    primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).getValue();
+                    primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).updateValue(parseInt(value));
                 }
             });
             break;
@@ -712,7 +710,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                     thisDevice.cacheCurrentAirPressure = value;
-                    primaryservice.getCharacteristic(Characteristic.EveAirPressure).getValue();
+                    primaryservice.getCharacteristic(Characteristic.EveAirPressure).updateValue(parseInt(value));
                 }
             });
             break;
@@ -723,7 +721,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cachePowerConsumption) {
                     thisDevice.cachePowerConsumption = value;
-                    primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
+                    primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).updateValue(parseInt(value));
                 }
             });
             break;
@@ -734,7 +732,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheLightState) {
                     thisDevice.cacheLightState = value;
-                    primaryservice.getCharacteristic(Characteristic.On).getValue();
+                    primaryservice.getCharacteristic(Characteristic.On).updateValue(parseInt(value));
                 }
             });
             if (accessory.context.brightness || accessory.context.color) {
@@ -742,7 +740,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                     // Update value if there's no error
                     if (!error && value !== thisDevice.cacheLightBrightness) {
                         thisDevice.cacheLightBrightness = value;
-                        primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+                        primaryservice.getCharacteristic(Characteristic.Brightness).updateValue(parseInt(value));
                     }
                 });
             }
@@ -751,14 +749,14 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                     // Update value if there's no error
                     if (!error && value !== thisDevice.cacheLightHue) {
                         thisDevice.cacheLightHue = value;
-                        primaryservice.getCharacteristic(Characteristic.Hue).getValue();
+                        primaryservice.getCharacteristic(Characteristic.Hue).updateValue(parseInt(value));
                     }
                 });
                 this.readSaturationState(thisDevice, function (error, value) {
                     // Update value if there's no error
                     if (!error && value !== thisDevice.cacheLightSaturation) {
                         thisDevice.cacheLightSaturation = value;
-                        primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+                        primaryservice.getCharacteristic(Characteristic.Saturation).updateValue(parseInt(value));
                     }
                 });
             }
@@ -770,7 +768,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
                 // Update value if there's no error
                 if (!error && value !== thisDevice.cacheTargetTemperature) {
                     thisDevice.cacheTargetTemperature = value;
-                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseInt(value));
                 }
             });
 
@@ -785,7 +783,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentTemperature) {
                 thisDevice.cacheCurrentTemperature = value;
-                primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value));
             }
         });
     }
@@ -794,7 +792,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentRelativeHumidity) {
                 thisDevice.cacheCurrentRelativeHumidity = value;
-                primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+                primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).updateValue(parseInt(value));
             }
         });
     }
@@ -803,7 +801,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentBatteryLevel) {
                 thisDevice.cacheCurrentBatteryLevel = value;
-                primaryservice.getCharacteristic(Characteristic.BatteryLevel).getValue();
+                primaryservice.getCharacteristic(Characteristic.BatteryLevel).updateValue(parseInt(value));
             }
         });
     }
@@ -812,7 +810,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheStatusLowBattery) {
                 thisDevice.cacheStatusLowBattery = value;
-                primaryservice.getCharacteristic(Characteristic.StatusLowBattery).getValue();
+                primaryservice.getCharacteristic(Characteristic.StatusLowBattery).updateValue(parseInt(value));
             }
         });
     }
@@ -823,7 +821,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirPressure) {
                 thisDevice.cacheCurrentAirPressure = value;
-                primaryservice.getCharacteristic(Characteristic.EveAirPressure).getValue();
+                primaryservice.getCharacteristic(Characteristic.EveAirPressure).updateValue(parseInt(value));
             }
         });
     }
@@ -834,7 +832,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheCurrentAirQuality) {
                 thisDevice.cacheCurrentAirQuality = value;
-                primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
+                primaryservice.getCharacteristic(Characteristic.AirQuality).updateValue(parseInt(value));
             }
         });
     }
@@ -844,7 +842,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cachePowerConsumption) {
                 thisDevice.cachePowerConsumption = value;
-                primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
+                primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).updateValue(parseInt(value));
             }
         });
     }
@@ -854,7 +852,7 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             // Update value if there's no error
             if (!error && value !== thisDevice.cacheTotalPowerConsumption) {
                 thisDevice.cacheTotalPowerConsumption = value;
-                primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).getValue();
+                primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).updateValue(parseInt(value));
             }
         });
     }
@@ -1105,91 +1103,91 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
 
         case "TemperatureSensor":
             primaryservice = accessory.getService(Service.TemperatureSensor);
-            primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+            primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value));
             break;
 
         case "HumiditySensor":
             primaryservice = accessory.getService(Service.HumiditySensor);
-            primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+            primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).updateValue(parseInt(value));
             break;
 
 
         case "Contact":
             primaryservice = accessory.getService(Service.ContactSensor);
-            primaryservice.getCharacteristic(Characteristic.ContactSensorState).getValue();
+            primaryservice.getCharacteristic(Characteristic.ContactSensorState).updateValue(parseInt(value));
             break;
 
 
         case "LeakSensor":
             primaryservice = accessory.getService(Service.LeakSensor);
-            primaryservice.getCharacteristic(Characteristic.LeakDetected).getValue();
+            primaryservice.getCharacteristic(Characteristic.LeakDetected).updateValue(parseInt(value));
             break;
 
 
         case "MotionSensor":
             primaryservice = accessory.getService(Service.MotionSensor);
-            primaryservice.getCharacteristic(Characteristic.MotionDetected).getValue();
+            primaryservice.getCharacteristic(Characteristic.MotionDetected).updateValue(parseInt(value));
             break;
 
 
         case "Switch":
             primaryservice = accessory.getService(Service.Switch);
-            primaryservice.getCharacteristic(Characteristic.On).getValue();
+            primaryservice.getCharacteristic(Characteristic.On).updateValue(parseInt(value));
             break;
 
         case "Door":
             primaryservice = accessory.getService(Service.Door);
             primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            primaryservice.getCharacteristic(Characteristic.PositionState).updateValue(parseInt(value));
             break;
 
         case "Window":
             primaryservice = accessory.getService(Service.Window);
             primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            primaryservice.getCharacteristic(Characteristic.PositionState).updateValue(parseInt(value));
             break;
 
         case "WindowCovering":
             primaryservice = accessory.getService(Service.WindowCovering);
             primaryservice.getCharacteristic(Characteristic.CurrentPosition).getValue();
-            primaryservice.getCharacteristic(Characteristic.PositionState).getValue();
+            primaryservice.getCharacteristic(Characteristic.PositionState).updateValue(parseInt(value));
             break;
 
         case "Outlet":
             primaryservice = accessory.getService(Service.Outlet);
             primaryservice.getCharacteristic(Characteristic.On).getValue();
-            primaryservice.getCharacteristic(Characteristic.OutletInUse).getValue();
+            primaryservice.getCharacteristic(Characteristic.OutletInUse).updateValue(parseInt(value));
             break;
 
         case "AirQualitySensor":
             primaryservice = accessory.getService(Service.AirQualitySensor);
             primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
-            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).updateValue(parseInt(value));
             break;
 
         case "FakeEveAirQualitySensor":
             primaryservice = accessory.getService(Service.EveRoomService);
-            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality).updateValue(parseInt(value));
             break;
 
         case "FakeEveWeatherSensor":
             primaryservice = accessory.getService(Service.EveWeatherService);
-            primaryservice.getCharacteristic(Characteristic.EveAirPressure).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveAirPressure).updateValue(parseInt(value));
             break;
 
         case "Powermeter":
             primaryservice = accessory.getService(Service.PowerMeterService);
-            primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
+            primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).updateValue(parseInt(value));
             break;
 
         case "Lightbulb":
             primaryservice = accessory.getService(Service.Lightbulb);
             if (accessory.context.color) {
                 primaryservice.getCharacteristic(Characteristic.Hue).getValue();
-                primaryservice.getCharacteristic(Characteristic.Saturation).getValue();
+                primaryservice.getCharacteristic(Characteristic.Saturation).updateValue(parseInt(value));
             }
             if (accessory.context.color || accessory.context.brightness) {
-                primaryservice.getCharacteristic(Characteristic.Brightness).getValue();
+                primaryservice.getCharacteristic(Characteristic.Brightness).updateValue(parseInt(value));
             }
             break;
 
@@ -1208,33 +1206,33 @@ DomotigaPlatform.prototype.getInitState = function (accessory) {
     // Additional/optional characteristics...
     if (primaryservice) {
         if (accessory.context.valueTemperature && (accessory.context.service != "TemperatureSensor")) {
-            primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+            primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value));
         }
         if (accessory.context.valueHumidity && (accessory.context.service != "HumiditySensor")) {
-            primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).getValue();
+            primaryservice.getCharacteristic(Characteristic.CurrentRelativeHumidity).updateValue(parseInt(value));
         }
         if (accessory.context.valueBattery) {
-            primaryservice.getCharacteristic(Characteristic.BatteryLevel).getValue();
+            primaryservice.getCharacteristic(Characteristic.BatteryLevel).updateValue(parseInt(value));
         }
         if (accessory.context.lowbattery) {
-            primaryservice.getCharacteristic(Characteristic.StatusLowBattery).getValue();
+            primaryservice.getCharacteristic(Characteristic.StatusLowBattery).updateValue(parseInt(value));
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure && (accessory.context.service != "FakeEveWeatherSensor")) {
-            primaryservice.getCharacteristic(Characteristic.EveAirPressure).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveAirPressure).updateValue(parseInt(value));
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirQuality &&
             (accessory.context.service != "AirQualitySensor") && (accessory.context.service != "FakeEveAirQualitySensor")) {
-            primaryservice.getCharacteristic(Characteristic.AirQuality).getValue();
+            primaryservice.getCharacteristic(Characteristic.AirQuality).updateValue(parseInt(value));
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valuePowerConsumption && (accessory.context.service != "Powermeter")) {
-            primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).getValue();
+            primaryservice.getCharacteristic(Characteristic.EvePowerConsumption).updateValue(parseInt(value));
         }
         // Eve characteristic (custom UUID)
         if (accessory.context.valueTotalPowerConsumption) {
-            primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).getValue();
+            primaryservice.getCharacteristic(Characteristic.EveTotalPowerConsumption).updateValue(parseInt(value));
         }
     }
     //}
