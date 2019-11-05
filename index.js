@@ -355,6 +355,7 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                     this.log.error('%s: missing definition of valueSwitch in config.json!', accessory.context.name);
                     return;
                 }
+                accessory.context.logType = "switch";
                 break;
 
             case "Door":
@@ -408,6 +409,15 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
                     return;
                 }
                 accessory.context.logType = "room";
+                break;
+
+            case "FakeEveWeatherTempHumiSensor":
+                primaryservice = new Service.EveWeatherService("Eve Weather");
+                if (!accessory.context.valueTemperature) {
+                    this.log.error('%s: missing definition of valueTemperature in config.json!', accessory.context.name);
+                    return;
+                }
+                accessory.context.logType = "weather";
                 break;
 
             case "FakeEveWeatherSensor":
@@ -477,7 +487,13 @@ DomotigaPlatform.prototype.addAccessory = function (data) {
         if (accessory.context.lowbattery) {
             primaryservice.addCharacteristic(Characteristic.StatusLowBattery);
         }
-
+        
+        // Eve characteristic (custom UUID)
+        if (accessory.context.valueTemperature &&
+            (accessory.context.service == "FakeEveWeatherTempHumiSensor")) {
+            primaryservice.addCharacteristic(Characteristic.CurrentTemperature);
+            accessory.context.logType = "weather";
+        }
         
         // Eve characteristic (custom UUID)
         if (accessory.context.valueAirPressure &&
@@ -786,6 +802,18 @@ DomotigaPlatform.prototype.doPolling = function (name) {
             });
             break;
 
+        case "FakeEveWeatherTempHumiSensor":
+            primaryservice = accessory.getService(Service.TemperatureSensor);
+            this.readCurrentTemperature(thisDevice, function (error, value) {
+                // Update value if there's no error
+                if (!error && value !== thisDevice.cacheCurrentTemperature) {
+                    thisDevice.cacheCurrentTemperature = value;
+                    //primaryservice.getCharacteristic(Characteristic.CurrentTemperature).getValue();
+                    primaryservice.getCharacteristic(Characteristic.CurrentTemperature).updateValue(parseFloat(value)); // why do we not just use updateValue?
+                }
+            });
+            break;
+
         case "FakeEveWeatherSensor":
             primaryservice = accessory.getService(Service.EveWeatherService);
             this.readCurrentAirPressure(thisDevice, function (error, value) {
@@ -1018,6 +1046,7 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.On)
                 .on('get', this.getSwitchState.bind(this, accessory.context))
                 .on('set', this.setSwitchState.bind(this, accessory.context))
+            accessory.context.logType = "switch";
             break;
 
         case "Door":
@@ -1077,6 +1106,14 @@ DomotigaPlatform.prototype.setService = function (accessory) {
             primaryservice.getCharacteristic(Characteristic.EveRoomAirQuality)
                 .on('get', this.getCurrentEveAirQuality.bind(this, accessory.context));
             accessory.context.logType = "room";
+            break;
+
+        case "FakeEveWeatherTempHumiSensor":
+            primaryservice = accessory.getService(Service.EveWeatherService);
+            primaryservice.getCharacteristic(Characteristic.CurrentTemperature)
+                .setProps({ minValue: -55, maxValue: 100 })
+                .on('get', this.getCurrentTemperature.bind(this, accessory.context));
+            accessory.context.logType = "weather";
             break;
 
         case "FakeEveWeatherSensor":
@@ -1388,7 +1425,9 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
     var self = this;
     this.log.debug("Logging history %s for %s", accessory.context.logType, accessory.context.name);
 
-    if (accessory.context.polling) {
+    if (accessory.context.polling) 
+    //if (accessory.context.logType != "unknown")
+    {
         if (!accessory.context.initHistory) {
             // Add history logging service    
             accessory.context.loggingService = new Service.FakeGatoHistoryService(accessory.context.logType, accessory, { storage: 'fs', path: this.localCache, disableTimer: false });
@@ -1453,7 +1492,10 @@ DomotigaPlatform.prototype.addValuesToHistory = function (accessory) {
                 this.log.debug("Motion: %s", accessory.context.cacheMotionSensorState);
                 accessory.context.loggingService.addEntry({ time: moment().unix(), status: parseFloat(accessory.context.cacheMotionSensorState) });
                 break;
-
+            case "switch":
+                this.log.debug("Switch: %s", accessory.context.cacheSwitchState);
+                accessory.context.loggingService.addEntry({ time: moment().unix(), status: parseFloat(accessory.context.cacheSwitchState) });
+                break;
             default:
                 this.log.error('Unknown log type %s %s, skipping...', accessory.context.logType, accessory.context.name);
                 break;
@@ -2133,6 +2175,8 @@ DomotigaPlatform.prototype.setSwitchState = function (thisDevice, switchOn, call
     var accessory = this.accessories[thisDevice.name];
     if (accessory) {
         accessory.getService(Service.Switch).getCharacteristic(Characteristic.On).updateValue(switchOn);
+        // History
+        this.addValuesToHistory(accessory);
     }
 
     var callbackWasCalled = false;
